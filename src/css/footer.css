@@ -1,0 +1,44 @@
+/* Footer Styles */
+.footer {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 70px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    justify-content: space-between;
+    background: #272928;
+    font-family: 'Ubuntu', sans-serif;
+  }
+  
+  .footer-information {
+    padding: 20px;
+    margin: auto;
+  }
+  
+  .footer-information p {
+    font-family: 'Poppins';
+    color: darkgrey;
+    font-size: 12px;
+  }
+  
+  .footer-links {
+    padding: 20px;
+    margin: auto;
+    font-family: 'Poppins';
+  }
+  
+  .footer-links ul {
+    padding: 0;
+  }
+  
+  .footer-links ul li a {
+    text-decoration: none;
+    color: white;
+  }
+  
+  .footer-links ul li a:hover {
+    cursor: pointer;
+    color: #5bdcac;
+  }
+  
