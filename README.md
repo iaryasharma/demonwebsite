@@ -37,7 +37,7 @@ For support or more information, join our [support server](https://discord.gg/5M
 
 ## License
 
-© 2020-2022 DEMON. All rights reserved. This website is created and maintained by FragNite.
+© 2022-2024 DEMON. All rights reserved. This website is created and maintained by FragNite.
 
 ##
 <p align="center">
