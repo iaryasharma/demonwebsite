@@ -1,4 +1,4 @@
-# DEMON Bot Website
+# <img src="https://cdn.discordapp.com/emojis/976777330506739752.png" alt="DEMON Logo" style="width:50px; float:left; margin-right:10px;"> DEMON Discord Bot
 
 Welcome to the official website for **DEMON** Discord Bot! This site is designed to provide comprehensive information about the bot and its development team.
 
@@ -39,3 +39,9 @@ For support or more information, join our [support server](https://discord.gg/5M
 
 © 2020-2022 DEMON. All rights reserved. This website is created and maintained by FragNite.
 
+##
+<p align="center">
+  <a href="https://github.com/iaryasharma" alt="https://github.com/iaryasharma">
+    <img src="https://img.shields.io/static/v1?style=for-the-badge&label=CREATED%20BY&message=iaryasharma&color=000000&logo=GitHub" alt="Created by Arya" />
+  </a>
+</p>
