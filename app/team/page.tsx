@@ -35,7 +35,44 @@ export default function TeamPage() {
     };
   }, []);
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0a0a0a] via-[#121212] to-[#1a1a1a] pt-20 px-4 pb-8">
+    <div className="min-h-screen bg-black relative">
+      {/* Fixed Video Background */}
+      <div className="fixed inset-0 z-0 overflow-hidden">
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          preload="auto"
+          className="absolute inset-0 w-full h-full object-cover opacity-30"
+          style={{
+            minWidth: '100%',
+            minHeight: '100%',
+            width: 'auto',
+            height: 'auto',
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)'
+          }}
+        >
+          <source src="/sky.mp4" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+        <div className="absolute inset-0 bg-black/50" />
+      </div>
+      
+      <div className="relative z-10 pt-24 px-4 pb-8">
+      {/* Team Header */}
+      <div className="text-center mb-12">
+        <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-[#00FF85] to-[#00D4AA] bg-clip-text text-transparent mb-4">
+          Demon Development Team
+        </h1>
+        <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+          Meet the passionate developers behind Demon Bot, dedicated to creating the best Discord experience for our community.
+        </p>
+      </div>
+
       <div className="max-w-md mx-auto">
         <div className="bg-gradient-to-b from-[#1e1e23] to-[#16161a] border border-[#2a2a2f] rounded-2xl shadow-2xl overflow-hidden backdrop-blur-sm">
           {/* Banner */}
@@ -63,7 +100,6 @@ export default function TeamPage() {
                   draggable={false}
                   onContextMenu={(e) => e.preventDefault()}
                   onDragStart={(e) => e.preventDefault()}
-                  onSelectStart={(e) => e.preventDefault()}
                   style={{ pointerEvents: 'none' }}
                 />
               </div>
@@ -201,6 +237,7 @@ export default function TeamPage() {
             </div>
           </div>
         </div>
+      </div>
       </div>
     </div>
   );

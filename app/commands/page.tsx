@@ -1,12 +1,6 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Separator } from "@/components/ui/separator"
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import { 
   Search, 
   Copy, 
@@ -18,9 +12,12 @@ import {
   Clock,
   Shield,
   Zap,
-  Command as CommandIcon,
+  Terminal,
   Sparkles
 } from "lucide-react"
+
+// Mock commands data - replace with your actual import
+// Replace the mock data with:
 import commandsData from "@/json/commands_list.json"
 
 interface Command {
@@ -40,7 +37,7 @@ interface Command {
 const SLASH_CATEGORIES = ['announcement', 'information', 'settings', 'moderator', 'support', 'voicemod']
 
 // Get default prefix from environment or fallback
-const DEFAULT_PREFIX = process.env.NEXT_PUBLIC_DEFAULT_PREFIX || '!!'
+const DEFAULT_PREFIX = '!!'
 
 export default function CommandsPage() {
   const [searchTerm, setSearchTerm] = useState("")
@@ -142,13 +139,31 @@ export default function CommandsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-black relative overflow-hidden">
-      {/* Animated background elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-96 h-96 bg-[#00FF85]/10 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse delay-1000" />
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-blue-500/8 rounded-full blur-3xl animate-pulse delay-500" />
-        <div className="absolute top-20 right-20 w-64 h-64 bg-emerald-500/5 rounded-full blur-2xl animate-pulse delay-2000" />
+    <div className="min-h-screen bg-black relative">
+      {/* Fixed Video Background */}
+      <div className="fixed inset-0 z-0 overflow-hidden">
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          preload="auto"
+          className="absolute inset-0 w-full h-full object-cover opacity-30"
+          style={{
+            minWidth: '100%',
+            minHeight: '100%',
+            width: 'auto',
+            height: 'auto',
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)'
+          }}
+        >
+          <source src="/sky.mp4" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+        <div className="absolute inset-0 bg-black/50" />
       </div>
       
       <div className="relative z-10 pt-24 px-4 sm:px-6 lg:px-8">
@@ -156,27 +171,19 @@ export default function CommandsPage() {
           {/* Header Section */}
           <div className="text-center mb-16">
             <div className="flex items-center justify-center mb-6">
-              <div className="relative">
-                <Sparkles className="w-12 h-12 text-[#00FF85] mr-4 animate-spin" style={{animationDuration: '4s'}} />
-                <div className="absolute inset-0 w-12 h-12 bg-[#00FF85]/30 rounded-full blur-lg mr-4 animate-pulse" />
-              </div>
-              <h1 className="text-5xl md:text-7xl font-bold bg-gradient-to-r from-white via-[#00FF85] to-white bg-clip-text text-transparent drop-shadow-2xl animate-pulse">
+              <h1 className="text-5xl md:text-7xl font-bold bg-gradient-to-r from-white via-green-400 to-white bg-clip-text text-transparent">
                 Commands
               </h1>
-              <div className="relative">
-                <Sparkles className="w-12 h-12 text-[#00FF85] ml-4 animate-spin" style={{animationDelay: '2s', animationDuration: '4s'}} />
-                <div className="absolute inset-0 w-12 h-12 bg-[#00FF85]/30 rounded-full blur-lg ml-4 animate-pulse" style={{animationDelay: '1s'}} />
-              </div>
             </div>
             <p className="text-xl md:text-2xl text-slate-300 max-w-3xl mx-auto mb-8 leading-relaxed">
-              Discover the full power of <span className="text-[#00FF85] font-semibold">Demon Bot</span> with our comprehensive command library
+              Discover the full power of <span className="text-green-400 font-semibold">Demon Bot</span> with our comprehensive command library
             </p>
             <div className="flex items-center justify-center space-x-8 text-sm text-slate-400">
-              <div className="flex items-center bg-slate-800/60 px-6 py-3 rounded-full border border-slate-700/50 backdrop-blur-sm hover:bg-slate-800/80 transition-all duration-300">
+              <div className="flex items-center bg-slate-900/60 px-6 py-3 rounded-full border border-slate-700/50 backdrop-blur-sm">
                 <Slash className="w-4 h-4 mr-2 text-blue-400" />
                 <span>Slash Commands</span>
               </div>
-              <div className="flex items-center bg-slate-800/60 px-6 py-3 rounded-full border border-slate-700/50 backdrop-blur-sm hover:bg-slate-800/80 transition-all duration-300">
+              <div className="flex items-center bg-slate-900/60 px-6 py-3 rounded-full border border-slate-700/50 backdrop-blur-sm">
                 <Hash className="w-4 h-4 mr-2 text-orange-400" />
                 <span>Prefix Commands</span>
               </div>
@@ -186,45 +193,43 @@ export default function CommandsPage() {
           {/* Search and Filter */}
           <div className="mb-12 space-y-6">
             <div className="relative max-w-2xl mx-auto">
-              <div className="absolute inset-0 bg-gradient-to-r from-[#00FF85]/20 via-blue-500/20 to-purple-500/20 rounded-2xl blur-xl animate-pulse" />
-              <div className="relative bg-slate-900/90 backdrop-blur-xl border border-slate-700/50 rounded-2xl p-1 hover:border-[#00FF85]/30 transition-all duration-300">
+              <div className="relative bg-slate-900/90 backdrop-blur-xl border border-slate-700/50 rounded-2xl p-1 hover:border-green-400/30 transition-all duration-300">
                 <div className="relative">
                   <Search className="absolute left-5 top-1/2 transform -translate-y-1/2 text-slate-300 h-6 w-6 z-20 pointer-events-none" />
-                  <Input
+                  <input
+                    type="text"
                     placeholder="Search commands, aliases, or descriptions..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-16 pr-6 h-16 bg-transparent border-0 focus:ring-2 focus:ring-[#00FF85]/20 focus:outline-none text-white placeholder-slate-400 text-lg font-medium transition-all duration-300"
+                    className="w-full pl-16 pr-6 h-16 bg-transparent border-0 focus:ring-2 focus:ring-green-400/20 focus:outline-none text-white placeholder-slate-400 text-lg font-medium transition-all duration-300 rounded-2xl"
                   />
                 </div>
               </div>
             </div>
             
             <div className="flex gap-3 flex-wrap justify-center">
-              <Button
-                variant={selectedCategory === null ? "default" : "outline"}
+              <button
                 onClick={() => setSelectedCategory(null)}
-                className={`rounded-full px-8 py-4 font-semibold transition-all duration-300 transform hover:scale-105 ${
+                className={`rounded-full px-8 py-4 font-semibold transition-all duration-300 ${
                   selectedCategory === null 
-                    ? "bg-gradient-to-r from-[#00FF85] to-emerald-400 text-black hover:from-[#00FF85]/90 hover:to-emerald-400/90 shadow-xl shadow-[#00FF85]/30" 
-                    : "border-slate-600 hover:border-[#00FF85] hover:text-[#00FF85] hover:shadow-lg hover:shadow-[#00FF85]/10 bg-slate-800/60 backdrop-blur-sm"
+                    ? "bg-gradient-to-r from-green-400 to-emerald-400 text-black shadow-lg" 
+                    : "border border-slate-600 hover:border-green-400 hover:text-green-400 bg-slate-800/60 backdrop-blur-sm text-white"
                 }`}
               >
                 All Commands
-              </Button>
+              </button>
               {categories.map((category) => (
-                <Button
+                <button
                   key={category}
-                  variant={selectedCategory === category ? "default" : "outline"}
                   onClick={() => setSelectedCategory(category)}
-                  className={`rounded-full px-8 py-4 font-semibold transition-all duration-300 transform hover:scale-105 capitalize ${
+                  className={`rounded-full px-8 py-4 font-semibold transition-all duration-300 capitalize ${
                     selectedCategory === category 
-                      ? "bg-gradient-to-r from-[#00FF85] to-emerald-400 text-black hover:from-[#00FF85]/90 hover:to-emerald-400/90 shadow-xl shadow-[#00FF85]/30" 
-                      : "border-slate-600 hover:border-[#00FF85] hover:text-[#00FF85] hover:shadow-lg hover:shadow-[#00FF85]/10 bg-slate-800/60 backdrop-blur-sm"
+                      ? "bg-gradient-to-r from-green-400 to-emerald-400 text-black shadow-lg" 
+                      : "border border-slate-600 hover:border-green-400 hover:text-green-400 bg-slate-800/60 backdrop-blur-sm text-white"
                   }`}
                 >
                   {category.replace(/_/g, ' ')}
-                </Button>
+                </button>
               ))}
             </div>
           </div>
@@ -235,10 +240,7 @@ export default function CommandsPage() {
               <div key={category} className="space-y-6">
                 <div className="flex items-center gap-4 mb-8">
                   <div className="flex items-center gap-4">
-                    <div className="relative">
-                      <CommandIcon className="w-8 h-8 text-[#00FF85] z-10 relative" />
-                      <div className="absolute inset-0 w-8 h-8 bg-[#00FF85]/20 rounded-full blur-md animate-pulse" />
-                    </div>
+                    <Terminal className="w-8 h-8 text-green-400" />
                     <h2 className="text-3xl font-bold text-white capitalize">
                       {category.replace(/_/g, ' ')}
                     </h2>
@@ -249,167 +251,161 @@ export default function CommandsPage() {
                   
                   {supportsSlashCommands(category) && (
                     <div className="flex gap-3">
-                      <Badge variant="secondary" className="flex items-center gap-2 bg-blue-500/20 text-blue-300 border-blue-500/30 px-3 py-1">
+                      <span className="flex items-center gap-2 bg-blue-500/20 text-blue-300 border border-blue-500/30 px-3 py-1 rounded-full text-sm">
                         <Slash className="h-4 w-4" />
                         Slash
-                      </Badge>
-                      <Badge variant="outline" className="flex items-center gap-2 border-orange-500/30 text-orange-300 bg-orange-500/10 px-3 py-1">
+                      </span>
+                      <span className="flex items-center gap-2 border border-orange-500/30 text-orange-300 bg-orange-500/10 px-3 py-1 rounded-full text-sm">
                         <Hash className="h-4 w-4" />
                         Prefix
-                      </Badge>
+                      </span>
                     </div>
                   )}
                   {!supportsSlashCommands(category) && (
-                    <Badge variant="outline" className="flex items-center gap-2 border-orange-500/30 text-orange-300 bg-orange-500/10 px-3 py-1">
+                    <span className="flex items-center gap-2 border border-orange-500/30 text-orange-300 bg-orange-500/10 px-3 py-1 rounded-full text-sm">
                       <Hash className="h-4 w-4" />
                       Prefix Only
-                    </Badge>
+                    </span>
                   )}
                 </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {categoryCommands.map((command) => (
-                    <Collapsible 
+                    <div 
                       key={command.name}
-                      open={expandedCommands.has(command.name)}
-                      onOpenChange={() => toggleCommandExpansion(command.name)}
+                      className="group relative overflow-hidden bg-slate-900/60 border border-slate-700/50 hover:border-green-400/50 transition-all duration-300 hover:shadow-lg hover:shadow-green-400/10 backdrop-blur-sm rounded-lg"
                     >
-                      <Card className="group relative overflow-hidden bg-slate-900/60 border-slate-700/50 hover:border-[#00FF85]/50 transition-all duration-300 hover:shadow-xl hover:shadow-[#00FF85]/20 backdrop-blur-sm hover:bg-slate-900/80">
-                        <CollapsibleTrigger asChild>
-                          <CardHeader className="cursor-pointer hover:bg-slate-800/40 transition-colors duration-200 p-6">
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center gap-3">
-                                <Zap className="w-5 h-5 text-[#00FF85]" />
-                                <CardTitle className="text-[#00FF85] font-mono text-xl group-hover:text-white transition-colors">
-                                  {command.name}
-                                </CardTitle>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                {supportsSlashCommands(command.category) && (
-                                  <Slash className="w-4 h-4 text-blue-400" />
-                                )}
-                                <Hash className="w-4 h-4 text-gray-400" />
-                                {expandedCommands.has(command.name) ? (
-                                  <ChevronDown className="w-5 h-5 text-gray-400 transition-transform" />
-                                ) : (
-                                  <ChevronRight className="w-5 h-5 text-gray-400 transition-transform" />
-                                )}
-                              </div>
-                            </div>
-                            <p className="text-gray-300 text-left mt-3 leading-relaxed">
-                              {command.description}
-                            </p>
-                          </CardHeader>
-                        </CollapsibleTrigger>
-                        
-                        <CollapsibleContent>
-                          <CardContent className="pt-0 space-y-4 border-t border-gray-700/50 p-6">
-                            <div className="grid grid-cols-1 gap-4 text-sm">
-                              {/* Usage Section */}
-                              <div className="space-y-3">
-                                <h4 className="text-sm font-semibold text-gray-400 flex items-center gap-2">
-                                  <CommandIcon className="w-4 h-4" />
-                                  Usage
-                                </h4>
-                                <div className="bg-slate-800/60 rounded-lg p-4 font-mono text-base border border-slate-700/50">
-                                  <span className="text-[#00FF85]">
-                                    {formatUsage(command.usage, command.name, command.category)}
-                                  </span>
-                                </div>
-                              </div>
-
-                              {/* Copy Buttons */}
-                              <div className="flex gap-3">
-                                {supportsSlashCommands(command.category) && (
-                                  <Button
-                                    size="sm"
-                                    variant="outline"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      copyCommand(command.name, true);
-                                    }}
-                                    className="flex-1 border-blue-500/30 text-blue-300 hover:bg-blue-500/20 hover:border-blue-400 transition-all duration-200"
-                                  >
-                                    {copiedCommand === `/${command.name}` ? (
-                                      <Check className="h-4 w-4 mr-2" />
-                                    ) : (
-                                      <Slash className="h-4 w-4 mr-2" />
-                                    )}
-                                    Copy Slash
-                                  </Button>
-                                )}
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    copyCommand(command.name, false);
-                                  }}
-                                  className="flex-1 border-gray-600 hover:bg-gray-700 hover:border-gray-500 transition-all duration-200"
-                                >
-                                  {copiedCommand === `${DEFAULT_PREFIX}${command.name}` ? (
-                                    <Check className="h-4 w-4 mr-2" />
-                                  ) : (
-                                    <Copy className="h-4 w-4 mr-2" />
-                                  )}
-                                  Copy Prefix
-                                </Button>
-                              </div>
-
-                              {command.aliases && command.aliases.length > 0 && (
-                                <div>
-                                  <span className="text-gray-400 font-medium">Aliases:</span>
-                                  <div className="flex flex-wrap gap-2 mt-2">
-                                    {command.aliases.map((alias) => (
-                                      <Badge key={alias} variant="secondary" className="text-xs bg-gray-700/60 text-gray-300 hover:bg-gray-700 transition-colors">
-                                        {alias}
-                                      </Badge>
-                                    ))}
-                                  </div>
-                                </div>
-                              )}
-
-                              {command.cooldown > 0 && (
-                                <div className="flex items-center gap-3">
-                                  <Clock className="w-5 h-5 text-orange-400" />
-                                  <span className="text-gray-400">Cooldown:</span>
-                                  <Badge variant="outline" className="border-orange-500/30 text-orange-300 bg-orange-500/10">
-                                    {command.cooldown}s
-                                  </Badge>
-                                </div>
-                              )}
-
-                              {command.userPermissions && command.userPermissions.length > 0 && (
-                                <div>
-                                  <div className="flex items-center gap-3 mb-3">
-                                    <Shield className="w-5 h-5 text-red-400" />
-                                    <span className="text-gray-400 font-medium">Required Permissions:</span>
-                                  </div>
-                                  <div className="flex flex-wrap gap-2">
-                                    {command.userPermissions.map((perm) => (
-                                      <Badge key={perm} variant="destructive" className="text-xs bg-red-500/20 text-red-300 border-red-500/30 hover:bg-red-500/30 transition-colors">
-                                        {perm.replace(/_/g, ' ')}
-                                      </Badge>
-                                    ))}
-                                  </div>
-                                </div>
-                              )}
-
-                              <div className="flex items-center gap-4 pt-3 border-t border-gray-700/50">
-                                {command.guildOnly && (
-                                  <Badge variant="outline" className="text-xs border-purple-500/30 text-purple-300 bg-purple-500/10">
-                                    Server Only
-                                  </Badge>
-                                )}
-                                <span className="text-xs text-gray-500">
-                                  Category: {command.category}
+                      <div 
+                        className="cursor-pointer hover:bg-slate-800 hover:bg-opacity-40 transition-colors duration-200 p-6"
+                        onClick={() => toggleCommandExpansion(command.name)}
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <Zap className="w-5 h-5 text-green-400" />
+                            <h3 className="text-green-400 font-mono text-xl group-hover:text-white transition-colors">
+                              {command.name}
+                            </h3>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            {supportsSlashCommands(command.category) && (
+                              <Slash className="w-4 h-4 text-blue-400" />
+                            )}
+                            <Hash className="w-4 h-4 text-gray-400" />
+                            {expandedCommands.has(command.name) ? (
+                              <ChevronDown className="w-5 h-5 text-gray-400 transition-transform" />
+                            ) : (
+                              <ChevronRight className="w-5 h-5 text-gray-400 transition-transform" />
+                            )}
+                          </div>
+                        </div>
+                        <p className="text-gray-300 text-left mt-3 leading-relaxed">
+                          {command.description}
+                        </p>
+                      </div>
+                      
+                      {expandedCommands.has(command.name) && (
+                        <div className="pt-0 space-y-4 border-t border-gray-700/50 p-6">
+                          <div className="grid grid-cols-1 gap-4 text-sm">
+                            {/* Usage Section */}
+                            <div className="space-y-3">
+                              <h4 className="text-sm font-semibold text-gray-400 flex items-center gap-2">
+                                <Terminal className="w-4 h-4" />
+                                Usage
+                              </h4>
+                              <div className="bg-slate-800/60 rounded-lg p-4 font-mono text-base border border-slate-700/50">
+                                <span className="text-green-400">
+                                  {formatUsage(command.usage, command.name, command.category)}
                                 </span>
                               </div>
                             </div>
-                          </CardContent>
-                        </CollapsibleContent>
-                      </Card>
-                    </Collapsible>
+
+                            {/* Copy Buttons */}
+                            <div className="flex gap-3">
+                              {supportsSlashCommands(command.category) && (
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    copyCommand(command.name, true);
+                                  }}
+                                  className="flex-1 border border-blue-500 border-opacity-30 text-blue-300 hover:bg-blue-500 hover:bg-opacity-20 hover:border-blue-400 transition-all duration-200 px-3 py-2 rounded-md text-sm flex items-center justify-center gap-2"
+                                >
+                                  {copiedCommand === `/${command.name}` ? (
+                                    <Check className="h-4 w-4" />
+                                  ) : (
+                                    <Slash className="h-4 w-4" />
+                                  )}
+                                  Copy Slash
+                                </button>
+                              )}
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  copyCommand(command.name, false);
+                                }}
+                                className="flex-1 border border-gray-600 hover:bg-gray-700 hover:border-gray-500 transition-all duration-200 px-3 py-2 rounded-md text-sm flex items-center justify-center gap-2 text-white"
+                              >
+                                {copiedCommand === `${DEFAULT_PREFIX}${command.name}` ? (
+                                  <Check className="h-4 w-4" />
+                                ) : (
+                                  <Copy className="h-4 w-4" />
+                                )}
+                                Copy Prefix
+                              </button>
+                            </div>
+
+                            {command.aliases && command.aliases.length > 0 && (
+                              <div>
+                                <span className="text-gray-400 font-medium">Aliases:</span>
+                                <div className="flex flex-wrap gap-2 mt-2">
+                                  {command.aliases.map((alias) => (
+                                    <span key={alias} className="text-xs bg-gray-700/60 text-gray-300 hover:bg-gray-700 transition-colors px-2 py-1 rounded-md">
+                                      {alias}
+                                    </span>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+
+                            {command.cooldown > 0 && (
+                              <div className="flex items-center gap-3">
+                                <Clock className="w-5 h-5 text-orange-400" />
+                                <span className="text-gray-400">Cooldown:</span>
+                                <span className="border border-orange-500/30 text-orange-300 bg-orange-500/10 px-2 py-1 rounded-md text-xs">
+                                  {command.cooldown}s
+                                </span>
+                              </div>
+                            )}
+
+                            {command.userPermissions && command.userPermissions.length > 0 && (
+                              <div>
+                                <div className="flex items-center gap-3 mb-3">
+                                  <Shield className="w-5 h-5 text-red-400" />
+                                  <span className="text-gray-400 font-medium">Required Permissions:</span>
+                                </div>
+                                <div className="flex flex-wrap gap-2">
+                                  {command.userPermissions.map((perm) => (
+                                    <span key={perm} className="text-xs bg-red-500/20 text-red-300 border border-red-500/30 hover:bg-red-500/30 transition-colors px-2 py-1 rounded-md">
+                                      {perm.replace(/_/g, ' ')}
+                                    </span>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+
+                            <div className="flex items-center gap-4 pt-3 border-t border-gray-700/50">
+                              {command.guildOnly && (
+                                <span className="text-xs border border-purple-500/30 text-purple-300 bg-purple-500/10 px-2 py-1 rounded-md">
+                                  Server Only
+                                </span>
+                              )}
+                              <span className="text-xs text-gray-500">
+                                Category: {command.category}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   ))}
                 </div>
               </div>
@@ -419,8 +415,7 @@ export default function CommandsPage() {
           {Object.keys(groupedCommands).length === 0 && (
             <div className="text-center py-16">
               <div className="relative inline-block mb-6">
-                <CommandIcon className="w-20 h-20 text-gray-600 mx-auto" />
-                <div className="absolute inset-0 w-20 h-20 bg-gray-600/10 rounded-full blur-lg mx-auto animate-pulse" />
+                <Terminal className="w-20 h-20 text-gray-600 mx-auto" />
               </div>
               <p className="text-gray-400 text-xl mb-2">No commands found matching your search.</p>
               <p className="text-gray-500 text-base">Try adjusting your search terms or category filter.</p>
