@@ -35,13 +35,20 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
-  metadataBase: new URL('https://demonbot.vercel.app'),
+  metadataBase: new URL(
+    process.env.VERCEL_URL 
+      ? `https://${process.env.VERCEL_URL}` 
+      : process.env.NODE_ENV === 'production' 
+        ? 'https://demonbot.vercel.app' 
+        : 'http://localhost:3000'
+  ),
   alternates: {
     canonical: '/',
   },
   openGraph: {
     title: "Demon Bot - Ultimate Discord Bot for Modern Communities",
     description: "Transform your Discord server with Demon Bot - advanced moderation, anime content, utilities, and entertainment all in one powerful bot.",
+    url: "https://demonbot.vercel.app",
     siteName: "Demon Bot",
     images: [
       {
@@ -90,6 +97,7 @@ export default function RootLayout({
         <link rel="icon" href="/favicon.ico" sizes="any" />
         <link rel="icon" href="/demon-logo.png" type="image/png" />
         <link rel="apple-touch-icon" href="/demon-logo.png" />
+        <link rel="canonical" href="https://demonbot.vercel.app" />
         <meta name="theme-color" content="#00FF85" />
         <meta name="application-name" content="Demon Bot" />
         <meta name="apple-mobile-web-app-title" content="Demon Bot" />
@@ -110,9 +118,11 @@ export default function RootLayout({
               "applicationCategory": "BusinessApplication",
               "operatingSystem": "Discord",
               "description": "Ultimate Discord bot for modern communities featuring advanced moderation, anime content, server utilities, and entertainment.",
+              "url": "https://demonbot.vercel.app",
               "author": {
                 "@type": "Organization",
-                "name": "FragNite"
+                "name": "FragNite",
+                "url": "https://fragnite.vercel.app"
               },
               "offers": {
                 "@type": "Offer",
