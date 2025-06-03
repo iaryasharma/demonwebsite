@@ -1,16 +1,8 @@
 "use client";
 
-import { HeroSection } from "@/components/hero-section"
-import { FeatureHighlights } from "@/components/feature-highlights"
-import { FeatureShowcase } from "@/components/feature-showcase"
-import { CommandShowcase } from "@/components/command-showcase"
-import { DiscordWidget } from "@/components/discord-widget"
-import { useEffect } from "react"
+import { useEffect } from "react";
 
-export default function HomePage() {
-  console.log('HomePage component loaded');
-  
-  // Prevent image downloads on the entire page
+export function ImageProtection() {
   useEffect(() => {
     const handleContextMenu = (e: MouseEvent) => {
       if (e.target instanceof HTMLImageElement) {
@@ -41,13 +33,5 @@ export default function HomePage() {
     };
   }, []);
 
-  return (
-    <div className="relative">
-      <HeroSection />
-      <FeatureHighlights />
-      <FeatureShowcase />
-      <CommandShowcase />
-      <DiscordWidget />
-    </div>
-  )
+  return null; // This component doesn't render anything visible
 }

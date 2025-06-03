@@ -1,4 +1,5 @@
 {
+  "buildCommand": "next build",
   "github": {
     "silent": true
   }
