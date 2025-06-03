@@ -7,7 +7,11 @@ import { CommandShowcase } from "@/components/command-showcase"
 import { DiscordWidget } from "@/components/discord-widget"
 import { useEffect } from "react"
 
+// Since this is a client component, metadata is handled in layout.tsx
+
 export default function HomePage() {
+  console.log('HomePage component loaded');
+  
   // Prevent image downloads on the entire page
   useEffect(() => {
     const handleContextMenu = (e: MouseEvent) => {
