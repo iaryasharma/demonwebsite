@@ -1,0 +1,1544 @@
+[
+  {
+    "file": "action/akick.js",
+    "name": "akick",
+    "description": "Kick another user with an anime gif",
+    "usage": "akick <user>",
+    "category": "action",
+    "cooldown": 0,
+    "userPermissions": [],
+    "botPermissions": [
+      "EmbedLinks"
+    ],
+    "aliases": [],
+    "guildOnly": false
+  },
+  {
+    "file": "action/bite.js",
+    "name": "bite",
+    "description": "Give someone a playful bite",
+    "usage": "bite <@user>",
+    "category": "action",
+    "cooldown": 3,
+    "userPermissions": [],
+    "botPermissions": [
+      "EmbedLinks"
+    ],
+    "aliases": [
+      "chomp"
+    ],
+    "guildOnly": false
+  },
+  {
+    "file": "action/cry.js",
+    "name": "cry",
+    "description": "Post a crying gif",
+    "usage": "cry [user]",
+    "category": "action",
+    "cooldown": 0,
+    "userPermissions": [],
+    "botPermissions": [
+      "EmbedLinks"
+    ],
+    "aliases": [],
+    "guildOnly": false
+  },
+  {
+    "file": "action/cuddle.js",
+    "name": "cuddle",
+    "description": "Give someone a warm cuddle",
+    "usage": "cuddle <@user>",
+    "category": "action",
+    "cooldown": 3,
+    "userPermissions": [],
+    "botPermissions": [
+      "EmbedLinks"
+    ],
+    "aliases": [
+      "snuggle"
+    ],
+    "guildOnly": false
+  },
+  {
+    "file": "action/feed.js",
+    "name": "feed",
+    "description": "Feed another user with a cute gif",
+    "usage": "feed <user>",
+    "category": "action",
+    "cooldown": 0,
+    "userPermissions": [],
+    "botPermissions": [
+      "EmbedLinks"
+    ],
+    "aliases": [],
+    "guildOnly": false
+  },
+  {
+    "file": "action/hug.js",
+    "name": "hug",
+    "description": "Give someone a warm hug",
+    "usage": "hug <@user>",
+    "category": "action",
+    "cooldown": 3,
+    "userPermissions": [],
+    "botPermissions": [
+      "EmbedLinks"
+    ],
+    "aliases": [
+      "cuddle"
+    ],
+    "guildOnly": false
+  },
+  {
+    "file": "action/kill.js",
+    "name": "kill",
+    "description": "Kill another user with an anime gif",
+    "usage": "kill <user>",
+    "category": "action",
+    "cooldown": 0,
+    "userPermissions": [],
+    "botPermissions": [
+      "EmbedLinks"
+    ],
+    "aliases": [],
+    "guildOnly": false
+  },
+  {
+    "file": "action/kiss.js",
+    "name": "kiss",
+    "description": "Give someone a kiss",
+    "usage": "kiss <@user>",
+    "category": "action",
+    "cooldown": 3,
+    "userPermissions": [],
+    "botPermissions": [
+      "SendMessages",
+      "EmbedLinks"
+    ],
+    "aliases": [],
+    "guildOnly": false
+  },
+  {
+    "file": "action/pat.js",
+    "name": "pat",
+    "description": "Give someone a gentle pat",
+    "usage": "pat <@user>",
+    "category": "action",
+    "cooldown": 3,
+    "userPermissions": [],
+    "botPermissions": [
+      "SendMessages",
+      "EmbedLinks"
+    ],
+    "aliases": [
+      "headpat"
+    ],
+    "guildOnly": false
+  },
+  {
+    "file": "action/punch.js",
+    "name": "punch",
+    "description": "Punch another user with an anime gif",
+    "usage": "punch <user>",
+    "category": "action",
+    "cooldown": 0,
+    "userPermissions": [],
+    "botPermissions": [
+      "EmbedLinks"
+    ],
+    "aliases": [],
+    "guildOnly": false
+  },
+  {
+    "file": "action/slap.js",
+    "name": "slap",
+    "description": "Give someone a slap",
+    "usage": "slap <@user>",
+    "category": "action",
+    "cooldown": 3,
+    "userPermissions": [],
+    "botPermissions": [
+      "SendMessages",
+      "EmbedLinks"
+    ],
+    "aliases": [
+      "smack"
+    ],
+    "guildOnly": false
+  },
+  {
+    "file": "action/tickle.js",
+    "name": "tickle",
+    "description": "Tickle another user with a cute gif",
+    "usage": "tickle <user>",
+    "category": "action",
+    "cooldown": 0,
+    "userPermissions": [],
+    "botPermissions": [
+      "EmbedLinks"
+    ],
+    "aliases": [],
+    "guildOnly": false
+  },
+  {
+    "file": "action/wink.js",
+    "name": "wink",
+    "description": "Give someone a playful wink",
+    "usage": "wink <@user>",
+    "category": "action",
+    "cooldown": 3,
+    "userPermissions": [],
+    "botPermissions": [
+      "SendMessages",
+      "EmbedLinks"
+    ],
+    "aliases": [],
+    "guildOnly": false
+  },
+  {
+    "file": "announcement/embed.js",
+    "name": "embed",
+    "description": "Create and send a custom embed message with interactive setup",
+    "usage": "embed <#channel>",
+    "category": "announcement",
+    "cooldown": 5,
+    "userPermissions": [
+      "ManageMessages"
+    ],
+    "botPermissions": [
+      "SendMessages",
+      "EmbedLinks",
+      "ManageWebhooks"
+    ],
+    "aliases": [
+      "createembed",
+      "embedbuilder"
+    ],
+    "guildOnly": true
+  },
+  {
+    "file": "announcement/webhookannounce.js",
+    "name": "webhookannounce",
+    "description": "Send an announcement using webhooks with custom name and avatar",
+    "usage": "webhookannounce <#channel> [title] [description] OR webhookannounce <#channel> (for interactive mode)",
+    "category": "announcement",
+    "cooldown": 10,
+    "userPermissions": [
+      "ManageMessages"
+    ],
+    "botPermissions": [
+      "ManageWebhooks",
+      "EmbedLinks"
+    ],
+    "aliases": [
+      "whannounce",
+      "webhookannouncement"
+    ],
+    "guildOnly": true
+  },
+  {
+    "file": "FUN/8ball.js",
+    "name": "8ball",
+    "description": "Ask the magic 8-ball a question",
+    "usage": "8ball <question>",
+    "category": "fun",
+    "cooldown": 0,
+    "userPermissions": [],
+    "botPermissions": [
+      "EmbedLinks"
+    ],
+    "aliases": [],
+    "guildOnly": false
+  },
+  {
+    "file": "FUN/ascii.js",
+    "name": "ascii",
+    "description": "Convert text to ASCII art",
+    "usage": "ascii <text>",
+    "category": "fun",
+    "cooldown": 0,
+    "userPermissions": [],
+    "botPermissions": [
+      "EmbedLinks"
+    ],
+    "aliases": [],
+    "guildOnly": false
+  },
+  {
+    "file": "FUN/dare.js",
+    "name": "dare",
+    "description": "Get a random dare challenge",
+    "usage": "dare",
+    "category": "fun",
+    "cooldown": 0,
+    "userPermissions": [],
+    "botPermissions": [
+      "EmbedLinks"
+    ],
+    "aliases": [],
+    "guildOnly": false
+  },
+  {
+    "file": "FUN/emojify.js",
+    "name": "emojify",
+    "description": "Convert text to emoji form",
+    "usage": "emojify <text>",
+    "category": "fun",
+    "cooldown": 0,
+    "userPermissions": [],
+    "botPermissions": [
+      "EmbedLinks"
+    ],
+    "aliases": [],
+    "guildOnly": false
+  },
+  {
+    "file": "FUN/fliptext.js",
+    "name": "fliptext",
+    "description": "Flip and reverse text upside down",
+    "usage": "fliptext <text>",
+    "category": "fun",
+    "cooldown": 0,
+    "userPermissions": [],
+    "botPermissions": [
+      "EmbedLinks"
+    ],
+    "aliases": [
+      "flipt",
+      "tflip"
+    ],
+    "guildOnly": false
+  },
+  {
+    "file": "FUN/hack.js",
+    "name": "hack",
+    "description": "Pretend to hack someone (just for fun!)",
+    "usage": "hack <user>",
+    "category": "fun",
+    "cooldown": 0,
+    "userPermissions": [],
+    "botPermissions": [
+      "EmbedLinks"
+    ],
+    "aliases": [],
+    "guildOnly": false
+  },
+  {
+    "file": "FUN/howgay.js",
+    "name": "howgay",
+    "description": "Calculate someone's gay percentage (just for fun!)",
+    "usage": "howgay [user]",
+    "category": "fun",
+    "cooldown": 0,
+    "userPermissions": [],
+    "botPermissions": [
+      "EmbedLinks"
+    ],
+    "aliases": [],
+    "guildOnly": false
+  },
+  {
+    "file": "FUN/love.js",
+    "name": "love",
+    "description": "Calculate love compatibility between two users",
+    "usage": "love <user>",
+    "category": "fun",
+    "cooldown": 0,
+    "userPermissions": [],
+    "botPermissions": [
+      "EmbedLinks"
+    ],
+    "aliases": [
+      "howmuchiloveyou",
+      "ship"
+    ],
+    "guildOnly": false
+  },
+  {
+    "file": "FUN/mission.js",
+    "name": "mission",
+    "description": "Get a random mission or task to complete",
+    "usage": "mission",
+    "category": "fun",
+    "cooldown": 0,
+    "userPermissions": [],
+    "botPermissions": [],
+    "aliases": [
+      "task",
+      "quest"
+    ],
+    "guildOnly": false
+  },
+  {
+    "file": "FUN/ppsize.js",
+    "name": "pp",
+    "description": "Measure someone's pp size for fun",
+    "usage": "pp <user>",
+    "category": "fun",
+    "cooldown": 0,
+    "userPermissions": [],
+    "botPermissions": [
+      "SendMessages",
+      "EmbedLinks"
+    ],
+    "aliases": [
+      "ppsize"
+    ],
+    "guildOnly": false
+  },
+  {
+    "file": "FUN/searchainme.js",
+    "name": "animesearch",
+    "description": "Get detailed information about an anime",
+    "usage": "animesearch <anime name>",
+    "category": "fun",
+    "cooldown": 0,
+    "userPermissions": [],
+    "botPermissions": [
+      "EmbedLinks"
+    ],
+    "aliases": [
+      "sanime"
+    ],
+    "guildOnly": false
+  },
+  {
+    "file": "FUN/truth.js",
+    "name": "truth",
+    "description": "Get a random truth question for truth or dare",
+    "usage": "truth [category]",
+    "category": "fun",
+    "cooldown": 0,
+    "userPermissions": [],
+    "botPermissions": [
+      "EmbedLinks"
+    ],
+    "aliases": [],
+    "guildOnly": false
+  },
+  {
+    "file": "information/avatar.js",
+    "name": "avatar",
+    "description": "Display a user's global avatar",
+    "usage": "avatar [user]",
+    "category": "information",
+    "cooldown": 0,
+    "userPermissions": [],
+    "botPermissions": [
+      "EmbedLinks"
+    ],
+    "aliases": [],
+    "guildOnly": false
+  },
+  {
+    "file": "information/badges.js",
+    "name": "badges",
+    "description": "Shows all badges a user currently has",
+    "usage": "badges [@user|userid]",
+    "category": "information",
+    "cooldown": 5,
+    "userPermissions": [],
+    "botPermissions": [],
+    "aliases": [
+      "badge",
+      "userbadges"
+    ],
+    "guildOnly": false
+  },
+  {
+    "file": "information/banner.js",
+    "name": "banner",
+    "description": "Display a user's banner",
+    "usage": "banner [user]",
+    "category": "information",
+    "cooldown": 0,
+    "userPermissions": [],
+    "botPermissions": [
+      "EmbedLinks"
+    ],
+    "aliases": [],
+    "guildOnly": false
+  },
+  {
+    "file": "information/channelinfo.js",
+    "name": "channelinfo",
+    "description": "Shows detailed information about a channel",
+    "usage": "channelinfo [#channel|channelid]",
+    "category": "information",
+    "cooldown": 5,
+    "userPermissions": [],
+    "botPermissions": [
+      "EmbedLinks"
+    ],
+    "aliases": [
+      "ci",
+      "channel"
+    ],
+    "guildOnly": true
+  },
+  {
+    "file": "information/emojiinfo.js",
+    "name": "emojiinfo",
+    "description": "Shows detailed information about an emoji",
+    "usage": "emojiinfo <emoji|emoji_name>",
+    "category": "information",
+    "cooldown": 5,
+    "userPermissions": [],
+    "botPermissions": [
+      "EmbedLinks"
+    ],
+    "aliases": [
+      "ei",
+      "emoji"
+    ],
+    "guildOnly": true
+  },
+  {
+    "file": "information/help.js",
+    "name": "help",
+    "description": "View available commands and get help",
+    "usage": "help [command]",
+    "category": "information",
+    "cooldown": 5,
+    "userPermissions": [],
+    "botPermissions": [
+      "SendMessages",
+      "EmbedLinks"
+    ],
+    "aliases": [
+      "commands",
+      "cmds",
+      "h"
+    ],
+    "guildOnly": false
+  },
+  {
+    "file": "information/inviteinfo.js",
+    "name": "inviteinfo",
+    "description": "Shows detailed information about a Discord invite",
+    "usage": "inviteinfo <invite_link|invite_code>",
+    "category": "information",
+    "cooldown": 5,
+    "userPermissions": [],
+    "botPermissions": [
+      "EmbedLinks"
+    ],
+    "aliases": [
+      "ii",
+      "invite"
+    ],
+    "guildOnly": false
+  },
+  {
+    "file": "information/messageinfo.js",
+    "name": "messageinfo",
+    "description": "Shows detailed information about a message",
+    "usage": "messageinfo <message_id> [#channel]",
+    "category": "information",
+    "cooldown": 5,
+    "userPermissions": [],
+    "botPermissions": [
+      "EmbedLinks",
+      "ReadMessageHistory"
+    ],
+    "aliases": [
+      "mi",
+      "msginfo",
+      "message"
+    ],
+    "guildOnly": true
+  },
+  {
+    "file": "information/ping.js",
+    "name": "ping",
+    "description": "Check bot latency and response time",
+    "usage": "ping",
+    "category": "information",
+    "cooldown": 3,
+    "userPermissions": [],
+    "botPermissions": [
+      "SendMessages",
+      "EmbedLinks"
+    ],
+    "aliases": [
+      "latency",
+      "pong"
+    ],
+    "guildOnly": false
+  },
+  {
+    "file": "information/roleinfo.js",
+    "name": "roleinfo",
+    "description": "Shows detailed information about a role",
+    "usage": "roleinfo <@role|rolename|roleid>",
+    "category": "information",
+    "cooldown": 5,
+    "userPermissions": [],
+    "botPermissions": [
+      "EmbedLinks"
+    ],
+    "aliases": [
+      "ri",
+      "role"
+    ],
+    "guildOnly": true
+  },
+  {
+    "file": "information/savatar.js",
+    "name": "savatar",
+    "description": "Display a user's server-specific avatar",
+    "usage": "savatar [user]",
+    "category": "information",
+    "cooldown": 0,
+    "userPermissions": [],
+    "botPermissions": [
+      "EmbedLinks"
+    ],
+    "aliases": [],
+    "guildOnly": false
+  },
+  {
+    "file": "information/sbanner.js",
+    "name": "sbanner",
+    "description": "Display a user's server banner",
+    "usage": "sbanner [user]",
+    "category": "information",
+    "cooldown": 0,
+    "userPermissions": [],
+    "botPermissions": [
+      "EmbedLinks"
+    ],
+    "aliases": [],
+    "guildOnly": true
+  },
+  {
+    "file": "information/serverinfo.js",
+    "name": "serverinfo",
+    "description": "Shows detailed information about the current server",
+    "usage": "serverinfo",
+    "category": "information",
+    "cooldown": 5,
+    "userPermissions": [],
+    "botPermissions": [
+      "EmbedLinks"
+    ],
+    "aliases": [
+      "si",
+      "server",
+      "guildinfo"
+    ],
+    "guildOnly": true
+  },
+  {
+    "file": "information/userinfo.js",
+    "name": "userinfo",
+    "description": "Shows detailed information about a user",
+    "usage": "userinfo [@user|userid]",
+    "category": "information",
+    "cooldown": 5,
+    "userPermissions": [],
+    "botPermissions": [
+      "EmbedLinks"
+    ],
+    "aliases": [
+      "ui",
+      "whois",
+      "user"
+    ],
+    "guildOnly": true
+  },
+  {
+    "file": "moderator/addrole.js",
+    "name": "addrole",
+    "description": "Add a role to users",
+    "usage": "addrole <role> <user|humans|bots> [@user|user_id|username] [reason]",
+    "category": "moderator",
+    "cooldown": 5,
+    "userPermissions": [
+      "ManageRoles"
+    ],
+    "botPermissions": [
+      "ManageRoles",
+      "EmbedLinks"
+    ],
+    "aliases": [
+      "giverole",
+      "roleadd"
+    ],
+    "guildOnly": true
+  },
+  {
+    "file": "moderator/ban.js",
+    "name": "ban",
+    "description": "Ban a member from the server",
+    "usage": "ban <@user|userid|username> [reason] [days]",
+    "category": "moderator",
+    "cooldown": 5,
+    "userPermissions": [
+      "BanMembers"
+    ],
+    "botPermissions": [
+      "BanMembers",
+      "EmbedLinks"
+    ],
+    "aliases": [
+      "banuser"
+    ],
+    "guildOnly": true
+  },
+  {
+    "file": "moderator/banlist.js",
+    "name": "banlist",
+    "description": "Lists all banned users in the server",
+    "usage": "banlist",
+    "category": "moderator",
+    "cooldown": 10,
+    "userPermissions": [
+      "Administrator"
+    ],
+    "botPermissions": [
+      "EmbedLinks",
+      "BanMembers"
+    ],
+    "aliases": [
+      "bans",
+      "listbans"
+    ],
+    "guildOnly": true
+  },
+  {
+    "file": "moderator/createchannel.js",
+    "name": "createchannel",
+    "description": "Create a new text or voice channel",
+    "usage": "createchannel <name> <type> [category] [topic] [userlimit] [bitrate] [nsfw] [reason]",
+    "category": "moderator",
+    "cooldown": 5,
+    "userPermissions": [
+      "ManageChannels"
+    ],
+    "botPermissions": [
+      "ManageChannels",
+      "EmbedLinks"
+    ],
+    "aliases": [
+      "mkchannel",
+      "makechannel",
+      "newchannel"
+    ],
+    "guildOnly": true
+  },
+  {
+    "file": "moderator/createrole.js",
+    "name": "createrole",
+    "description": "Create a new role in the server",
+    "usage": "createrole <role_name> [color] [mentionable: true/false] [hoist: true/false] [reason]",
+    "category": "moderator",
+    "cooldown": 5,
+    "userPermissions": [],
+    "botPermissions": [
+      "ManageRoles"
+    ],
+    "aliases": [
+      "mkrole",
+      "makerole",
+      "newrole"
+    ],
+    "guildOnly": true
+  },
+  {
+    "file": "moderator/deletechannel.js",
+    "name": "deletechannel",
+    "description": "Delete an existing channel from the server",
+    "usage": "deletechannel <#channel|channel_name|channel_id> [reason]",
+    "category": "moderator",
+    "cooldown": 5,
+    "userPermissions": [],
+    "botPermissions": [
+      "ManageChannels"
+    ],
+    "aliases": [
+      "rmchannel",
+      "removechannel",
+      "channeldel",
+      "delch"
+    ],
+    "guildOnly": true
+  },
+  {
+    "file": "moderator/deleterole.js",
+    "name": "deleterole",
+    "description": "Delete an existing role from the server",
+    "usage": "deleterole <@role|role_name|role_id> [reason]",
+    "category": "moderator",
+    "cooldown": 5,
+    "userPermissions": [],
+    "botPermissions": [
+      "ManageRoles"
+    ],
+    "aliases": [
+      "rmrole",
+      "removerole",
+      "roledel"
+    ],
+    "guildOnly": true
+  },
+  {
+    "file": "moderator/kick.js",
+    "name": "kick",
+    "description": "Kick a member from the server.",
+    "usage": "kick <@user|userid|username> [reason]",
+    "category": "moderator",
+    "cooldown": 3,
+    "userPermissions": [
+      "KickMembers"
+    ],
+    "botPermissions": [
+      "KickMembers",
+      "EmbedLinks"
+    ],
+    "aliases": [
+      "kickuser"
+    ],
+    "guildOnly": true
+  },
+  {
+    "file": "moderator/listadminroles.js",
+    "name": "listadminroles",
+    "description": "Lists all roles with Administrator permission",
+    "usage": "listadminroles",
+    "category": "moderator",
+    "cooldown": 5,
+    "userPermissions": [
+      "Administrator"
+    ],
+    "botPermissions": [
+      "EmbedLinks"
+    ],
+    "aliases": [
+      "adminroles",
+      "admroles"
+    ],
+    "guildOnly": true
+  },
+  {
+    "file": "moderator/listadminusers.js",
+    "name": "listadminusers",
+    "description": "Lists all users with Administrator permission in the server",
+    "usage": "listadminusers",
+    "category": "moderator",
+    "cooldown": 5,
+    "userPermissions": [
+      "Administrator"
+    ],
+    "botPermissions": [
+      "EmbedLinks"
+    ],
+    "aliases": [
+      "adminusers",
+      "admusers"
+    ],
+    "guildOnly": true
+  },
+  {
+    "file": "moderator/listemojis.js",
+    "name": "listemojis",
+    "description": "Lists all emojis in the server with their IDs",
+    "usage": "listemojis",
+    "category": "moderator",
+    "cooldown": 5,
+    "userPermissions": [
+      "Administrator"
+    ],
+    "botPermissions": [
+      "EmbedLinks"
+    ],
+    "aliases": [
+      "emojis",
+      "emojilist"
+    ],
+    "guildOnly": true
+  },
+  {
+    "file": "moderator/listroles.js",
+    "name": "listroles",
+    "description": "Lists all roles in the server with their IDs",
+    "usage": "listroles",
+    "category": "moderator",
+    "cooldown": 5,
+    "userPermissions": [
+      "Administrator"
+    ],
+    "botPermissions": [
+      "EmbedLinks"
+    ],
+    "aliases": [
+      "roles",
+      "rolelist"
+    ],
+    "guildOnly": true
+  },
+  {
+    "file": "moderator/lock.js",
+    "name": "lock",
+    "description": "Lock a channel to prevent members from sending messages",
+    "usage": "lock [#channel|channel_name|channel_id] [reason]",
+    "category": "moderator",
+    "cooldown": 3,
+    "userPermissions": [],
+    "botPermissions": [
+      "ManageChannels",
+      "ManageRoles"
+    ],
+    "aliases": [
+      "lockdown",
+      "lockchannel"
+    ],
+    "guildOnly": true
+  },
+  {
+    "file": "moderator/lockdown.js",
+    "name": "lockdown",
+    "description": "Temporarily restrict sending messages in a channel",
+    "usage": "lockdown [channel] [duration|unlock] [reason]",
+    "category": "moderator",
+    "cooldown": 5,
+    "userPermissions": [
+      "ManageChannels"
+    ],
+    "botPermissions": [
+      "ManageChannels",
+      "EmbedLinks"
+    ],
+    "aliases": [
+      "lock",
+      "unlock"
+    ],
+    "guildOnly": true
+  },
+  {
+    "file": "moderator/mute.js",
+    "name": "mute",
+    "description": "Timeout/mute a member for a specified duration",
+    "usage": "mute <@user|username|userid> <duration> [reason]",
+    "category": "moderator",
+    "cooldown": 3,
+    "userPermissions": [
+      "ModerateMembers"
+    ],
+    "botPermissions": [
+      "ModerateMembers",
+      "EmbedLinks"
+    ],
+    "aliases": [
+      "timeout"
+    ],
+    "guildOnly": true
+  },
+  {
+    "file": "moderator/nickname.js",
+    "name": "nickname",
+    "description": "Change a member's nickname",
+    "usage": "nickname <@user|userid> [new nickname|reset]",
+    "category": "moderator",
+    "cooldown": 3,
+    "userPermissions": [
+      "ManageNicknames"
+    ],
+    "botPermissions": [
+      "ManageNicknames",
+      "EmbedLinks"
+    ],
+    "aliases": [
+      "nick",
+      "setnick"
+    ],
+    "guildOnly": true
+  },
+  {
+    "file": "moderator/purge.js",
+    "name": "purge",
+    "description": "Bulk delete messages in a channel",
+    "usage": "purge <amount> [user]",
+    "category": "moderator",
+    "cooldown": 5,
+    "userPermissions": [
+      "ManageMessages"
+    ],
+    "botPermissions": [
+      "ManageMessages",
+      "EmbedLinks"
+    ],
+    "aliases": [
+      "clear",
+      "prune"
+    ],
+    "guildOnly": true
+  },
+  {
+    "file": "moderator/removerole.js",
+    "name": "removerole",
+    "description": "Remove a role from users",
+    "usage": "removerole <role> <user|humans|bots> [@user|user_id|username] [reason]",
+    "category": "moderator",
+    "cooldown": 5,
+    "userPermissions": [
+      "ManageRoles"
+    ],
+    "botPermissions": [
+      "ManageRoles",
+      "EmbedLinks"
+    ],
+    "aliases": [
+      "takerole",
+      "roleremove"
+    ],
+    "guildOnly": true
+  },
+  {
+    "file": "moderator/roleicon.js",
+    "name": "roleicon",
+    "description": "Set or remove an icon for a role",
+    "usage": "roleicon <role> <icon_url|remove>",
+    "category": "moderator",
+    "cooldown": 0,
+    "userPermissions": [
+      "ManageRoles"
+    ],
+    "botPermissions": [
+      "ManageRoles",
+      "EmbedLinks"
+    ],
+    "aliases": [],
+    "guildOnly": false
+  },
+  {
+    "file": "moderator/slowmode.js",
+    "name": "slowmode",
+    "description": "Set slowmode (rate limit) for a channel",
+    "usage": "slowmode <duration|off> [reason]",
+    "category": "moderator",
+    "cooldown": 3,
+    "userPermissions": [
+      "ManageChannels"
+    ],
+    "botPermissions": [
+      "ManageChannels",
+      "EmbedLinks"
+    ],
+    "aliases": [
+      "slow",
+      "ratelimit"
+    ],
+    "guildOnly": true
+  },
+  {
+    "file": "moderator/stealemoji.js",
+    "name": "stealemoji",
+    "description": "Steal an emoji from another server or add from URL",
+    "usage": "stealemoji <emoji|url> [name] [reason]",
+    "category": "moderator",
+    "cooldown": 5,
+    "userPermissions": [
+      "ManageEmojisAndStickers"
+    ],
+    "botPermissions": [
+      "ManageEmojisAndStickers",
+      "EmbedLinks"
+    ],
+    "aliases": [
+      "addemoji",
+      "steal",
+      "emojistealer"
+    ],
+    "guildOnly": true
+  },
+  {
+    "file": "moderator/stealsticker.js",
+    "name": "stealsticker",
+    "description": "Steal a sticker from another server or add from URL",
+    "usage": "stealsticker <sticker_url> [name] [description] [tags] [reason]",
+    "category": "moderator",
+    "cooldown": 5,
+    "userPermissions": [
+      "ManageEmojisAndStickers"
+    ],
+    "botPermissions": [
+      "ManageEmojisAndStickers",
+      "EmbedLinks"
+    ],
+    "aliases": [
+      "addsticker",
+      "stickersteal",
+      "stickerstealer"
+    ],
+    "guildOnly": true
+  },
+  {
+    "file": "moderator/unban.js",
+    "name": "unban",
+    "description": "Unban a user from the server",
+    "usage": "unban <userid> [reason]",
+    "category": "moderator",
+    "cooldown": 5,
+    "userPermissions": [
+      "BanMembers"
+    ],
+    "botPermissions": [
+      "BanMembers",
+      "EmbedLinks"
+    ],
+    "aliases": [
+      "pardon"
+    ],
+    "guildOnly": true
+  },
+  {
+    "file": "moderator/unlock.js",
+    "name": "unlock",
+    "description": "Unlock a channel to allow members to send messages",
+    "usage": "unlock [#channel|channel_name|channel_id] [reason]",
+    "category": "moderator",
+    "cooldown": 3,
+    "userPermissions": [],
+    "botPermissions": [
+      "ManageChannels",
+      "ManageRoles"
+    ],
+    "aliases": [
+      "unlockdown",
+      "unlockchannel"
+    ],
+    "guildOnly": true
+  },
+  {
+    "file": "moderator/unmute.js",
+    "name": "unmute",
+    "description": "Remove timeout/mute from a member",
+    "usage": "unmute <@user|username|userid> [reason]",
+    "category": "moderator",
+    "cooldown": 3,
+    "userPermissions": [
+      "ModerateMembers"
+    ],
+    "botPermissions": [
+      "ModerateMembers",
+      "EmbedLinks"
+    ],
+    "aliases": [
+      "untimeout"
+    ],
+    "guildOnly": true
+  },
+  {
+    "file": "settings/disable.js",
+    "name": "disable",
+    "description": "Disable bot commands",
+    "usage": "disable <channel|all> [#channel|channel_id|channel_name] [reason]",
+    "category": "settings",
+    "cooldown": 3,
+    "userPermissions": [
+      "Administrator"
+    ],
+    "botPermissions": [
+      "EmbedLinks"
+    ],
+    "aliases": [
+      "disablecmds",
+      "cmdoff"
+    ],
+    "guildOnly": true
+  },
+  {
+    "file": "settings/enable.js",
+    "name": "enable",
+    "description": "Enable bot commands in channels",
+    "usage": "enable <channel|all> [#channel|channel_id|channel_name] [reason]",
+    "category": "settings",
+    "cooldown": 3,
+    "userPermissions": [
+      "Administrator"
+    ],
+    "botPermissions": [
+      "EmbedLinks"
+    ],
+    "aliases": [
+      "enablecmds",
+      "cmdon"
+    ],
+    "guildOnly": true
+  },
+  {
+    "file": "settings/mmode.js",
+    "name": "mmode",
+    "description": "Toggle maintenance mode for the server",
+    "usage": "mmode",
+    "category": "settings",
+    "cooldown": 10,
+    "userPermissions": [
+      "Administrator"
+    ],
+    "botPermissions": [
+      "ManageChannels",
+      "ManageRoles"
+    ],
+    "aliases": [
+      "maintenance",
+      "maintenancemode"
+    ],
+    "guildOnly": true
+  },
+  {
+    "file": "settings/prefix.js",
+    "name": "prefix",
+    "description": "Set a custom prefix for the bot in this server",
+    "usage": "prefix [new_prefix]",
+    "category": "settings",
+    "cooldown": 5,
+    "userPermissions": [
+      "Administrator"
+    ],
+    "botPermissions": [
+      "SendMessages",
+      "EmbedLinks"
+    ],
+    "aliases": [
+      "setprefix",
+      "changeprefix"
+    ],
+    "guildOnly": true
+  },
+  {
+    "file": "settings/resetprefix.js",
+    "name": "resetprefix",
+    "description": "Reset the bot prefix to the default prefix",
+    "usage": "resetprefix",
+    "category": "settings",
+    "cooldown": 5,
+    "userPermissions": [
+      "Administrator"
+    ],
+    "botPermissions": [
+      "SendMessages",
+      "EmbedLinks"
+    ],
+    "aliases": [
+      "defaultprefix",
+      "prefixreset"
+    ],
+    "guildOnly": true
+  },
+  {
+    "file": "support/botstats.js",
+    "name": "botstats",
+    "description": "Display comprehensive bot statistics and performance metrics",
+    "usage": "botstats [detailed:true]",
+    "category": "support",
+    "cooldown": 0,
+    "userPermissions": [],
+    "botPermissions": [
+      "SendMessages",
+      "EmbedLinks"
+    ],
+    "aliases": [
+      "stats",
+      "info",
+      "botinfo"
+    ],
+    "guildOnly": false
+  },
+  {
+    "file": "support/bug.js",
+    "name": "bug",
+    "description": "Report a bug or issue with the bot",
+    "usage": "bug <description> [steps] [screenshot] [image_url]",
+    "category": "support",
+    "cooldown": 0,
+    "userPermissions": [],
+    "botPermissions": [
+      "SendMessages",
+      "EmbedLinks"
+    ],
+    "aliases": [
+      "bugreport",
+      "issue",
+      "error",
+      "report"
+    ],
+    "guildOnly": false
+  },
+  {
+    "file": "support/changelog.js",
+    "name": "changelog",
+    "description": "View the latest bot updates and changelog",
+    "usage": "changelog [force_refresh:true]",
+    "category": "support",
+    "cooldown": 0,
+    "userPermissions": [],
+    "botPermissions": [
+      "SendMessages",
+      "EmbedLinks"
+    ],
+    "aliases": [
+      "updates",
+      "patch",
+      "version",
+      "whats-new"
+    ],
+    "guildOnly": false
+  },
+  {
+    "file": "support/invite.js",
+    "name": "invite",
+    "description": "Get the bot invite link and permission information",
+    "usage": "invite [minimal:true]",
+    "category": "support",
+    "cooldown": 0,
+    "userPermissions": [],
+    "botPermissions": [
+      "SendMessages",
+      "EmbedLinks"
+    ],
+    "aliases": [
+      "inv",
+      "add",
+      "botinvite"
+    ],
+    "guildOnly": false
+  },
+  {
+    "file": "support/suggest.js",
+    "name": "suggest",
+    "description": "Submit a suggestion to improve the bot",
+    "usage": "suggest <suggestion> [image_attachment] [image_url]",
+    "category": "support",
+    "cooldown": 0,
+    "userPermissions": [],
+    "botPermissions": [
+      "SendMessages",
+      "EmbedLinks"
+    ],
+    "aliases": [
+      "suggestion",
+      "feature-request",
+      "idea"
+    ],
+    "guildOnly": false
+  },
+  {
+    "file": "support/support.js",
+    "name": "support",
+    "description": "Get help and support information for the bot",
+    "usage": "support",
+    "category": "support",
+    "cooldown": 0,
+    "userPermissions": [],
+    "botPermissions": [
+      "SendMessages",
+      "EmbedLinks"
+    ],
+    "aliases": [
+      "help-support",
+      "contact",
+      "helpdesk"
+    ],
+    "guildOnly": false
+  },
+  {
+    "file": "utility/colorinfo.js",
+    "name": "colorinfo",
+    "description": "Get detailed information about a color",
+    "usage": "colorinfo <color>",
+    "category": "utility",
+    "cooldown": 3,
+    "userPermissions": [],
+    "botPermissions": [
+      "EmbedLinks",
+      "AttachFiles"
+    ],
+    "aliases": [
+      "color",
+      "colourinfo",
+      "colour"
+    ],
+    "guildOnly": false
+  },
+  {
+    "file": "utility/poll.js",
+    "name": "poll",
+    "description": "Create a poll with multiple choice options",
+    "usage": "poll \"<question>\" \"<option1|option2|option3>\" [duration] [#channel]",
+    "category": "utility",
+    "cooldown": 10,
+    "userPermissions": [
+      "ManageMessages"
+    ],
+    "botPermissions": [
+      "SendMessages",
+      "EmbedLinks",
+      "AddReactions"
+    ],
+    "aliases": [
+      "vote",
+      "survey"
+    ],
+    "guildOnly": true
+  },
+  {
+    "file": "utility/randomcolor.js",
+    "name": "randomcolor",
+    "description": "Generate a random color with detailed information",
+    "usage": "randomcolor [type]",
+    "category": "utility",
+    "cooldown": 3,
+    "userPermissions": [],
+    "botPermissions": [
+      "EmbedLinks",
+      "AttachFiles"
+    ],
+    "aliases": [
+      "randomhex",
+      "randcolor",
+      "rc"
+    ],
+    "guildOnly": false
+  },
+  {
+    "file": "utility/remind.js",
+    "name": "remind",
+    "description": "Set a reminder for yourself or another user",
+    "usage": "remind <time> <message> [@user]",
+    "category": "utility",
+    "cooldown": 5,
+    "userPermissions": [],
+    "botPermissions": [
+      "SendMessages",
+      "EmbedLinks"
+    ],
+    "aliases": [
+      "reminder",
+      "remindme"
+    ],
+    "guildOnly": false
+  },
+  {
+    "file": "voicemod/voicedeafen.js",
+    "name": "voicedeafen",
+    "description": "Deafen a user in voice channels",
+    "usage": "voicedeafen <@user|userid|username> [reason]",
+    "category": "voicemod",
+    "cooldown": 3,
+    "userPermissions": [
+      "DeafenMembers"
+    ],
+    "botPermissions": [
+      "DeafenMembers",
+      "EmbedLinks"
+    ],
+    "aliases": [
+      "vdeafen",
+      "vcdeafen"
+    ],
+    "guildOnly": true
+  },
+  {
+    "file": "voicemod/voicekick.js",
+    "name": "voicekick",
+    "description": "Kick a user from their current voice channel",
+    "usage": "voicekick <@user|userid|username> [reason]",
+    "category": "voicemod",
+    "cooldown": 3,
+    "userPermissions": [
+      "MoveMembers"
+    ],
+    "botPermissions": [
+      "MoveMembers",
+      "EmbedLinks"
+    ],
+    "aliases": [
+      "vkick",
+      "vckick"
+    ],
+    "guildOnly": true
+  },
+  {
+    "file": "voicemod/voicemove.js",
+    "name": "voicemove",
+    "description": "Join your voice channel and allow dragging to move everyone",
+    "usage": "voicemove [reason]",
+    "category": "voicemod",
+    "cooldown": 3,
+    "userPermissions": [
+      "MoveMembers"
+    ],
+    "botPermissions": [
+      "MoveMembers",
+      "EmbedLinks",
+      "Connect"
+    ],
+    "aliases": [
+      "vmove",
+      "vcmove"
+    ],
+    "guildOnly": true
+  },
+  {
+    "file": "voicemod/voicemute.js",
+    "name": "voicemute",
+    "description": "Mute a user in voice channels",
+    "usage": "voicemute <@user|userid|username> [reason]",
+    "category": "voicemod",
+    "cooldown": 3,
+    "userPermissions": [
+      "MuteMembers"
+    ],
+    "botPermissions": [
+      "MuteMembers",
+      "EmbedLinks"
+    ],
+    "aliases": [
+      "vmute",
+      "vcmute"
+    ],
+    "guildOnly": true
+  },
+  {
+    "file": "voicemod/voiceundeafen.js",
+    "name": "voiceundeafen",
+    "description": "Undeafen a user in voice channels",
+    "usage": "voiceundeafen <@user|userid|username> [reason]",
+    "category": "voicemod",
+    "cooldown": 3,
+    "userPermissions": [
+      "DeafenMembers"
+    ],
+    "botPermissions": [
+      "DeafenMembers",
+      "EmbedLinks"
+    ],
+    "aliases": [
+      "vundeafen",
+      "vcundeafen"
+    ],
+    "guildOnly": true
+  },
+  {
+    "file": "voicemod/voiceunmute.js",
+    "name": "voiceunmute",
+    "description": "Unmute a user in voice channels",
+    "usage": "voiceunmute <@user|userid|username> [reason]",
+    "category": "voicemod",
+    "cooldown": 3,
+    "userPermissions": [
+      "MuteMembers"
+    ],
+    "botPermissions": [
+      "MuteMembers",
+      "EmbedLinks"
+    ],
+    "aliases": [
+      "vunmute",
+      "vcunmute"
+    ],
+    "guildOnly": true
+  }
+]
