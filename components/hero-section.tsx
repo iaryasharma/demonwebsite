@@ -31,8 +31,8 @@ export function HeroSection() {
         
         {/* Animated background elements */}
         <div className="absolute inset-0">
-          <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-[#00FF85]/30 rounded-full animate-pulse" />
-          <div className="absolute top-3/4 right-1/4 w-1 h-1 bg-[#00D4AA]/40 rounded-full animate-pulse delay-1000" />
+          <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-[#8b5cf6]/30 rounded-full animate-pulse" />
+          <div className="absolute top-3/4 right-1/4 w-1 h-1 bg-[#7c3aed]/40 rounded-full animate-pulse delay-1000" />
           <div className="absolute top-1/2 left-3/4 w-1.5 h-1.5 bg-white/20 rounded-full animate-pulse delay-500" />
         </div>
       </div>
@@ -42,14 +42,14 @@ export function HeroSection() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div className={`text-left transition-all duration-1000 ${isMounted && isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
             <div className="mb-4">
-              <span className="inline-block px-4 py-2 bg-gradient-to-r from-[#00FF85]/10 to-[#00D4AA]/10 border border-[#00FF85]/20 rounded-full text-sm font-medium text-[#00FF85] backdrop-blur-sm">
+              <span className="inline-block px-4 py-2 bg-gradient-to-r from-[#8b5cf6]/10 to-[#7c3aed]/10 border border-[#8b5cf6]/20 rounded-full text-sm font-medium text-[#8b5cf6] backdrop-blur-sm">
                 🚀 The Ultimate Discord Bot
               </span>
             </div>
 
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
               <span className="block text-white mb-2">Your Discord Server</span>
-              <span className="block bg-gradient-to-r from-[#00FF85] to-[#00D4AA] bg-clip-text text-transparent mb-2">
+              <span className="block bg-gradient-to-r from-[#8b5cf6] to-[#7c3aed] bg-clip-text text-transparent mb-2">
                 Needs in a
               </span>
               <span className="block text-white">Single Bot</span>
@@ -63,16 +63,16 @@ export function HeroSection() {
 
             {/* Key Features List */}
             <div className="flex flex-wrap gap-4 mb-8">
-              <div className="flex items-center gap-2 bg-black/30 backdrop-blur-sm px-3 py-2 rounded-full border border-[#00FF85]/20">
-                <div className="w-2 h-2 bg-[#00FF85] rounded-full animate-pulse"></div>
+              <div className="flex items-center gap-2 bg-black/30 backdrop-blur-sm px-3 py-2 rounded-full border border-[#8b5cf6]/20">
+                <div className="w-2 h-2 bg-[#8b5cf6] rounded-full animate-pulse"></div>
                 <span className="text-sm text-gray-300">Advanced Moderation</span>
               </div>
-              <div className="flex items-center gap-2 bg-black/30 backdrop-blur-sm px-3 py-2 rounded-full border border-[#00D4AA]/20">
-                <div className="w-2 h-2 bg-[#00D4AA] rounded-full animate-pulse delay-200"></div>
+              <div className="flex items-center gap-2 bg-black/30 backdrop-blur-sm px-3 py-2 rounded-full border border-[#7c3aed]/20">
+                <div className="w-2 h-2 bg-[#7c3aed] rounded-full animate-pulse delay-200"></div>
                 <span className="text-sm text-gray-300">Anime & Entertainment</span>
               </div>
-              <div className="flex items-center gap-2 bg-black/30 backdrop-blur-sm px-3 py-2 rounded-full border border-[#00FF85]/20">
-                <div className="w-2 h-2 bg-[#00FF85] rounded-full animate-pulse delay-500"></div>
+              <div className="flex items-center gap-2 bg-black/30 backdrop-blur-sm px-3 py-2 rounded-full border border-[#8b5cf6]/20">
+                <div className="w-2 h-2 bg-[#8b5cf6] rounded-full animate-pulse delay-500"></div>
                 <span className="text-sm text-gray-300">99.9% Uptime</span>
               </div>
             </div>
@@ -81,7 +81,7 @@ export function HeroSection() {
             <div className="flex flex-col sm:flex-row gap-4">
               <Button
                 size="lg"
-                className="bg-gradient-to-r from-[#00FF85] to-[#00D4AA] text-black hover:from-[#00E077] hover:to-[#00C19B] font-semibold px-8 py-4 text-lg transition-all duration-200 hover:shadow-lg hover:shadow-[#00FF85]/25 hover:-translate-y-1"
+                className="bg-gradient-to-r from-[#8b5cf6] to-[#7c3aed] text-black hover:from-[#8b5cf6] hover:to-[#7c3aed] font-semibold px-8 py-4 text-lg transition-all duration-200 hover:shadow-lg hover:shadow-[#8b5cf6]/25 hover:-translate-y-1"
                 onClick={() => window.open('https://discord.com/oauth2/authorize?client_id=836880109478608897&scope=bot%20identify%20guilds%20applications.commands&response_type=code&permissions=1513962695871&state=QGn-6VzBYf2Ta8nMk_tFe', '_blank')}
               >
                 <ExternalLink className="mr-2 h-5 w-5" />
@@ -91,7 +91,7 @@ export function HeroSection() {
               <Button
                 size="lg"
                 variant="outline"
-                className="border-white/20 text-white hover:bg-white/5 px-8 py-4 text-lg transition-all duration-200 hover:border-[#00FF85]/50"
+                className="border-white/20 text-white hover:bg-white/5 px-8 py-4 text-lg transition-all duration-200 hover:border-[#8b5cf6]/50"
               >
                 <Play className="mr-2 h-5 w-5" />
                 Watch Demo
@@ -106,7 +106,7 @@ export function HeroSection() {
               onMouseEnter={() => setLogoHover(true)}
               onMouseLeave={() => setLogoHover(false)}
             >
-              <div className="absolute inset-0 bg-gradient-to-r from-[#00FF85]/20 to-[#00D4AA]/20 rounded-full blur-2xl transition-all duration-500 opacity-0 group-hover:opacity-100 scale-150" />
+              <div className="absolute inset-0 bg-gradient-to-r from-[#8b5cf6]/20 to-[#7c3aed]/20 rounded-full blur-2xl transition-all duration-500 opacity-0 group-hover:opacity-100 scale-150" />
               <Image
                 src="/demon-logo.png"
                 alt="Demon Bot"
@@ -137,8 +137,8 @@ export function HeroSection() {
           />
           <defs>
             <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#00FF85" />
-              <stop offset="100%" stopColor="#00D4AA" />
+              <stop offset="0%" stopColor="#8b5cf6" />
+              <stop offset="100%" stopColor="#7c3aed" />
             </linearGradient>
           </defs>
         </svg>

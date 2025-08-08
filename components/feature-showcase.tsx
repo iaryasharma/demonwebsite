@@ -11,7 +11,7 @@ export function FeatureShowcase() {
         {/* Badges Showcase */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-32">
           <div className="order-2 lg:order-1">
-            <div className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-sm rounded-xl p-6 border border-white/10 hover:border-[#00FF85]/30 transition-all duration-300">
+            <div className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-sm rounded-xl p-6 border border-white/10 hover:border-[#8b5cf6]/30 transition-all duration-300">
               <div className="flex items-start">
                 <div className="flex-shrink-0 mr-3">
                   <Image src="/demon-logo.png" alt="Demon Bot" width={48} height={48} className="rounded-full" />
@@ -39,7 +39,7 @@ export function FeatureShowcase() {
                     </div>
                     <div className="space-y-2">
                       <div className="flex items-center">
-                        <span className="text-[#00FF85] font-semibold">&gt; OWNER</span>
+                        <span className="text-[#8b5cf6] font-semibold">&gt; OWNER</span>
                       </div>
                       <div className="flex items-center">
                         <span className="text-blue-400 font-semibold">DEVELOPER</span>
@@ -61,7 +61,7 @@ export function FeatureShowcase() {
           </div>
           <div className="order-1 lg:order-2">
             <div className="mb-4">
-              <span className="inline-block px-4 py-2 bg-gradient-to-r from-[#00FF85]/10 to-[#00D4AA]/10 border border-[#00FF85]/20 rounded-full text-sm font-medium text-[#00FF85] backdrop-blur-sm">
+              <span className="inline-block px-4 py-2 bg-gradient-to-r from-[#8b5cf6]/10 to-[#7c3aed]/10 border border-[#8b5cf6]/20 rounded-full text-sm font-medium text-[#8b5cf6] backdrop-blur-sm">
                 🏆 Recognition System
               </span>
             </div>
@@ -71,7 +71,7 @@ export function FeatureShowcase() {
             <p className="text-lg text-gray-300 mb-8 leading-relaxed">
               Earn exclusive badges by contributing to the community and helping us improve the bot. Display your achievements and stand out among your peers.
             </p>
-            <Button className="bg-gradient-to-r from-[#00FF85] to-[#00D4AA] text-black hover:from-[#00E077] hover:to-[#00C19B] font-medium px-6 py-3 transition-all duration-200 hover:shadow-lg hover:shadow-[#00FF85]/25 hover:-translate-y-1">
+            <Button className="bg-gradient-to-r from-[#8b5cf6] to-[#7c3aed] text-black hover:from-[#00E077] hover:to-[#00C19B] font-medium px-6 py-3 transition-all duration-200 hover:shadow-lg hover:shadow-[#8b5cf6]/25 hover:-translate-y-1">
               Learn More
               <ChevronRight className="ml-2 h-4 w-4" />
             </Button>
@@ -92,7 +92,7 @@ export function FeatureShowcase() {
             <p className="text-lg text-gray-300 mb-8 leading-relaxed">
               Get comprehensive anime information including episode counts, ratings, scores, and air dates. Perfect for anime enthusiasts in your server.
             </p>
-            <Button className="bg-gradient-to-r from-[#00FF85] to-[#00D4AA] text-black hover:from-[#00E077] hover:to-[#00C19B] font-medium px-6 py-3 transition-all duration-200 hover:shadow-lg hover:shadow-[#00FF85]/25 hover:-translate-y-1">
+            <Button className="bg-gradient-to-r from-[#8b5cf6] to-[#7c3aed] text-black hover:from-[#00E077] hover:to-[#00C19B] font-medium px-6 py-3 transition-all duration-200 hover:shadow-lg hover:shadow-[#8b5cf6]/25 hover:-translate-y-1">
               Learn More
               <ChevronRight className="ml-2 h-4 w-4" />
             </Button>
@@ -110,7 +110,7 @@ export function FeatureShowcase() {
                     <span className="text-gray-400 text-xs ml-2">05/26/2022</span>
                   </div>
                   <div className="mt-4 bg-gray-800/60 backdrop-blur-sm rounded-lg p-4 border border-white/5">
-                    <div className="text-[#00FF85] font-semibold mb-4">
+                    <div className="text-[#8b5cf6] font-semibold mb-4">
                       My Anime List search result for Attack On Titan
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -153,7 +153,7 @@ export function FeatureShowcase() {
                     </div>
                     <div className="mt-4 pt-3 border-t border-white/5">
                       <span className="text-gray-400 text-sm block mb-1">Link</span>
-                      <div className="text-[#00FF85] text-sm break-all">
+                      <div className="text-[#8b5cf6] text-sm break-all">
                         https://myanimelist.net/anime/16498/Shingeki_no_Kyojin
                       </div>
                     </div>
@@ -182,21 +182,21 @@ export function FeatureShowcase() {
                     <div className="text-white font-semibold mb-3">DEMON Help Menu</div>
                     <ul className="space-y-2 text-gray-300">
                       <li className="flex items-center">
-                        <span className="w-2 h-2 bg-[#00FF85] rounded-full mr-3"></span>
+                        <span className="w-2 h-2 bg-[#8b5cf6] rounded-full mr-3"></span>
                         My prefix is !!
                       </li>
                       <li className="flex items-center">
-                        <span className="w-2 h-2 bg-[#00FF85] rounded-full mr-3"></span>
-                        <span className="text-[#00FF85] hover:underline cursor-pointer">Get Demon</span> | <span className="text-[#00FF85] hover:underline cursor-pointer">Support server</span>
+                        <span className="w-2 h-2 bg-[#8b5cf6] rounded-full mr-3"></span>
+                        <span className="text-[#8b5cf6] hover:underline cursor-pointer">Get Demon</span> | <span className="text-[#8b5cf6] hover:underline cursor-pointer">Support server</span>
                       </li>
                       <li className="flex items-start">
-                        <span className="w-2 h-2 bg-[#00FF85] rounded-full mr-3 mt-1.5"></span>
+                        <span className="w-2 h-2 bg-[#8b5cf6] rounded-full mr-3 mt-1.5"></span>
                         Type: <span className="text-gray-400 font-mono bg-gray-700/50 px-2 py-1 rounded text-sm ml-1">!!help &lt;command | module&gt;</span> for more info.
                       </li>
                     </ul>
                     <div className="mt-4 pt-3 border-t border-white/10">
                       <div className="text-white font-semibold mb-2">MAIN COMMANDS</div>
-                      <div className="w-full h-1 bg-gradient-to-r from-[#00FF85] to-[#00D4AA] rounded-full"></div>
+                      <div className="w-full h-1 bg-gradient-to-r from-[#8b5cf6] to-[#7c3aed] rounded-full"></div>
                     </div>
                   </div>
                 </div>
@@ -215,7 +215,7 @@ export function FeatureShowcase() {
             <p className="text-lg text-gray-300 mb-8 leading-relaxed">
               Explore our extensive collection of commands organized into intuitive categories for seamless server management and entertainment.
             </p>
-            <Button className="bg-gradient-to-r from-[#00FF85] to-[#00D4AA] text-black hover:from-[#00E077] hover:to-[#00C19B] font-medium px-6 py-3 transition-all duration-200 hover:shadow-lg hover:shadow-[#00FF85]/25 hover:-translate-y-1">
+            <Button className="bg-gradient-to-r from-[#8b5cf6] to-[#7c3aed] text-black hover:from-[#00E077] hover:to-[#00C19B] font-medium px-6 py-3 transition-all duration-200 hover:shadow-lg hover:shadow-[#8b5cf6]/25 hover:-translate-y-1">
               View All Commands
               <ChevronRight className="ml-2 h-4 w-4" />
             </Button>

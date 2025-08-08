@@ -12,7 +12,7 @@ export default function PrivacyPage() {
         <div className="space-y-8">
           <Card className="glass">
             <CardHeader>
-              <CardTitle className="text-[#00FF85]">Data Collection</CardTitle>
+              <CardTitle className="text-[#8b5cf6]">Data Collection</CardTitle>
             </CardHeader>
             <CardContent className="prose prose-invert max-w-none">
               <p className="text-gray-300">Demon Bot collects minimal data necessary for functionality:</p>
@@ -27,7 +27,7 @@ export default function PrivacyPage() {
 
           <Card className="glass">
             <CardHeader>
-              <CardTitle className="text-[#00FF85]">Data Usage</CardTitle>
+              <CardTitle className="text-[#8b5cf6]">Data Usage</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-gray-300 mb-4">Your data is used exclusively for:</p>
@@ -42,7 +42,7 @@ export default function PrivacyPage() {
 
           <Card className="glass">
             <CardHeader>
-              <CardTitle className="text-[#00FF85]">Data Protection</CardTitle>
+              <CardTitle className="text-[#8b5cf6]">Data Protection</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-gray-300 mb-4">We implement security measures to protect your data:</p>
@@ -57,7 +57,7 @@ export default function PrivacyPage() {
 
           <Card className="glass">
             <CardHeader>
-              <CardTitle className="text-[#00FF85]">Your Rights</CardTitle>
+              <CardTitle className="text-[#8b5cf6]">Your Rights</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-gray-300 mb-4">You have the right to:</p>
@@ -72,16 +72,16 @@ export default function PrivacyPage() {
 
           <Card className="glass">
             <CardHeader>
-              <CardTitle className="text-[#00FF85]">Contact</CardTitle>
+              <CardTitle className="text-[#8b5cf6]">Contact</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-gray-300">
                 For privacy-related questions or requests, contact us through our{" "}
-                <a href="#" className="text-[#00FF85] hover:underline">
+                <a href="#" className="text-[#8b5cf6] hover:underline">
                   Discord support server
                 </a>{" "}
                 or email us at{" "}
-                <a href="mailto:privacy@demonbot.com" className="text-[#00FF85] hover:underline">
+                <a href="mailto:privacy@demonbot.com" className="text-[#8b5cf6] hover:underline">
                   privacy@demonbot.com
                 </a>
               </p>

@@ -98,13 +98,13 @@ export default function RootLayout({
         <link rel="icon" href="/demon-logo.png" type="image/png" />
         <link rel="apple-touch-icon" href="/demon-logo.png" />
         <link rel="canonical" href="https://demonbot.vercel.app" />
-        <meta name="theme-color" content="#00FF85" />
+        <meta name="theme-color" content="#8b5cf6" />
         <meta name="application-name" content="Demon Bot" />
         <meta name="apple-mobile-web-app-title" content="Demon Bot" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="mobile-web-app-capable" content="yes" />
-        <meta name="msapplication-TileColor" content="#00FF85" />
+        <meta name="msapplication-TileColor" content="#8b5cf6" />
         <meta name="msapplication-config" content="/browserconfig.xml" />
         
         {/* Structured Data for SEO */}

@@ -31,7 +31,7 @@ export function Navigation() {
                 height={32} 
                 className="transition-transform duration-300 group-hover:scale-110" 
               />
-              <div className="absolute inset-0 bg-[#00FF85]/20 rounded-full blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <div className="absolute inset-0 bg-[#8b5cf6]/20 rounded-full blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </div>
             <span className="text-xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
               Demon Bot
@@ -49,7 +49,7 @@ export function Navigation() {
                 >
                   {item.icon && <item.icon className="h-4 w-4 mr-1.5" />}
                   {item.label}
-                  <div className="absolute bottom-0 left-1/2 w-0 h-0.5 bg-gradient-to-r from-[#00FF85] to-[#00D4AA] transition-all duration-300 group-hover:w-full group-hover:left-0" />
+                  <div className="absolute bottom-0 left-1/2 w-0 h-0.5 bg-gradient-to-r from-[#8b5cf6] to-[#7c3aed] transition-all duration-300 group-hover:w-full group-hover:left-0" />
                 </Link>
               ))}
             </div>
@@ -57,7 +57,7 @@ export function Navigation() {
 
           <div className="hidden md:block">
             <Button 
-              className="bg-gradient-to-r from-[#00FF85] to-[#00D4AA] text-black hover:from-[#00E077] hover:to-[#00C19B] font-medium px-6 py-2 transition-all duration-200 hover:shadow-lg hover:shadow-[#00FF85]/25 hover:-translate-y-0.5"
+              className="bg-gradient-to-r from-[#8b5cf6] to-[#7c3aed] text-black hover:from-[#8b5cf6] hover:to-[#7c3aed] font-medium px-6 py-2 transition-all duration-200 hover:shadow-lg hover:shadow-[#8b5cf6]/25 hover:-translate-y-0.5"
               onClick={() => window.open('https://discord.com/oauth2/authorize?client_id=836880109478608897&scope=bot%20identify%20guilds%20applications.commands&response_type=code&permissions=1513962695871&state=QGn-6VzBYf2Ta8nMk_tFe', '_blank')}
             >
               Invite Bot
@@ -94,7 +94,7 @@ export function Navigation() {
               </Link>
             ))}
             <Button 
-              className="w-full mt-4 bg-gradient-to-r from-[#00FF85] to-[#00D4AA] text-black hover:from-[#00E077] hover:to-[#00C19B] font-medium"
+              className="w-full mt-4 bg-gradient-to-r from-[#8b5cf6] to-[#7c3aed] text-black hover:from-[#8b5cf6] hover:to-[#7c3aed] font-medium"
               onClick={() => window.open('https://discord.com/oauth2/authorize?client_id=836880109478608897&scope=bot%20identify%20guilds%20applications.commands&response_type=code&permissions=1513962695871&state=QGn-6VzBYf2Ta8nMk_tFe', '_blank')}
             >
               Invite Bot

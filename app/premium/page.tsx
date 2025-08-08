@@ -45,11 +45,11 @@ export default function PremiumPage() {
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-16">
           <div className="flex items-center justify-center space-x-2 mb-6">
-            <Sparkles className="h-6 w-6 text-[#00FF85]" />
-            <span className="text-sm uppercase tracking-wider text-[#00FF85]">Unlock Premium Power</span>
-            <Sparkles className="h-6 w-6 text-[#00FF85]" />
+            <Sparkles className="h-6 w-6 text-[#8b5cf6]" />
+            <span className="text-sm uppercase tracking-wider text-[#8b5cf6]">Unlock Premium Power</span>
+            <Sparkles className="h-6 w-6 text-[#8b5cf6]" />
           </div>
-          <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-[#00FF85] to-purple-500 glow-text">Premium Plans</h1>
+          <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-[#8b5cf6] to-purple-500 glow-text">Premium Plans</h1>
           <p className="text-xl text-gray-300 max-w-2xl mx-auto leading-relaxed">
             Unlock the full potential of Demon Bot with our premium subscription plans and take your Discord server to the next level
           </p>
@@ -75,7 +75,7 @@ export default function PremiumPage() {
                 <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Power Up Your<br />Discord Experience</h2>
                 <p className="text-xl text-gray-200 mb-6 max-w-lg">Join thousands of servers already enjoying premium features</p>
                 <Button 
-                  className="bg-gradient-to-r from-[#00FF85] to-purple-500 text-black hover:opacity-90 text-lg font-medium px-8 py-6"
+                  className="bg-gradient-to-r from-[#8b5cf6] to-purple-500 text-black hover:opacity-90 text-lg font-medium px-8 py-6"
                   onClick={() => window.open('https://discord.com/oauth2/authorize?client_id=836880109478608897&scope=bot%20identify%20guilds%20applications.commands&response_type=code&permissions=1513962695871&state=QGn-6VzBYf2Ta8nMk_tFe', '_blank')}
                 >
                   Get Started
@@ -95,16 +95,16 @@ export default function PremiumPage() {
         <FaqSection />
 
         {/* CTA */}
-        <div className="text-center glass-dark border border-[#00FF85]/20 rounded-xl p-12 relative overflow-hidden">
+        <div className="text-center glass-dark border border-[#8b5cf6]/20 rounded-xl p-12 relative overflow-hidden">
           <div className="absolute -top-24 -right-24 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl"></div>
-          <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-[#00FF85]/10 rounded-full blur-3xl"></div>
+          <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-[#8b5cf6]/10 rounded-full blur-3xl"></div>
           
           <h3 className="text-2xl md:text-3xl font-bold text-white mb-6">Ready to supercharge your Discord server?</h3>
           <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">Join thousands of communities already enjoying premium features</p>
           
           <Button 
             size="lg" 
-            className="bg-gradient-to-r from-[#00FF85] to-purple-500 text-black hover:opacity-90 text-lg px-10 py-7 rounded-xl transform transition-all hover:scale-105 font-medium"
+            className="bg-gradient-to-r from-[#8b5cf6] to-purple-500 text-black hover:opacity-90 text-lg px-10 py-7 rounded-xl transform transition-all hover:scale-105 font-medium"
             onClick={() => window.open('https://discord.com/oauth2/authorize?client_id=836880109478608897&scope=bot%20identify%20guilds%20applications.commands&response_type=code&permissions=1513962695871&state=QGn-6VzBYf2Ta8nMk_tFe', '_blank')}
           >
             <Star className="mr-2 h-5 w-5" />

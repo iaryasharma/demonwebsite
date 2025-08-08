@@ -43,10 +43,10 @@ export function FeatureHighlights() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {features.map((feature, index) => (
-            <Card key={index} className="glass hover:glow-green transition-all duration-300 cursor-pointer group">
+            <Card key={index} className="glass hover:shadow-lg hover:shadow-purple-500/20 transition-all duration-300 cursor-pointer group">
               <CardContent className="p-6 text-center">
                 <feature.icon
-                  className={`h-12 w-12 mx-auto mb-4 ${feature.color} group-hover:text-[#00FF85] transition-colors`}
+                  className={`h-12 w-12 mx-auto mb-4 ${feature.color} group-hover:text-[#8b5cf6] transition-colors`}
                 />
                 <h3 className="text-xl font-semibold mb-2 text-white">{feature.title}</h3>
                 <p className="text-gray-400 group-hover:text-gray-300 transition-colors">{feature.description}</p>

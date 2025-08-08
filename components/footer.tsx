@@ -4,11 +4,11 @@ import { Github, Twitter, ExternalLink, Shield, Heart, Command } from "lucide-re
 
 export function Footer() {
   return (
-    <footer className="relative bg-gradient-to-br from-black via-gray-900/50 to-black border-t border-[#00FF85]/20">
+    <footer className="relative bg-gradient-to-br from-black via-gray-900/50 to-black border-t border-[#8b5cf6]/20">
       {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-[#00FF85]/20 rounded-full animate-pulse" />
-        <div className="absolute top-3/4 right-1/4 w-1 h-1 bg-[#00D4AA]/30 rounded-full animate-pulse delay-1000" />
+        <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-[#8b5cf6]/20 rounded-full animate-pulse" />
+        <div className="absolute top-3/4 right-1/4 w-1 h-1 bg-[#7c3aed]/30 rounded-full animate-pulse delay-1000" />
         <div className="absolute top-1/2 left-3/4 w-1.5 h-1.5 bg-white/10 rounded-full animate-pulse delay-500" />
       </div>
       
@@ -35,7 +35,7 @@ export function Footer() {
             <div className="flex space-x-4">
               <Link 
                 href="https://discord.com/oauth2/authorize?client_id=836880109478608897&scope=bot%20identify%20guilds%20applications.commands&response_type=code&permissions=1513962695871&state=QGn-6VzBYf2Ta8nMk_tFe" 
-                className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-[#00FF85] to-[#00D4AA] text-black font-medium rounded-lg hover:from-[#00E077] hover:to-[#00C19B] transition-all duration-200 hover:shadow-lg hover:shadow-[#00FF85]/25"
+                className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-[#8b5cf6] to-[#7c3aed] text-black font-medium rounded-lg hover:from-[#8b5cf6] hover:to-[#7c3aed] transition-all duration-200 hover:shadow-lg hover:shadow-[#8b5cf6]/25"
                 title="Invite Demon Bot"
               >
                 <ExternalLink className="w-4 h-4 mr-2" />
@@ -49,25 +49,25 @@ export function Footer() {
             <h4 className="text-white font-semibold mb-4">Quick Links</h4>
             <ul className="space-y-3">
               <li>
-                <Link href="/commands" className="text-gray-400 hover:text-[#00FF85] transition-colors flex items-center">
+                <Link href="/commands" className="text-gray-400 hover:text-[#8b5cf6] transition-colors flex items-center">
                   <Command className="w-4 h-4 mr-2" />
                   Commands
                 </Link>
               </li>
               <li>
-                <Link href="/premium" className="text-gray-400 hover:text-[#00FF85] transition-colors flex items-center">
+                <Link href="/premium" className="text-gray-400 hover:text-[#8b5cf6] transition-colors flex items-center">
                   <Shield className="w-4 h-4 mr-2" />
                   Premium
                 </Link>
               </li>
               <li>
-                <Link href="/team" className="text-gray-400 hover:text-[#00FF85] transition-colors flex items-center">
+                <Link href="/team" className="text-gray-400 hover:text-[#8b5cf6] transition-colors flex items-center">
                   <Heart className="w-4 h-4 mr-2" />
                   Our Team
                 </Link>
               </li>
               <li>
-                <Link href="/dashboard" className="text-gray-400 hover:text-[#00FF85] transition-colors">
+                <Link href="/dashboard" className="text-gray-400 hover:text-[#8b5cf6] transition-colors">
                   Dashboard
                 </Link>
               </li>
@@ -90,7 +90,7 @@ export function Footer() {
               </Link>
               <Link 
                 href="https://github.com/iaryasharma" 
-                className="flex items-center text-gray-400 hover:text-[#00FF85] transition-colors"
+                className="flex items-center text-gray-400 hover:text-[#8b5cf6] transition-colors"
                 title="View Source Code"
               >
                 <Github className="w-5 h-5 mr-3" />
@@ -98,7 +98,7 @@ export function Footer() {
               </Link>
               <Link 
                 href="https://x.com/iaryasharma" 
-                className="flex items-center text-gray-400 hover:text-[#00FF85] transition-colors"
+                className="flex items-center text-gray-400 hover:text-[#8b5cf6] transition-colors"
                 title="Follow on X"
               >
                 <Twitter className="w-5 h-5 mr-3" />
@@ -109,14 +109,14 @@ export function Footer() {
         </div>
 
         {/* Bottom Section */}
-        <div className="border-t border-[#00FF85]/10 pt-8">
+        <div className="border-t border-[#8b5cf6]/10 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="text-center md:text-left mb-4 md:mb-0">
               <p className="text-gray-400">
                 Made with 💖 by{" "}
                 <Link
                   href="https://fragnite.vercel.app"
-                  className="text-[#00FF85] hover:text-[#00D4AA] transition-colors"
+                  className="text-[#8b5cf6] hover:text-[#7c3aed] transition-colors"
                   target="_blank"
                   rel="noopener noreferrer"
                 >

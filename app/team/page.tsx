@@ -65,7 +65,7 @@ export default function TeamPage() {
       <div className="relative z-10 pt-24 px-4 pb-8">
       {/* Team Header */}
       <div className="text-center mb-12">
-        <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-[#00FF85] to-[#00D4AA] bg-clip-text text-transparent mb-4">
+        <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-[#8b5cf6] to-[#7c3aed] bg-clip-text text-transparent mb-4">
           Demon Development Team
         </h1>
         <p className="text-gray-400 text-lg max-w-2xl mx-auto">
@@ -104,7 +104,7 @@ export default function TeamPage() {
                 />
               </div>
               {/* Online status indicator with glow */}
-              <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full border-3 border-[#16161a] bg-green-500 shadow-lg shadow-green-500/50 animate-pulse" />
+              <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full border-3 border-[#16161a] bg-violet-500 shadow-lg shadow-violet-500/50 animate-pulse" />
             </div>
 
             {/* User Info */}
@@ -136,11 +136,11 @@ export default function TeamPage() {
             {/* Role */}
             <div className="mb-6">
               <h3 className="text-sm font-semibold text-gray-300 mb-3 uppercase tracking-wider flex items-center">
-                <span className="w-2 h-2 bg-green-400 rounded-full mr-2" />
+                <span className="w-2 h-2 bg-violet-400 rounded-full mr-2" />
                 Role
               </h3>
-              <div className="inline-flex items-center px-3 py-1.5 bg-gradient-to-r from-green-400/20 to-emerald-400/20 border border-green-400/30 rounded-full text-green-400 text-sm font-medium shadow-lg">
-                <div className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse" />
+              <div className="inline-flex items-center px-3 py-1.5 bg-gradient-to-r from-violet-400/20 to-purple-400/20 border border-violet-400/30 rounded-full text-violet-400 text-sm font-medium shadow-lg">
+                <div className="w-2 h-2 bg-violet-400 rounded-full mr-2 animate-pulse" />
                 Developer
               </div>
             </div>

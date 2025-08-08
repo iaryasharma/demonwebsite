@@ -53,7 +53,7 @@ export default function DashboardPage() {
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-black relative overflow-hidden">
       {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-96 h-96 bg-[#00FF85]/5 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute -top-40 -right-40 w-96 h-96 bg-[#8b5cf6]/5 rounded-full blur-3xl animate-pulse" />
         <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-purple-500/5 rounded-full blur-3xl animate-pulse delay-1000" />
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-blue-500/3 rounded-full blur-3xl animate-pulse delay-500" />
       </div>
@@ -76,21 +76,21 @@ export default function DashboardPage() {
                     onDragStart={(e) => e.preventDefault()}
                   />
                 </div>
-                <div className="absolute inset-0 bg-[#00FF85]/20 rounded-full blur-md mr-4" />
+                <div className="absolute inset-0 bg-[#8b5cf6]/20 rounded-full blur-md mr-4" />
               </div>
-              <h1 className="text-5xl md:text-7xl font-bold bg-gradient-to-r from-white via-[#00FF85] to-white bg-clip-text text-transparent drop-shadow-2xl">
+              <h1 className="text-5xl md:text-7xl font-bold bg-gradient-to-r from-white via-[#8b5cf6] to-white bg-clip-text text-transparent drop-shadow-2xl">
                 Dashboard
               </h1>
               <div className="relative">
-                <Wrench className="w-10 h-10 text-[#00FF85] ml-4 animate-bounce" />
-                <div className="absolute inset-0 w-10 h-10 bg-[#00FF85]/20 rounded-full blur-md ml-4" />
+                <Wrench className="w-10 h-10 text-[#8b5cf6] ml-4 animate-bounce" />
+                <div className="absolute inset-0 w-10 h-10 bg-[#8b5cf6]/20 rounded-full blur-md ml-4" />
               </div>
             </div>
             
-            <div className="bg-gradient-to-r from-[#00FF85]/10 via-blue-500/10 to-purple-500/10 rounded-2xl p-8 mb-8 backdrop-blur-xl border border-slate-700/50">
+            <div className="bg-gradient-to-r from-[#8b5cf6]/10 via-blue-500/10 to-purple-500/10 rounded-2xl p-8 mb-8 backdrop-blur-xl border border-slate-700/50">
               <div className="flex items-center justify-center mb-4">
-                <Clock className="w-8 h-8 text-[#00FF85] mr-3 animate-pulse" />
-                <Badge className="bg-gradient-to-r from-[#00FF85] to-emerald-400 text-black font-semibold text-lg px-6 py-2">
+                <Clock className="w-8 h-8 text-[#8b5cf6] mr-3 animate-pulse" />
+                <Badge className="bg-gradient-to-r from-[#8b5cf6] to-purple-400 text-black font-semibold text-lg px-6 py-2">
                   Coming Soon
                 </Badge>
               </div>
@@ -105,9 +105,9 @@ export default function DashboardPage() {
 
           {/* Features Preview */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-            <Card className="bg-slate-900/50 border-slate-700/50 hover:border-[#00FF85]/50 transition-all duration-300 hover:shadow-lg hover:shadow-[#00FF85]/10 backdrop-blur-sm">
+            <Card className="bg-slate-900/50 border-slate-700/50 hover:border-[#8b5cf6]/50 transition-all duration-300 hover:shadow-lg hover:shadow-[#8b5cf6]/10 backdrop-blur-sm">
               <CardHeader>
-                <CardTitle className="flex items-center text-[#00FF85]">
+                <CardTitle className="flex items-center text-[#8b5cf6]">
                   <Settings className="mr-3 h-6 w-6" />
                   Server Management
                 </CardTitle>
@@ -116,15 +116,15 @@ export default function DashboardPage() {
                 <p className="text-slate-300 mb-4">Complete control over your server's bot configuration</p>
                 <ul className="text-sm text-slate-400 space-y-2">
                   <li className="flex items-center">
-                    <span className="w-2 h-2 bg-[#00FF85] rounded-full mr-3"></span>
+                    <span className="w-2 h-2 bg-[#8b5cf6] rounded-full mr-3"></span>
                     Custom prefixes and commands
                   </li>
                   <li className="flex items-center">
-                    <span className="w-2 h-2 bg-[#00FF85] rounded-full mr-3"></span>
+                    <span className="w-2 h-2 bg-[#8b5cf6] rounded-full mr-3"></span>
                     Channel-specific permissions
                   </li>
                   <li className="flex items-center">
-                    <span className="w-2 h-2 bg-[#00FF85] rounded-full mr-3"></span>
+                    <span className="w-2 h-2 bg-[#8b5cf6] rounded-full mr-3"></span>
                     Moderation settings
                   </li>
                 </ul>
@@ -189,12 +189,12 @@ export default function DashboardPage() {
             <h3 className="text-2xl font-bold text-white mb-6 text-center">Development Timeline</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="text-center">
-                <div className="w-16 h-16 bg-gradient-to-r from-[#00FF85] to-emerald-400 rounded-full flex items-center justify-center mx-auto mb-4">
+                <div className="w-16 h-16 bg-gradient-to-r from-[#8b5cf6] to-purple-400 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Code className="w-8 h-8 text-black" />
                 </div>
                 <h4 className="text-lg font-semibold text-white mb-2">Phase 1</h4>
                 <p className="text-slate-300 text-sm">Core functionality development</p>
-                <Badge className="mt-2 bg-[#00FF85]/20 text-[#00FF85] border-[#00FF85]/30">In Progress</Badge>
+                <Badge className="mt-2 bg-[#8b5cf6]/20 text-[#8b5cf6] border-[#8b5cf6]/30">In Progress</Badge>
               </div>
               
               <div className="text-center">
@@ -225,7 +225,7 @@ export default function DashboardPage() {
             </p>
             <Button 
               size="lg" 
-              className="bg-gradient-to-r from-[#00FF85] to-emerald-400 text-black hover:from-[#00FF85]/90 hover:to-emerald-400/90 text-lg px-8 py-6 rounded-xl transform transition-all hover:scale-105 font-medium shadow-lg shadow-[#00FF85]/25"
+              className="bg-gradient-to-r from-[#8b5cf6] to-purple-400 text-black hover:from-[#8b5cf6]/90 hover:to-purple-400/90 text-lg px-8 py-6 rounded-xl transform transition-all hover:scale-105 font-medium shadow-lg shadow-[#8b5cf6]/25"
               onClick={() => window.open('https://discord.com/oauth2/authorize?client_id=836880109478608897&scope=bot%20identify%20guilds%20applications.commands&response_type=code&permissions=1513962695871&state=QGn-6VzBYf2Ta8nMk_tFe', '_blank')}
             >
               <ExternalLink className="mr-2 h-5 w-5" />

@@ -83,7 +83,7 @@ export default function NotFound() {
             </div>
           </div>
           
-          <h1 className="text-8xl md:text-9xl font-bold bg-gradient-to-r from-white via-[#00FF85] to-white bg-clip-text text-transparent mb-4 animate-pulse">
+          <h1 className="text-8xl md:text-9xl font-bold bg-gradient-to-r from-white via-[#8b5cf6] to-white bg-clip-text text-transparent mb-4 animate-pulse">
             404
           </h1>
           
@@ -101,15 +101,15 @@ export default function NotFound() {
           <h3 className="text-xl font-semibold text-white mb-4">What happened?</h3>
           <ul className="text-slate-300 space-y-2 text-left">
             <li className="flex items-center">
-              <span className="w-2 h-2 bg-[#00FF85] rounded-full mr-3"></span>
+              <span className="w-2 h-2 bg-[#8b5cf6] rounded-full mr-3"></span>
               The page you're looking for might have been moved or deleted
             </li>
             <li className="flex items-center">
-              <span className="w-2 h-2 bg-[#00FF85] rounded-full mr-3"></span>
+              <span className="w-2 h-2 bg-[#8b5cf6] rounded-full mr-3"></span>
               You might have typed the URL incorrectly
             </li>
             <li className="flex items-center">
-              <span className="w-2 h-2 bg-[#00FF85] rounded-full mr-3"></span>
+              <span className="w-2 h-2 bg-[#8b5cf6] rounded-full mr-3"></span>
               The link you followed might be broken or outdated
             </li>
           </ul>
@@ -120,7 +120,7 @@ export default function NotFound() {
           <Link href="/">
             <Button 
               size="lg" 
-              className="bg-gradient-to-r from-[#00FF85] to-emerald-400 text-black hover:from-[#00FF85]/90 hover:to-emerald-400/90 text-lg px-8 py-6 rounded-xl transform transition-all hover:scale-105 font-medium shadow-lg shadow-[#00FF85]/25"
+              className="bg-gradient-to-r from-[#8b5cf6] to-purple-400 text-black hover:from-[#8b5cf6]/90 hover:to-purple-400/90 text-lg px-8 py-6 rounded-xl transform transition-all hover:scale-105 font-medium shadow-lg shadow-[#8b5cf6]/25"
             >
               <Home className="mr-2 h-5 w-5" />
               Go Home
@@ -131,7 +131,7 @@ export default function NotFound() {
             size="lg" 
             variant="outline"
             onClick={() => window.history.back()}
-            className="border-slate-600 hover:border-[#00FF85] hover:text-[#00FF85] hover:shadow-lg hover:shadow-[#00FF85]/10 bg-slate-800/50 backdrop-blur-sm text-lg px-8 py-6 rounded-xl transform transition-all hover:scale-105 font-medium"
+            className="border-slate-600 hover:border-[#8b5cf6] hover:text-[#8b5cf6] hover:shadow-lg hover:shadow-[#8b5cf6]/10 bg-slate-800/50 backdrop-blur-sm text-lg px-8 py-6 rounded-xl transform transition-all hover:scale-105 font-medium"
           >
             <ArrowLeft className="mr-2 h-5 w-5" />
             Go Back
@@ -144,7 +144,7 @@ export default function NotFound() {
               href="https://discord.com/oauth2/authorize?client_id=836880109478608897&scope=bot%20identify%20guilds%20applications.commands&response_type=code&permissions=1513962695871&state=QGn-6VzBYf2Ta8nMk_tFe" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="text-[#00FF85] hover:text-[#00FF85]/80 underline transition-colors"
+              className="text-[#8b5cf6] hover:text-[#8b5cf6]/80 underline transition-colors"
             >
               Discord Server
             </a>

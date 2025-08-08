@@ -131,7 +131,7 @@ demonwebsite/
 
 ### 🎨 Modern Design
 - **Responsive Design**: Optimized for all devices and screen sizes
-- **Dark Theme**: Sleek dark interface with neon green accents
+- **Dark Theme**: Sleek dark interface with vibrant purple accents
 - **Smooth Animations**: Engaging transitions and hover effects
 - **Video Background**: Dynamic sky video background on hero section
 

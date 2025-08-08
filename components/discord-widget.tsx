@@ -15,14 +15,14 @@ export function DiscordWidget() {
       {/* Animated background elements */}
       <div className="absolute inset-0">
         <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-[#5865F2]/30 rounded-full animate-pulse" />
-        <div className="absolute top-3/4 right-1/4 w-1 h-1 bg-[#00FF85]/40 rounded-full animate-pulse delay-1000" />
+        <div className="absolute top-3/4 right-1/4 w-1 h-1 bg-[#8b5cf6]/40 rounded-full animate-pulse delay-1000" />
         <div className="absolute top-1/2 left-3/4 w-1.5 h-1.5 bg-white/20 rounded-full animate-pulse delay-500" />
       </div>
 
       <div className="max-w-6xl mx-auto text-center relative z-10">
         <div className={`transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
           <div className="mb-4">
-            <span className="inline-block px-4 py-2 bg-gradient-to-r from-[#5865F2]/10 to-[#00FF85]/10 border border-[#5865F2]/20 rounded-full text-sm font-medium text-[#5865F2] backdrop-blur-sm">
+            <span className="inline-block px-4 py-2 bg-gradient-to-r from-[#5865F2]/10 to-[#8b5cf6]/10 border border-[#5865F2]/20 rounded-full text-sm font-medium text-[#5865F2] backdrop-blur-sm">
               💬 Community Hub
             </span>
           </div>
@@ -43,8 +43,8 @@ export function DiscordWidget() {
                 <div className="text-2xl font-bold text-white mb-1">5,000+</div>
                 <div className="text-gray-400 text-sm">Active Members</div>
               </div>
-              <div className="text-center p-6 bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-sm rounded-xl border border-[#00FF85]/20 hover:border-[#00FF85]/40 transition-all duration-300">
-                <MessageCircle className="w-8 h-8 text-[#00FF85] mx-auto mb-3" />
+              <div className="text-center p-6 bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-sm rounded-xl border border-[#8b5cf6]/20 hover:border-[#8b5cf6]/40 transition-all duration-300">
+                <MessageCircle className="w-8 h-8 text-[#8b5cf6] mx-auto mb-3" />
                 <div className="text-2xl font-bold text-white mb-1">24/7</div>
                 <div className="text-gray-400 text-sm">Support</div>
               </div>
@@ -52,7 +52,7 @@ export function DiscordWidget() {
             
             <div className="text-left space-y-4">
               <div className="flex items-center text-gray-300">
-                <div className="w-2 h-2 bg-[#00FF85] rounded-full mr-3"></div>
+                <div className="w-2 h-2 bg-[#8b5cf6] rounded-full mr-3"></div>
                 <span>Get help with bot setup and configuration</span>
               </div>
               <div className="flex items-center text-gray-300">
@@ -60,7 +60,7 @@ export function DiscordWidget() {
                 <span>Share feedback and feature requests</span>
               </div>
               <div className="flex items-center text-gray-300">
-                <div className="w-2 h-2 bg-[#00FF85] rounded-full mr-3"></div>
+                <div className="w-2 h-2 bg-[#8b5cf6] rounded-full mr-3"></div>
                 <span>Connect with other server owners</span>
               </div>
               <div className="flex items-center text-gray-300">
@@ -73,7 +73,7 @@ export function DiscordWidget() {
           {/* Discord Server Widget */}
           <div className={`transition-all duration-1000 delay-500 ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-8'}`}>
             <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-br from-[#5865F2]/20 to-[#00FF85]/20 rounded-2xl blur-xl opacity-50" />
+              <div className="absolute inset-0 bg-gradient-to-br from-[#5865F2]/20 to-[#8b5cf6]/20 rounded-2xl blur-xl opacity-50" />
               <div className="relative bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm rounded-2xl p-8 border border-[#5865F2]/30 hover:border-[#5865F2]/50 transition-all duration-300 group">
                 <div className="mb-6">
                   <div className="w-16 h-16 bg-gradient-to-br from-[#5865F2] to-[#4752C4] rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
@@ -83,7 +83,7 @@ export function DiscordWidget() {
                   </div>
                   <h3 className="text-2xl font-bold text-white mb-2">Demon Bot Official</h3>
                   <div className="flex items-center justify-center text-gray-400 text-sm mb-4">
-                    <div className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></div>
+                    <div className="w-2 h-2 bg-violet-400 rounded-full mr-2 animate-pulse"></div>
                     <span>1,234 members online</span>
                   </div>
                   <p className="text-gray-300 text-sm leading-relaxed">

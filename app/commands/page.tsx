@@ -171,12 +171,12 @@ export default function CommandsPage() {
           {/* Header Section */}
           <div className="text-center mb-16">
             <div className="flex items-center justify-center mb-6">
-              <h1 className="text-5xl md:text-7xl font-bold bg-gradient-to-r from-white via-green-400 to-white bg-clip-text text-transparent">
+              <h1 className="text-5xl md:text-7xl font-bold bg-gradient-to-r from-white via-violet-400 to-white bg-clip-text text-transparent">
                 Commands
               </h1>
             </div>
             <p className="text-xl md:text-2xl text-slate-300 max-w-3xl mx-auto mb-8 leading-relaxed">
-              Discover the full power of <span className="text-green-400 font-semibold">Demon Bot</span> with our comprehensive command library
+              Discover the full power of <span className="text-violet-400 font-semibold">Demon Bot</span> with our comprehensive command library
             </p>
             <div className="flex items-center justify-center space-x-8 text-sm text-slate-400">
               <div className="flex items-center bg-slate-900/60 px-6 py-3 rounded-full border border-slate-700/50 backdrop-blur-sm">
@@ -193,7 +193,7 @@ export default function CommandsPage() {
           {/* Search and Filter */}
           <div className="mb-12 space-y-6">
             <div className="relative max-w-2xl mx-auto">
-              <div className="relative bg-slate-900/90 backdrop-blur-xl border border-slate-700/50 rounded-2xl p-1 hover:border-green-400/30 transition-all duration-300">
+              <div className="relative bg-slate-900/90 backdrop-blur-xl border border-slate-700/50 rounded-2xl p-1 hover:border-violet-400/30 transition-all duration-300">
                 <div className="relative">
                   <Search className="absolute left-5 top-1/2 transform -translate-y-1/2 text-slate-300 h-6 w-6 z-20 pointer-events-none" />
                   <input
@@ -201,7 +201,7 @@ export default function CommandsPage() {
                     placeholder="Search commands, aliases, or descriptions..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-16 pr-6 h-16 bg-transparent border-0 focus:ring-2 focus:ring-green-400/20 focus:outline-none text-white placeholder-slate-400 text-lg font-medium transition-all duration-300 rounded-2xl"
+                    className="w-full pl-16 pr-6 h-16 bg-transparent border-0 focus:ring-2 focus:ring-violet-400/20 focus:outline-none text-white placeholder-slate-400 text-lg font-medium transition-all duration-300 rounded-2xl"
                   />
                 </div>
               </div>
@@ -212,8 +212,8 @@ export default function CommandsPage() {
                 onClick={() => setSelectedCategory(null)}
                 className={`rounded-full px-8 py-4 font-semibold transition-all duration-300 ${
                   selectedCategory === null 
-                    ? "bg-gradient-to-r from-green-400 to-emerald-400 text-black shadow-lg" 
-                    : "border border-slate-600 hover:border-green-400 hover:text-green-400 bg-slate-800/60 backdrop-blur-sm text-white"
+                    ? "bg-gradient-to-r from-violet-400 to-purple-400 text-black shadow-lg" 
+                    : "border border-slate-600 hover:border-violet-400 hover:text-violet-400 bg-slate-800/60 backdrop-blur-sm text-white"
                 }`}
               >
                 All Commands
@@ -224,8 +224,8 @@ export default function CommandsPage() {
                   onClick={() => setSelectedCategory(category)}
                   className={`rounded-full px-8 py-4 font-semibold transition-all duration-300 capitalize ${
                     selectedCategory === category 
-                      ? "bg-gradient-to-r from-green-400 to-emerald-400 text-black shadow-lg" 
-                      : "border border-slate-600 hover:border-green-400 hover:text-green-400 bg-slate-800/60 backdrop-blur-sm text-white"
+                      ? "bg-gradient-to-r from-violet-400 to-purple-400 text-black shadow-lg" 
+                      : "border border-slate-600 hover:border-violet-400 hover:text-violet-400 bg-slate-800/60 backdrop-blur-sm text-white"
                   }`}
                 >
                   {category.replace(/_/g, ' ')}
@@ -240,7 +240,7 @@ export default function CommandsPage() {
               <div key={category} className="space-y-6">
                 <div className="flex items-center gap-4 mb-8">
                   <div className="flex items-center gap-4">
-                    <Terminal className="w-8 h-8 text-green-400" />
+                    <Terminal className="w-8 h-8 text-violet-400" />
                     <h2 className="text-3xl font-bold text-white capitalize">
                       {category.replace(/_/g, ' ')}
                     </h2>
@@ -273,7 +273,7 @@ export default function CommandsPage() {
                   {categoryCommands.map((command) => (
                     <div 
                       key={command.name}
-                      className="group relative overflow-hidden bg-slate-900/60 border border-slate-700/50 hover:border-green-400/50 transition-all duration-300 hover:shadow-lg hover:shadow-green-400/10 backdrop-blur-sm rounded-lg"
+                      className="group relative overflow-hidden bg-slate-900/60 border border-slate-700/50 hover:border-violet-400/50 transition-all duration-300 hover:shadow-lg hover:shadow-violet-400/10 backdrop-blur-sm rounded-lg"
                     >
                       <div 
                         className="cursor-pointer hover:bg-slate-800 hover:bg-opacity-40 transition-colors duration-200 p-6"
@@ -281,8 +281,8 @@ export default function CommandsPage() {
                       >
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-3">
-                            <Zap className="w-5 h-5 text-green-400" />
-                            <h3 className="text-green-400 font-mono text-xl group-hover:text-white transition-colors">
+                            <Zap className="w-5 h-5 text-violet-400" />
+                            <h3 className="text-violet-400 font-mono text-xl group-hover:text-white transition-colors">
                               {command.name}
                             </h3>
                           </div>
@@ -313,7 +313,7 @@ export default function CommandsPage() {
                                 Usage
                               </h4>
                               <div className="bg-slate-800/60 rounded-lg p-4 font-mono text-base border border-slate-700/50">
-                                <span className="text-green-400">
+                                <span className="text-violet-400">
                                   {formatUsage(command.usage, command.name, command.category)}
                                 </span>
                               </div>
