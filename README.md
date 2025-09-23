@@ -1,3 +1,193 @@
+<p align="center">
+   <img src="https://cdn.discordapp.com/emojis/976777330506739752.png" alt="DEMON Logo" width="80" />
+</p>
+
+<h1 align="center">DEMON Discord Bot - Official Website</h1>
+
+<p align="center">
+   <b>The modern, elegant, and feature-rich website for the all-in-one <a href="https://demonbot.vercel.app">DEMON Discord Bot</a>.</b>
+</p>
+
+<p align="center">
+   <a href="https://demonbot.vercel.app"><img src="https://img.shields.io/website?url=https%3A%2F%2Fdemonbot.vercel.app&style=for-the-badge" alt="Website Status"></a>
+   <a href="https://discord.gg/5MredjDjed"><img src="https://img.shields.io/discord/979632685335085067?style=for-the-badge&logo=discord&logoColor=white&label=Discord" alt="Discord"></a>
+   <a href="LICENSE"><img src="https://img.shields.io/badge/License-All%20Rights%20Reserved-red?style=for-the-badge" alt="License"></a>
+</p>
+
+---
+
+## 🌟 Overview
+
+**DEMON** is a next-generation Discord bot and this is its official website. The site is designed to:
+
+- Showcase all bot features, commands, and premium offerings
+- Provide a beautiful, responsive, and accessible user experience
+- Serve as the main hub for documentation, support, and community links
+
+### ✨ Key Features
+
+- **Advanced Moderation**: Keep your server safe with powerful tools
+- **Anime & Entertainment**: Anime stats, airing schedules, and fun commands
+- **Image Manipulation**: Advanced image editing and meme generation
+- **Interactive Features**: Giveaways, games, and community engagement
+- **Lightning Fast**: 99.9% uptime, instant responses
+- **Utility Commands**: Server management, info, and more
+- **Premium Upgrades**: Unlock exclusive features and perks
+
+---
+
+## 🚀 Live Website
+
+Visit: [https://demonbot.vercel.app](https://demonbot.vercel.app)
+
+---
+
+## 🛠️ Tech Stack
+
+- **Framework**: [Next.js 15](https://nextjs.org/) (App Router, React 19)
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/) + custom animations
+- **UI Components**: [Radix UI](https://www.radix-ui.com/), custom components
+- **Icons**: [Lucide React](https://lucide.dev/)
+- **Deployment**: [Vercel](https://vercel.com/)
+- **Language**: TypeScript
+
+#### Key Dependencies
+
+```json
+{
+   "next": "15.2.4",
+   "react": "^19",
+   "tailwindcss": "^3.4.17",
+   "@radix-ui/react-*": "latest",
+   "lucide-react": "^0.454.0",
+   "framer-motion": "^11.0.0",
+   "class-variance-authority": "^0.7.1"
+}
+```
+
+---
+
+## 🏃‍♂️ Getting Started
+
+### Prerequisites
+
+- Node.js 18+
+- pnpm, npm, or yarn package manager
+
+### Installation
+
+```bash
+# Clone the repository
+$ git clone https://github.com/iaryasharma/demonwebsite.git
+$ cd demonwebsite
+
+# Install dependencies (choose one)
+$ pnpm install
+# or
+$ npm install
+# or
+$ yarn install
+```
+
+### Development
+
+```bash
+# Start the local dev server
+$ pnpm dev
+# or
+$ npm run dev
+# or
+$ yarn dev
+```
+
+The site will be available at [http://localhost:3000](http://localhost:3000)
+
+### Build for Production
+
+```bash
+$ pnpm build
+# or
+$ npm run build
+# or
+$ yarn build
+```
+
+---
+
+## 📁 Project Structure
+
+```
+/ (root)
+├── app/                # Next.js app directory (routes, layouts, pages)
+│   ├── commands/       # Commands showcase page
+│   ├── dashboard/      # Dashboard landing page
+│   ├── premium/        # Premium features & pricing
+│   ├── team/           # Team & contributors
+│   ├── privacy/        # Privacy policy
+│   ├── not-found.tsx   # Custom 404 page
+│   └── ...
+├── components/         # Reusable React components
+│   ├── premium/        # Premium-specific UI
+│   ├── ui/             # UI primitives (buttons, cards, etc.)
+│   └── ...
+├── hooks/              # Custom React hooks
+├── json/               # Static JSON data (commands, etc.)
+├── lib/                # Utility functions
+├── public/             # Static assets (images, video, etc.)
+├── styles/             # Global styles (Tailwind, CSS)
+├── tailwind.config.ts  # Tailwind CSS config
+├── next.config.mjs     # Next.js config
+└── ...
+```
+
+---
+
+## 👥 Team & Contributors
+
+- **Arya Sharma** – [@iaryasharma](https://github.com/iaryasharma) (Lead Developer, Designer)
+- [Your Name Here] – Open for contributions!
+
+---
+
+## 💡 Feature Highlights
+
+- **Modern UI**: Beautiful, responsive, and accessible design
+- **Dark Theme**: Sleek dark interface with vibrant purple accents
+- **Video Backgrounds**: Subtle animated backgrounds for key pages
+- **Command Library**: Searchable, filterable command showcase
+- **Premium Pricing**: Elegant pricing cards and feature comparison
+- **Team Page**: Meet the creators and contributors
+- **404 Page**: Custom not-found with video background
+
+---
+
+## 📄 License
+
+All rights reserved. For personal or demo use only. Contact the author for commercial or redistribution inquiries.
+
+---
+
+## 🙋 FAQ & Support
+
+- **Discord Support**: [Join our server](https://discord.gg/5MredjDjed)
+- **Website**: [demonbot.vercel.app](https://demonbot.vercel.app)
+- **Contact**: See the team page or open an issue
+
+---
+
+## 🙏 Acknowledgments
+
+- [Next.js](https://nextjs.org/)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [Radix UI](https://www.radix-ui.com/)
+- [Lucide Icons](https://lucide.dev/)
+- [Vercel](https://vercel.com/)
+
+---
+
+<p align="center">
+   <b>Made with ❤️ by the DEMON team</b>
+</p>
 # <img src="https://cdn.discordapp.com/emojis/976777330506739752.png" alt="DEMON Logo" style="width:50px; float:left; margin-right:10px;"> DEMON Discord Bot - Official Website
 
 Welcome to the official website for **DEMON** Discord Bot! This modern, responsive website showcases the ultimate all-in-one Discord bot designed to transform your server experience.
