@@ -112,12 +112,12 @@ export function Footer() {
                 <FontAwesomeIcon icon={faHeart} className="w-3 h-3 text-red-400/60 mx-0.5 inline" />{" "}
                 by{" "}
                 <Link
-                  href="https://fragnite.vercel.app"
+                  href="https://iaryasharma.me"
                   className="text-[#a78bfa] hover:text-[#8b5cf6] transition-colors"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  FragNite
+                  iaryasharma.me
                 </Link>
               </p>
               <p className="text-xs text-gray-700 mt-1">

@@ -28,9 +28,9 @@ export const metadata: Metadata = {
     "Discord Bot Commands",
     "Discord Community Bot"
   ],
-  authors: [{ name: "FragNite", url: "https://fragnite.vercel.app" }],
-  creator: "FragNite",
-  publisher: "FragNite",
+  authors: [{ name: "Arya", url: "https://iaryasharma.me" }],
+  creator: "Arya",
+  publisher: "Arya",
   formatDetection: {
     email: false,
     address: false,
@@ -121,9 +121,9 @@ export default function RootLayout({
               "description": "Ultimate Discord bot for modern communities featuring advanced moderation, anime content, server utilities, and entertainment.",
               "url": "https://demonbot.vercel.app",
               "author": {
-                "@type": "Organization",
-                "name": "FragNite",
-                "url": "https://fragnite.vercel.app"
+                "@type": "Person",
+                "name": "Arya",
+                "url": "https://iaryasharma.me"
               },
               "offers": {
                 "@type": "Offer",

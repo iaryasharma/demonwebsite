@@ -1,115 +1,83 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { Check } from "lucide-react";
+import { motion } from "framer-motion";
+import { Check, X } from "lucide-react";
+
+const features = [
+  { name: "Basic Commands", free: true, prime: true, pro: true },
+  { name: "Moderation", free: true, prime: true, pro: true },
+  { name: "Anime Search", free: true, prime: true, pro: true },
+  { name: "Custom Prefix", free: false, prime: true, pro: true },
+  { name: "Custom Welcome Images", free: false, prime: true, pro: true },
+  { name: "Advanced Giveaways", free: false, prime: true, pro: true },
+  { name: "Auto Recovery", free: false, prime: false, pro: true },
+  { name: "Premium Support", free: false, prime: false, pro: true },
+];
+
+function CellIcon({ available }: { available: boolean }) {
+  return available ? (
+    <div className="w-6 h-6 rounded-full bg-[#8b5cf6]/10 flex items-center justify-center mx-auto">
+      <Check className="w-3.5 h-3.5 text-[#a78bfa]" />
+    </div>
+  ) : (
+    <X className="w-4 h-4 text-gray-600 mx-auto" />
+  );
+}
 
 export function FeatureComparison() {
   return (
-    <div className="mb-16">
-      <div className="text-center mb-12">
-        <h2 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[#8b5cf6] to-purple-500 inline-block mb-4">Premium Features Comparison</h2>
-        <p className="text-gray-300">Find the perfect plan for your Discord community</p>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.6 }}
+      className="mb-24"
+    >
+      <div className="text-center mb-10">
+        <h2 className="text-2xl md:text-3xl font-bold text-white mb-3">Compare Plans</h2>
+        <p className="text-gray-500 text-sm">Find the perfect plan for your community</p>
       </div>
-      <div className="glass-dark border border-[#8b5cf6]/20 rounded-lg p-8 relative overflow-hidden">
-        <div className="absolute -top-24 -right-24 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl"></div>
-        <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-[#8b5cf6]/10 rounded-full blur-3xl"></div>
-        <div className="overflow-x-auto relative z-10">
+
+      <div className="rounded-2xl border border-white/[0.06] overflow-hidden bg-white/[0.01]">
+        <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-gray-700">
-                <th className="text-left py-4 px-4 text-gray-300 font-medium">Feature</th>
-                <th className="text-center py-4 px-4 text-gray-400 font-medium">Free</th>
-                <th className="text-center py-4 px-4 text-[#8b5cf6] font-medium">Prime</th>
-                <th className="text-center py-4 px-4 text-purple-400 font-medium">Pro</th>
+              <tr className="border-b border-white/[0.06]">
+                <th className="text-left py-4 px-6 text-sm font-medium text-gray-400">Feature</th>
+                <th className="text-center py-4 px-4 text-sm font-medium text-gray-500 w-24">Free</th>
+                <th className="text-center py-4 px-4 text-sm font-medium text-[#a78bfa] w-24">Prime</th>
+                <th className="text-center py-4 px-4 w-24">
+                  <span className="text-sm font-medium bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">Pro</span>
+                </th>
               </tr>
             </thead>
             <tbody>
-              <tr className="border-b border-gray-800">
-                <td className="py-3 px-2 text-white">Basic Commands</td>
-                <td className="py-3 px-2 text-center">
-                  <Check className="h-5 w-5 text-gray-400 mx-auto" />
-                </td>
-                <td className="py-3 px-2 text-center">
-                  <Check className="h-5 w-5 text-[#8b5cf6] mx-auto" />
-                </td>
-                <td className="py-3 px-2 text-center">
-                  <Check className="h-5 w-5 text-purple-400 mx-auto" />
-                </td>
-              </tr>
-              <tr className="border-b border-gray-800">
-                <td className="py-3 px-2 text-white">Moderation</td>
-                <td className="py-3 px-2 text-center">
-                  <Check className="h-5 w-5 text-gray-400 mx-auto" />
-                </td>
-                <td className="py-3 px-2 text-center">
-                  <Check className="h-5 w-5 text-[#8b5cf6] mx-auto" />
-                </td>
-                <td className="py-3 px-2 text-center">
-                  <Check className="h-5 w-5 text-purple-400 mx-auto" />
-                </td>
-              </tr>
-              <tr className="border-b border-gray-800">
-                <td className="py-3 px-2 text-white">Anime Search</td>
-                <td className="py-3 px-2 text-center">
-                  <Check className="h-5 w-5 text-gray-400 mx-auto" />
-                </td>
-                <td className="py-3 px-2 text-center">
-                  <Check className="h-5 w-5 text-[#8b5cf6] mx-auto" />
-                </td>
-                <td className="py-3 px-2 text-center">
-                  <Check className="h-5 w-5 text-purple-400 mx-auto" />
-                </td>
-              </tr>
-              <tr className="border-b border-gray-800">
-                <td className="py-3 px-2 text-white">Custom Prefix</td>
-                <td className="py-3 px-2 text-center">-</td>
-                <td className="py-3 px-2 text-center">
-                  <Check className="h-5 w-5 text-[#8b5cf6] mx-auto" />
-                </td>
-                <td className="py-3 px-2 text-center">
-                  <Check className="h-5 w-5 text-purple-400 mx-auto" />
-                </td>
-              </tr>
-              <tr className="border-b border-gray-800">
-                <td className="py-3 px-2 text-white">Custom Welcome Images</td>
-                <td className="py-3 px-2 text-center">-</td>
-                <td className="py-3 px-2 text-center">
-                  <Check className="h-5 w-5 text-[#8b5cf6] mx-auto" />
-                </td>
-                <td className="py-3 px-2 text-center">
-                  <Check className="h-5 w-5 text-purple-400 mx-auto" />
-                </td>
-              </tr>
-              <tr className="border-b border-gray-800">
-                <td className="py-3 px-2 text-white">Advanced Giveaways</td>
-                <td className="py-3 px-2 text-center">-</td>
-                <td className="py-3 px-2 text-center">
-                  <Check className="h-5 w-5 text-[#8b5cf6] mx-auto" />
-                </td>
-                <td className="py-3 px-2 text-center">
-                  <Check className="h-5 w-5 text-purple-400 mx-auto" />
-                </td>
-              </tr>
-              <tr className="border-b border-gray-800">
-                <td className="py-3 px-2 text-white">Auto Recovery</td>
-                <td className="py-3 px-2 text-center">-</td>
-                <td className="py-3 px-2 text-center">-</td>
-                <td className="py-3 px-2 text-center">
-                  <Check className="h-5 w-5 text-purple-400 mx-auto" />
-                </td>
-              </tr>
-              <tr>
-                <td className="py-3 px-2 text-white">Premium Support</td>
-                <td className="py-3 px-2 text-center">-</td>
-                <td className="py-3 px-2 text-center">-</td>
-                <td className="py-3 px-2 text-center">
-                  <Check className="h-5 w-5 text-purple-400 mx-auto" />
-                </td>
-              </tr>
+              {features.map((f, i) => (
+                <motion.tr
+                  key={f.name}
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.04 }}
+                  className={`border-b border-white/[0.03] hover:bg-white/[0.015] transition-colors ${i === features.length - 1 ? "border-b-0" : ""
+                    }`}
+                >
+                  <td className="py-3.5 px-6 text-sm text-gray-300">{f.name}</td>
+                  <td className="py-3.5 px-4 text-center">
+                    <CellIcon available={f.free} />
+                  </td>
+                  <td className="py-3.5 px-4 text-center">
+                    <CellIcon available={f.prime} />
+                  </td>
+                  <td className="py-3.5 px-4 text-center">
+                    <CellIcon available={f.pro} />
+                  </td>
+                </motion.tr>
+              ))}
             </tbody>
           </table>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

@@ -230,17 +230,6 @@ export function HeroSection() {
                   Invite Bot
                 </Button>
               </motion.div>
-
-              <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="border-white/15 text-white hover:bg-white/5 px-8 py-4 text-lg transition-all duration-300 hover:border-[#8b5cf6]/40"
-                >
-                  <FontAwesomeIcon icon={faPlay} className="mr-2 h-4 w-4" />
-                  Watch Demo
-                </Button>
-              </motion.div>
             </motion.div>
 
             {/* Stats */}
@@ -248,7 +237,11 @@ export function HeroSection() {
               variants={itemVariants}
               className="grid grid-cols-3 gap-6"
             >
-              {stats.map((stat, i) => (
+              {[
+                { value: 1200, suffix: "+", label: "Servers" },
+                { value: 250000, suffix: "+", label: "Users Served" },
+                { value: 250, suffix: "+", label: "Commands" },
+              ].map((stat, i) => (
                 <div key={i} className="text-center sm:text-left">
                   <div className="text-2xl md:text-3xl font-bold text-white">
                     <AnimatedCounter target={stat.value} suffix={stat.suffix} />
@@ -284,26 +277,6 @@ export function HeroSection() {
           </motion.div>
         </div>
       </div>
-
-      {/* Scroll Indicator */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 2 }}
-        className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
-      >
-        <motion.div
-          animate={{ y: [0, 8, 0] }}
-          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-          className="w-6 h-10 border-2 border-white/20 rounded-full flex justify-center"
-        >
-          <motion.div
-            animate={{ opacity: [0.3, 1, 0.3], y: [0, 12, 0] }}
-            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-            className="w-1 h-2 bg-[#8b5cf6] rounded-full mt-2"
-          />
-        </motion.div>
-      </motion.div>
 
       {/* Bottom gradient fade */}
       <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-black to-transparent" />

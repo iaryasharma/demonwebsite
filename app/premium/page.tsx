@@ -1,117 +1,101 @@
 "use client";
 
-import { Button } from "@/components/ui/button"
-import { Star, Sparkles } from "lucide-react"
-import Image from "next/image"
-import { useEffect } from "react"
-import { PricingCards } from "@/components/premium/pricing-cards"
-import { FeatureComparison } from "@/components/premium/feature-comparison"
-import { FaqSection } from "@/components/premium/faq-section"
+import { motion } from "framer-motion";
+import { Sparkles, Star, ArrowRight } from "lucide-react";
+import { PricingCards } from "@/components/premium/pricing-cards";
+import { FeatureComparison } from "@/components/premium/feature-comparison";
+import { FaqSection } from "@/components/premium/faq-section";
 
 export default function PremiumPage() {
-  // Prevent image downloads on the entire page
-  useEffect(() => {
-    const handleContextMenu = (e: MouseEvent) => {
-      if (e.target instanceof HTMLImageElement) {
-        e.preventDefault();
-      }
-    };
-    
-    const handleDragStart = (e: DragEvent) => {
-      if (e.target instanceof HTMLImageElement) {
-        e.preventDefault();
-      }
-    };
-
-    const handleSelectStart = (e: Event) => {
-      if (e.target instanceof HTMLImageElement) {
-        e.preventDefault();
-      }
-    };
-    
-    document.addEventListener('contextmenu', handleContextMenu);
-    document.addEventListener('dragstart', handleDragStart);
-    document.addEventListener('selectstart', handleSelectStart);
-    
-    return () => {
-      document.removeEventListener('contextmenu', handleContextMenu);
-      document.removeEventListener('dragstart', handleDragStart);
-      document.removeEventListener('selectstart', handleSelectStart);
-    };
-  }, []);
-
   return (
-    <div className="min-h-screen pt-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-gray-900 via-black to-gray-900">
-      <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-16">
-          <div className="flex items-center justify-center space-x-2 mb-6">
-            <Sparkles className="h-6 w-6 text-[#8b5cf6]" />
-            <span className="text-sm uppercase tracking-wider text-[#8b5cf6]">Unlock Premium Power</span>
-            <Sparkles className="h-6 w-6 text-[#8b5cf6]" />
-          </div>
-          <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-[#8b5cf6] to-purple-500 glow-text">Premium Plans</h1>
-          <p className="text-xl text-gray-300 max-w-2xl mx-auto leading-relaxed">
-            Unlock the full potential of Demon Bot with our premium subscription plans and take your Discord server to the next level
-          </p>
-        </div>
-        
-        {/* Hero Image */}
-        <div className="mb-16 relative">
-          <div className="absolute inset-0 bg-gradient-to-r from-black to-transparent z-10"></div>
-          <div className="rounded-lg overflow-hidden shadow-xl relative">
-            <div className="select-none" style={{ pointerEvents: 'none' }}>
-              <Image 
-                src="/demon-banner.png" 
-                alt="Demon Bot Premium" 
-                width={1200} 
-                height={400} 
-                className="w-full h-64 md:h-80 object-cover"
-                draggable={false}
-                priority
-              />
-            </div>
-            <div className="absolute inset-0 flex items-center z-20 p-8">
-              <div>
-                <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Power Up Your<br />Discord Experience</h2>
-                <p className="text-xl text-gray-200 mb-6 max-w-lg">Join thousands of servers already enjoying premium features</p>
-                <Button 
-                  className="bg-gradient-to-r from-[#8b5cf6] to-purple-500 text-black hover:opacity-90 text-lg font-medium px-8 py-6"
-                  onClick={() => window.open('https://discord.com/oauth2/authorize?client_id=836880109478608897&scope=bot%20identify%20guilds%20applications.commands&response_type=code&permissions=1513962695871&state=QGn-6VzBYf2Ta8nMk_tFe', '_blank')}
+    <div className="min-h-screen bg-black relative overflow-hidden">
+      {/* Ambient background effects */}
+      <div className="fixed inset-0 pointer-events-none">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-[#8b5cf6]/[0.04] rounded-full blur-[120px]" />
+        <div className="absolute bottom-1/4 right-0 w-[500px] h-[500px] bg-purple-600/[0.03] rounded-full blur-[100px]" />
+        <div className="absolute top-1/2 left-0 w-[400px] h-[400px] bg-indigo-500/[0.03] rounded-full blur-[100px]" />
+      </div>
+
+      <div className="relative z-10 pt-28 pb-20 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-5xl mx-auto">
+
+          {/* Hero / Header */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7 }}
+            className="text-center mb-20"
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.2, duration: 0.5 }}
+              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#8b5cf6]/10 border border-[#8b5cf6]/20 mb-8"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-[#a78bfa]" />
+              <span className="text-xs font-medium text-[#a78bfa] uppercase tracking-widest">Premium Plans</span>
+              <Sparkles className="w-3.5 h-3.5 text-[#a78bfa]" />
+            </motion.div>
+
+            <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-[1.1] tracking-tight">
+              Unlock the{" "}
+              <span className="bg-gradient-to-r from-[#8b5cf6] via-purple-400 to-[#a78bfa] bg-clip-text text-transparent">
+                full power
+              </span>
+            </h1>
+            <p className="text-lg text-gray-400 max-w-xl mx-auto leading-relaxed">
+              Take your Discord server to the next level with premium features, priority support, and unlimited access.
+            </p>
+          </motion.div>
+
+          {/* Pricing Cards */}
+          <PricingCards />
+
+          {/* Feature Comparison */}
+          <FeatureComparison />
+
+          {/* FAQ Section */}
+          <FaqSection />
+
+          {/* Bottom CTA */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="text-center mt-8 mb-8"
+          >
+            <div className="relative rounded-2xl border border-white/[0.06] overflow-hidden">
+              {/* Gradient background */}
+              <div className="absolute inset-0 bg-gradient-to-br from-[#8b5cf6]/10 via-transparent to-purple-600/10" />
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[300px] h-px bg-gradient-to-r from-transparent via-[#8b5cf6]/40 to-transparent" />
+
+              <div className="relative p-12 md:p-16">
+                <Star className="w-8 h-8 text-[#a78bfa]/30 mx-auto mb-6" />
+                <h3 className="text-2xl md:text-3xl font-bold text-white mb-4">
+                  Ready to supercharge your server?
+                </h3>
+                <p className="text-gray-400 mb-10 max-w-lg mx-auto">
+                  Join thousands of communities already enjoying premium features and priority support.
+                </p>
+
+                <motion.a
+                  href="https://discord.gg/demonbot"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  whileHover={{ scale: 1.03, y: -2 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-gradient-to-r from-[#8b5cf6] to-[#7c3aed] text-white font-semibold text-sm hover:shadow-lg hover:shadow-[#8b5cf6]/25 transition-shadow"
                 >
                   Get Started
-                </Button>
+                  <ArrowRight className="w-4 h-4" />
+                </motion.a>
               </div>
             </div>
-          </div>
-        </div>
+          </motion.div>
 
-        {/* Pricing Cards */}
-        <PricingCards />
-
-        {/* Feature Comparison */}
-        <FeatureComparison />
-
-        {/* FAQ Section */}
-        <FaqSection />
-
-        {/* CTA */}
-        <div className="text-center glass-dark border border-[#8b5cf6]/20 rounded-xl p-12 relative overflow-hidden">
-          <div className="absolute -top-24 -right-24 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl"></div>
-          <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-[#8b5cf6]/10 rounded-full blur-3xl"></div>
-          
-          <h3 className="text-2xl md:text-3xl font-bold text-white mb-6">Ready to supercharge your Discord server?</h3>
-          <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">Join thousands of communities already enjoying premium features</p>
-          
-          <Button 
-            size="lg" 
-            className="bg-gradient-to-r from-[#8b5cf6] to-purple-500 text-black hover:opacity-90 text-lg px-10 py-7 rounded-xl transform transition-all hover:scale-105 font-medium"
-            onClick={() => window.open('https://discord.com/oauth2/authorize?client_id=836880109478608897&scope=bot%20identify%20guilds%20applications.commands&response_type=code&permissions=1513962695871&state=QGn-6VzBYf2Ta8nMk_tFe', '_blank')}
-          >
-            <Star className="mr-2 h-5 w-5" />
-            Upgrade Now
-          </Button>
         </div>
       </div>
     </div>
-  )
+  );
 }
