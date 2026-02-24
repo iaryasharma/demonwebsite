@@ -37,7 +37,7 @@ interface Command {
 const SLASH_CATEGORIES = ['announcement', 'information', 'settings', 'moderator', 'support', 'voicemod']
 
 // Get default prefix from environment or fallback
-const DEFAULT_PREFIX = '!!'
+const DEFAULT_PREFIX = process.env.NEXT_PUBLIC_DEFAULT_PREFIX || '!!'
 
 export default function CommandsPage() {
   const [searchTerm, setSearchTerm] = useState("")
