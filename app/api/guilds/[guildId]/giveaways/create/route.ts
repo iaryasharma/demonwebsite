@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
-import { getServerSession } from "next-auth"
-import { authOptions } from "@/lib/auth"
+import { getToken } from "next-auth/jwt"
+import { getAccessTokenFromRequest, requireManageGuild } from "@/lib/permissions"
 import { connectToDatabase } from "@/lib/mongodb"
 import Giveaway from "@/lib/models/Giveaway"
 import { sendMessage } from "@/lib/discord"
@@ -37,12 +37,24 @@ export async function POST(
     request: Request,
     { params }: { params: Promise<{ guildId: string }> }
 ) {
-    const session = await getServerSession(authOptions)
-    if (!session || !(session as any).accessToken) {
+    const accessToken = await getAccessTokenFromRequest(request)
+    if (!accessToken) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
     const { guildId } = await params
+
+    if (!(await requireManageGuild(accessToken, guildId))) {
+        return NextResponse.json({ error: "Forbidden" }, { status: 403 })
+    }
+
+    // Get the user's Discord ID from the JWT for hostId
+    const jwtToken = await getToken({ req: request as any, secret: process.env.NEXTAUTH_SECRET })
+    const discordId = (jwtToken as any)?.discordId
+
+    if (!discordId) {
+        return NextResponse.json({ error: "Unable to identify user" }, { status: 401 })
+    }
 
     try {
         const body = await request.json()
@@ -91,13 +103,13 @@ export async function POST(
         const startTime = new Date()
         const endTime = new Date(Date.now() + durationMs)
 
-        // Build the giveaway embed
+        // Build the giveaway embed — use the actual Discord user ID
         const giveawayData = {
             prize,
             description: description?.trim() || null,
             requiredRole: requiredRole?.trim() || null,
             winnerCount: winners,
-            hostId: (session as any).user?.id || "dashboard",
+            hostId: discordId,
             endTime,
             endedAt: null,
             participants: [],
@@ -109,28 +121,28 @@ export async function POST(
 
         const activeEmbed = buildActiveEmbed(giveawayData)
 
-        // Build the enter/leave buttons (matching bot's createGiveawayButtons)
+        // Build the enter/leave buttons
         const components = [
             {
-                type: 1, // ActionRow
+                type: 1,
                 components: [
                     {
-                        type: 2, // Button
-                        style: 3, // Success (green)
+                        type: 2,
+                        style: 3,
                         label: "Enter Giveaway",
                         emoji: { name: "🎉" },
-                        custom_id: "giveaway_enter_temp", // Updated after send
+                        custom_id: "giveaway_enter_temp",
                     },
                     {
-                        type: 2, // Button
-                        style: 2, // Secondary (gray)
+                        type: 2,
+                        style: 2,
                         label: "Leave",
                         emoji: { name: "❌" },
                         custom_id: "giveaway_leave_temp",
                     },
                     {
-                        type: 2, // Button
-                        style: 1, // Primary (blue)
+                        type: 2,
+                        style: 1,
                         label: "Show Participants",
                         emoji: { name: "👥" },
                         custom_id: "giveaway_participants_temp",
@@ -147,13 +159,12 @@ export async function POST(
 
         if (!sendResult.ok) {
             return NextResponse.json(
-                { error: `Failed to send giveaway message: ${sendResult.error}` },
+                { error: "Failed to send giveaway message" },
                 { status: 500 }
             )
         }
 
-        // We need the message ID from the response — update sendMessage to return body
-        // For now, fetch the message we just sent
+        // Fetch the message ID
         const token = process.env.DISCORD_BOT_TOKEN
         const msgRes = await fetch(
             `https://discord.com/api/v10/channels/${channelId}/messages?limit=1`,
@@ -212,14 +223,14 @@ export async function POST(
             }
         )
 
-        // Save to database
+        // Save to database — use real Discord user ID
         await connectToDatabase()
 
         const giveaway = new Giveaway({
             messageId,
             channelId,
             guildId,
-            hostId: (session as any).user?.id || "dashboard",
+            hostId: discordId,
             prize,
             description: description?.trim() || null,
             requiredRole: requiredRole?.trim() || null,

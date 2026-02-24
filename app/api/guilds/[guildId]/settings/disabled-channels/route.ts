@@ -1,19 +1,22 @@
 import { NextResponse } from "next/server"
-import { getServerSession } from "next-auth"
-import { authOptions } from "@/lib/auth"
+import { getAccessTokenFromRequest, requireManageGuild } from "@/lib/permissions"
 import { connectToDatabase } from "@/lib/mongodb"
 import { Guild } from "@/lib/models/Guild"
 
 export async function GET(
-    _request: Request,
+    request: Request,
     { params }: { params: Promise<{ guildId: string }> }
 ) {
-    const session = await getServerSession(authOptions)
-    if (!session || !(session as any).accessToken) {
+    const accessToken = await getAccessTokenFromRequest(request)
+    if (!accessToken) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
     const { guildId } = await params
+
+    if (!(await requireManageGuild(accessToken, guildId))) {
+        return NextResponse.json({ error: "Forbidden" }, { status: 403 })
+    }
 
     try {
         await connectToDatabase()
@@ -30,12 +33,16 @@ export async function POST(
     request: Request,
     { params }: { params: Promise<{ guildId: string }> }
 ) {
-    const session = await getServerSession(authOptions)
-    if (!session || !(session as any).accessToken) {
+    const accessToken = await getAccessTokenFromRequest(request)
+    if (!accessToken) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
     const { guildId } = await params
+
+    if (!(await requireManageGuild(accessToken, guildId))) {
+        return NextResponse.json({ error: "Forbidden" }, { status: 403 })
+    }
 
     try {
         const body = await request.json()

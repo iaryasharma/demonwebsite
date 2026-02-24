@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server"
-import { getServerSession } from "next-auth"
-import { authOptions } from "@/lib/auth"
+import { getAccessTokenFromRequest, requireManageGuild } from "@/lib/permissions"
 
 // Simple in-memory rate limiter: max 5 sends per guild per minute
 const rateLimits = new Map<string, { count: number; resetAt: number }>()
@@ -24,12 +23,16 @@ export async function POST(
     request: Request,
     { params }: { params: Promise<{ guildId: string }> }
 ) {
-    const session = await getServerSession(authOptions)
-    if (!session || !(session as any).accessToken) {
+    const accessToken = await getAccessTokenFromRequest(request)
+    if (!accessToken) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
     const { guildId } = await params
+
+    if (!(await requireManageGuild(accessToken, guildId))) {
+        return NextResponse.json({ error: "Forbidden" }, { status: 403 })
+    }
 
     if (!checkRateLimit(guildId)) {
         return NextResponse.json(
@@ -69,10 +72,11 @@ export async function POST(
         })
 
         if (!res.ok) {
+            // Log internal details but don't expose to client
             const errorBody = await res.text()
             console.error("Discord webhook error:", res.status, errorBody)
             return NextResponse.json(
-                { error: `Discord returned ${res.status}: ${errorBody}` },
+                { error: "Failed to send message via webhook" },
                 { status: res.status }
             )
         }

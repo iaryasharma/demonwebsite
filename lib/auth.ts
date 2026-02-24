@@ -30,8 +30,12 @@ export const authOptions: NextAuthOptions = {
         },
         async session({ session, token }) {
             const t = token as ExtendedToken
-                ; (session as any).accessToken = t.accessToken
-                ; (session as any).discordId = t.discordId
+            // SECURITY: Do NOT expose accessToken to the client.
+            // Only expose the discordId so the client knows who the user is.
+            if (session.user) {
+                ; (session.user as any).id = t.discordId
+            }
+            ; (session as any).discordId = t.discordId
             return session
         },
     },
@@ -39,4 +43,17 @@ export const authOptions: NextAuthOptions = {
         signIn: "/dashboard",
     },
     secret: process.env.NEXTAUTH_SECRET,
+}
+
+/**
+ * Extract the server-side-only access token from the session.
+ * This must only be called from server-side code (API routes / server components).
+ */
+export function getAccessToken(session: any): string | null {
+    // In Next-Auth, the full JWT (with accessToken) is available
+    // via getServerSession -> the session callback runs server-side.
+    // Since we removed accessToken from the session object sent to client,
+    // we need a way to get it server-side. We add a helper that reads
+    // from the token directly.
+    return null // We'll use getToken() from next-auth/jwt instead
 }

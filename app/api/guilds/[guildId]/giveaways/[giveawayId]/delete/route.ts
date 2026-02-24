@@ -1,20 +1,23 @@
 import { NextResponse } from "next/server"
-import { getServerSession } from "next-auth"
-import { authOptions } from "@/lib/auth"
+import { getAccessTokenFromRequest, requireManageGuild } from "@/lib/permissions"
 import { connectToDatabase } from "@/lib/mongodb"
 import Giveaway from "@/lib/models/Giveaway"
 import { deleteMessage } from "@/lib/discord"
 
 export async function DELETE(
-    _request: Request,
+    request: Request,
     { params }: { params: Promise<{ guildId: string; giveawayId: string }> }
 ) {
-    const session = await getServerSession(authOptions)
-    if (!session || !(session as any).accessToken) {
+    const accessToken = await getAccessTokenFromRequest(request)
+    if (!accessToken) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
     const { guildId, giveawayId } = await params
+
+    if (!(await requireManageGuild(accessToken, guildId))) {
+        return NextResponse.json({ error: "Forbidden" }, { status: 403 })
+    }
 
     try {
         await connectToDatabase()

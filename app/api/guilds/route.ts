@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server"
-import { getServerSession } from "next-auth"
-import { authOptions } from "@/lib/auth"
+import { getToken } from "next-auth/jwt"
+import { getAccessTokenFromRequest, requireManageGuild } from "@/lib/permissions"
 
-export async function GET() {
-    const session = await getServerSession(authOptions)
-    if (!session || !(session as any).accessToken) {
+export async function GET(request: Request) {
+    const accessToken = await getAccessTokenFromRequest(request)
+    if (!accessToken) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
@@ -12,7 +12,7 @@ export async function GET() {
         // Fetch user's guilds from Discord API
         const res = await fetch("https://discord.com/api/v10/users/@me/guilds", {
             headers: {
-                Authorization: `Bearer ${(session as any).accessToken}`,
+                Authorization: `Bearer ${accessToken}`,
             },
         })
 
@@ -27,7 +27,7 @@ export async function GET() {
             (g: any) => (parseInt(g.permissions) & 0x20) === 0x20
         )
 
-        // Map to a clean shape
+        // Map to a clean shape — do NOT expose raw permissions
         const result = manageableGuilds.map((g: any) => ({
             id: g.id,
             name: g.name,
@@ -35,7 +35,6 @@ export async function GET() {
                 ? `https://cdn.discordapp.com/icons/${g.id}/${g.icon}.${g.icon.startsWith("a_") ? "gif" : "webp"}?size=128`
                 : null,
             memberCount: g.approximate_member_count || null,
-            permissions: g.permissions,
         }))
 
         return NextResponse.json(result)

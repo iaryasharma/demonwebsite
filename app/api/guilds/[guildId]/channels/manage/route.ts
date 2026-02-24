@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server"
-import { getServerSession } from "next-auth"
-import { authOptions } from "@/lib/auth"
+import { getAccessTokenFromRequest, requireManageGuild } from "@/lib/permissions"
 
 const DISCORD_API = "https://discord.com/api/v10"
 
@@ -8,12 +7,17 @@ export async function POST(
     request: Request,
     { params }: { params: Promise<{ guildId: string }> }
 ) {
-    const session = await getServerSession(authOptions)
-    if (!session || !(session as any).accessToken) {
+    const accessToken = await getAccessTokenFromRequest(request)
+    if (!accessToken) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
     const { guildId } = await params
+
+    if (!(await requireManageGuild(accessToken, guildId))) {
+        return NextResponse.json({ error: "Forbidden" }, { status: 403 })
+    }
+
     const token = process.env.DISCORD_BOT_TOKEN
 
     if (!token) {
@@ -39,8 +43,6 @@ export async function POST(
             const everyoneRoleId = guildId
 
             // Build permission overwrite payload
-            // SendMessages = 0x800, AddReactions = 0x40, CreatePublicThreads = 0x800000000
-            // CreatePrivateThreads = 0x1000000000, SendMessagesInThreads = 0x4000000000
             const denyBits = "0x4001800000840"
             const payload: any = {
                 id: everyoneRoleId,
@@ -51,7 +53,6 @@ export async function POST(
                 payload.deny = denyBits
                 payload.allow = "0"
             } else {
-                // Unlock: remove the deny bits
                 payload.deny = "0"
                 payload.allow = "0"
             }
@@ -69,9 +70,9 @@ export async function POST(
             )
 
             if (!res.ok && res.status !== 204) {
-                const errorData = await res.json().catch(() => ({}))
+                console.error(`Failed to ${action} channel:`, await res.text().catch(() => ""))
                 return NextResponse.json(
-                    { error: `Failed to ${action} channel`, details: errorData },
+                    { error: `Failed to ${action} channel` },
                     { status: res.status }
                 )
             }
@@ -80,7 +81,6 @@ export async function POST(
         }
 
         if (action === "slowmode") {
-            // duration in seconds (0 = off, max 21600 = 6h)
             const seconds = Math.min(Math.max(0, parseInt(duration) || 0), 21600)
 
             const res = await fetch(`${DISCORD_API}/channels/${channelId}`, {
@@ -93,9 +93,9 @@ export async function POST(
             })
 
             if (!res.ok) {
-                const errorData = await res.json().catch(() => ({}))
+                console.error("Failed to set slowmode:", await res.text().catch(() => ""))
                 return NextResponse.json(
-                    { error: "Failed to set slowmode", details: errorData },
+                    { error: "Failed to set slowmode" },
                     { status: res.status }
                 )
             }

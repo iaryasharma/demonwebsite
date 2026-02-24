@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server"
-import { getServerSession } from "next-auth"
-import { authOptions } from "@/lib/auth"
+import { getAccessTokenFromRequest, requireAdministrator } from "@/lib/permissions"
 
 const DISCORD_API = "https://discord.com/api/v10"
 
@@ -13,15 +12,21 @@ async function getGuildChannels(guildId: string, token: string) {
 }
 
 export async function GET(
-    _request: Request,
+    request: Request,
     { params }: { params: Promise<{ guildId: string }> }
 ) {
-    const session = await getServerSession(authOptions)
-    if (!session || !(session as any).accessToken) {
+    const accessToken = await getAccessTokenFromRequest(request)
+    if (!accessToken) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
     const { guildId } = await params
+
+    // Maintenance mode requires ADMINISTRATOR
+    if (!(await requireAdministrator(accessToken, guildId))) {
+        return NextResponse.json({ error: "Forbidden — Administrator permission required" }, { status: 403 })
+    }
+
     const token = process.env.DISCORD_BOT_TOKEN
 
     if (!token) {
@@ -35,8 +40,6 @@ export async function GET(
 
         return NextResponse.json({
             active: !!(maintenanceChat || maintenanceVC),
-            chatChannelId: maintenanceChat?.id || null,
-            vcChannelId: maintenanceVC?.id || null,
         })
     } catch (error) {
         console.error("Error checking maintenance status:", error)
@@ -48,12 +51,18 @@ export async function POST(
     request: Request,
     { params }: { params: Promise<{ guildId: string }> }
 ) {
-    const session = await getServerSession(authOptions)
-    if (!session || !(session as any).accessToken) {
+    const accessToken = await getAccessTokenFromRequest(request)
+    if (!accessToken) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
     const { guildId } = await params
+
+    // Maintenance mode requires ADMINISTRATOR
+    if (!(await requireAdministrator(accessToken, guildId))) {
+        return NextResponse.json({ error: "Forbidden — Administrator permission required" }, { status: 403 })
+    }
+
     const token = process.env.DISCORD_BOT_TOKEN
 
     if (!token) {
@@ -74,7 +83,6 @@ export async function POST(
         const channels = await getGuildChannels(guildId, token)
 
         if (action === "start") {
-            // Check if already active
             const existing = channels.find((c: any) => c.name === "maintenance-mode-chat")
             if (existing) {
                 return NextResponse.json(
@@ -85,7 +93,7 @@ export async function POST(
 
             // Lock all text and voice channels
             const lockableChannels = channels.filter(
-                (c: any) => c.type === 0 || c.type === 2 // text or voice
+                (c: any) => c.type === 0 || c.type === 2
             )
 
             for (const ch of lockableChannels) {
@@ -101,11 +109,7 @@ export async function POST(
                             body: JSON.stringify({
                                 id: guildId,
                                 type: 0,
-                                deny: String(
-                                    (1n << 11n) | // SendMessages
-                                    (1n << 20n) | // Connect
-                                    (1n << 10n)   // ViewChannel
-                                ),
+                                deny: "1051648", // SendMessages | Connect | ViewChannel
                                 allow: "0",
                             }),
                         }
@@ -129,15 +133,15 @@ export async function POST(
                         {
                             id: guildId,
                             type: 0,
-                            allow: String((1n << 10n) | (1n << 16n)), // ViewChannel + ReadMessageHistory
-                            deny: String(1n << 11n), // SendMessages
+                            allow: "66560", // ViewChannel | ReadMessageHistory
+                            deny: "2048", // SendMessages
                         },
                     ],
                 }),
             })
 
             // Create maintenance voice channel
-            const vcRes = await fetch(`${DISCORD_API}/guilds/${guildId}/channels`, {
+            await fetch(`${DISCORD_API}/guilds/${guildId}/channels`, {
                 method: "POST",
                 headers: {
                     Authorization: `Bot ${token}`,
@@ -150,17 +154,13 @@ export async function POST(
                         {
                             id: guildId,
                             type: 0,
-                            allow: String(
-                                (1n << 10n) | // ViewChannel
-                                (1n << 20n) | // Connect
-                                (1n << 21n)   // Speak
-                            ),
+                            allow: "3146752", // ViewChannel | Connect | Speak
                         },
                     ],
                 }),
             })
 
-            // Send maintenance embed in the new chat channel
+            // Send maintenance embed
             if (chatRes.ok) {
                 const chatChannel = await chatRes.json()
                 await fetch(`${DISCORD_API}/channels/${chatChannel.id}/messages`, {
@@ -201,7 +201,6 @@ export async function POST(
                 )
             }
 
-            // Delete maintenance channels
             if (maintenanceChat) {
                 await fetch(`${DISCORD_API}/channels/${maintenanceChat.id}`, {
                     method: "DELETE",
@@ -215,7 +214,6 @@ export async function POST(
                 })
             }
 
-            // Unlock all channels by removing @everyone permission overwrite
             const lockableChannels = channels.filter(
                 (c: any) =>
                     (c.type === 0 || c.type === 2) &&
