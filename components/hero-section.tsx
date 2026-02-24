@@ -111,6 +111,31 @@ export function HeroSection() {
     })
   }, [isMounted])
 
+  const [botStats, setBotStats] = useState({
+    servers: 1200,
+    users: 250000,
+    commands: 102
+  })
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const res = await fetch("/api/bot-stats")
+        if (res.ok) {
+          const data = await res.json()
+          setBotStats({
+            servers: data.servers || 1200,
+            users: data.users || 250000,
+            commands: data.commands || 102
+          })
+        }
+      } catch (error) {
+        console.error("Failed to fetch bot stats:", error)
+      }
+    }
+    fetchStats()
+  }, [])
+
   const wrapWords = (text: string) =>
     text.split(" ").map((word, i) => (
       <span
@@ -238,9 +263,9 @@ export function HeroSection() {
               className="grid grid-cols-3 gap-6"
             >
               {[
-                { value: 1200, suffix: "+", label: "Servers" },
-                { value: 250000, suffix: "+", label: "Users Served" },
-                { value: 250, suffix: "+", label: "Commands" },
+                { value: botStats.servers, suffix: "+", label: "Servers" },
+                { value: botStats.users, suffix: "+", label: "Users Served" },
+                { value: botStats.commands, suffix: "+", label: "Commands" },
               ].map((stat, i) => (
                 <div key={i} className="text-center sm:text-left">
                   <div className="text-2xl md:text-3xl font-bold text-white">
