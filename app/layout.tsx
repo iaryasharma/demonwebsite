@@ -2,8 +2,9 @@ import type React from "react"
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
-import { Navigation } from "@/components/navigation"
-import { Footer } from "@/components/footer"
+import { SmoothScrollProvider } from "@/components/smooth-scroll-provider"
+import { SessionProvider } from "@/components/session-provider"
+import { RootLayoutShell } from "@/components/root-layout-shell"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -36,10 +37,10 @@ export const metadata: Metadata = {
     telephone: false,
   },
   metadataBase: new URL(
-    process.env.VERCEL_URL 
-      ? `https://${process.env.VERCEL_URL}` 
-      : process.env.NODE_ENV === 'production' 
-        ? 'https://demonbot.vercel.app' 
+    process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}`
+      : process.env.NODE_ENV === 'production'
+        ? 'https://demonbot.vercel.app'
         : 'http://localhost:3000'
   ),
   alternates: {
@@ -106,7 +107,7 @@ export default function RootLayout({
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="msapplication-TileColor" content="#8b5cf6" />
         <meta name="msapplication-config" content="/browserconfig.xml" />
-        
+
         {/* Structured Data for SEO */}
         <script
           type="application/ld+json"
@@ -146,20 +147,22 @@ export default function RootLayout({
             })
           }}
         />
-        
+
         {/* Additional SEO Tags */}
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta name="twitter:image:alt" content="Demon Bot - Discord Bot by FragNite" />
-        
+
         {/* Preload critical resources */}
         <link rel="preload" href="/demon-logo.png" as="image" />
         <link rel="preload" href="/sky.mp4" as="video" type="video/mp4" />
       </head>
       <body className={`${inter.className} bg-black text-white overflow-x-hidden`}>
-        <Navigation />
-        <main className="min-h-screen">{children}</main>
-        <Footer />
+        <SessionProvider>
+          <SmoothScrollProvider>
+            <RootLayoutShell>{children}</RootLayoutShell>
+          </SmoothScrollProvider>
+        </SessionProvider>
       </body>
     </html>
   )

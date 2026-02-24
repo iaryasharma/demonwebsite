@@ -8,8 +8,7 @@ import { DiscordWidget } from "@/components/discord-widget"
 import { useEffect } from "react"
 
 export default function HomePage() {
-  console.log('HomePage component loaded');
-  
+
   // Prevent image downloads on the entire page
   useEffect(() => {
     const handleContextMenu = (e: MouseEvent) => {
@@ -17,7 +16,7 @@ export default function HomePage() {
         e.preventDefault();
       }
     };
-    
+
     const handleDragStart = (e: DragEvent) => {
       if (e.target instanceof HTMLImageElement) {
         e.preventDefault();
@@ -29,11 +28,11 @@ export default function HomePage() {
         e.preventDefault();
       }
     };
-    
+
     document.addEventListener('contextmenu', handleContextMenu);
     document.addEventListener('dragstart', handleDragStart);
     document.addEventListener('selectstart', handleSelectStart);
-    
+
     return () => {
       document.removeEventListener('contextmenu', handleContextMenu);
       document.removeEventListener('dragstart', handleDragStart);

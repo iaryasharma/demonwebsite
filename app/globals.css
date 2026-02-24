@@ -10,7 +10,7 @@
     --card-foreground: 0 0% 100%;
     --popover: 0 0% 5%;
     --popover-foreground: 0 0% 100%;
-    --primary: 142 100% 50%;
+    --primary: 263 70% 66%;
     --primary-foreground: 0 0% 0%;
     --secondary: 0 0% 10%;
     --secondary-foreground: 0 0% 100%;
@@ -22,9 +22,32 @@
     --destructive-foreground: 0 0% 100%;
     --border: 0 0% 15%;
     --input: 0 0% 15%;
-    --ring: 142 100% 50%;
+    --ring: 263 70% 66%;
     --radius: 0.5rem;
+    --brand: #8b5cf6;
+    --brand-deep: #7c3aed;
   }
+}
+
+/* Lenis smooth scroll */
+html.lenis, html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
 }
 
 @layer utilities {
@@ -38,37 +61,45 @@
 
   .glass {
     background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
   }
 
   .glass-dark {
-    background: rgba(0, 0, 0, 0.3);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(0, 255, 133, 0.2);
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(139, 92, 246, 0.15);
+  }
+
+  .gradient-border {
+    position: relative;
+  }
+
+  .gradient-border::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.4), rgba(124, 58, 237, 0.1), rgba(139, 92, 246, 0.4));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+
+  .text-gradient {
+    background: linear-gradient(135deg, #8b5cf6, #a78bfa, #7c3aed);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 }
 
 .neon-text {
-  text-shadow: 0 0 10px rgba(0, 255, 133, 0.8);
-}
-
-.cursor-glow {
-  cursor: none;
-}
-
-.cursor-glow::before {
-  content: "";
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 20px;
-  height: 20px;
-  background: radial-gradient(circle, rgba(0, 255, 133, 0.6) 0%, transparent 70%);
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 9999;
-  transform: translate(-50%, -50%);
+  text-shadow: 0 0 10px rgba(139, 92, 246, 0.6), 0 0 30px rgba(139, 92, 246, 0.2);
 }
 
 /* Global image protection */
@@ -82,17 +113,15 @@ img {
   pointer-events: none;
 }
 
-/* Allow pointer events for interactive elements but maintain protection */
 img.interactive {
   pointer-events: auto;
 }
 
-/* Disable right-click context menu on images */
-img::-webkit-media-controls {
-  display: none !important;
+img::selection {
+  background: transparent;
 }
 
-/* Disable text selection on the entire page for better protection */
+/* Disable text selection globally except inputs */
 * {
   -webkit-touch-callout: none;
   -webkit-user-select: none;
@@ -102,7 +131,6 @@ img::-webkit-media-controls {
   user-select: none;
 }
 
-/* Re-enable text selection for specific elements */
 input, textarea, [contenteditable] {
   -webkit-user-select: text;
   -moz-user-select: text;
@@ -110,35 +138,20 @@ input, textarea, [contenteditable] {
   user-select: text;
 }
 
-/* Global Image Protection */
-img {
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-  -webkit-user-drag: none;
-  -khtml-user-drag: none;
-  -moz-user-drag: none;
-  -o-user-drag: none;
-  user-drag: none;
-  pointer-events: none;
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
 }
 
-/* Prevent screenshot shortcuts on images */
-img::selection {
+::-webkit-scrollbar-track {
   background: transparent;
 }
 
-img::-moz-selection {
-  background: transparent;
+::-webkit-scrollbar-thumb {
+  background: rgba(139, 92, 246, 0.3);
+  border-radius: 3px;
 }
 
-/* Additional protection for NextJS Image components */
-img[src] {
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(139, 92, 246, 0.5);
 }

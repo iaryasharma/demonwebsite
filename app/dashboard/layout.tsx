@@ -1,31 +1,54 @@
-import { Metadata } from "next"
+"use client"
 
-export const metadata: Metadata = {
-  title: "Dashboard - Demon Bot | Server Management (Coming Soon)",
-  description: "Access your Discord server's Demon Bot dashboard for advanced configuration, analytics, and management tools. Feature coming soon!",
-  keywords: [
-    "Demon Bot dashboard",
-    "Discord bot dashboard",
-    "server management",
-    "Discord bot configuration",
-    "bot analytics",
-    "server settings"
-  ],
-  openGraph: {
-    title: "Demon Bot Dashboard - Server Management",
-    description: "Manage your Discord server with Demon Bot's powerful dashboard. Advanced configuration and analytics coming soon.",
-    url: "https://demonbot.vercel.app/dashboard",
-  },
-  twitter: {
-    title: "Demon Bot Dashboard - Coming Soon",
-    description: "Advanced server management dashboard for Demon Bot is in development. Stay tuned for powerful features!",
-  },
+import { useSession } from "next-auth/react"
+import { useParams } from "next/navigation"
+import { useState, useEffect } from "react"
+import { DashboardSidebar } from "@/components/dashboard/dashboard-sidebar"
+
+interface GuildInfo {
+  id: string
+  name: string
+  icon: string | null
 }
 
-export default function DashboardLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
-  return children
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const { data: session, status } = useSession()
+  const params = useParams()
+  const guildId = params?.guildId as string | undefined
+  const [guildInfo, setGuildInfo] = useState<GuildInfo | null>(null)
+
+  // Fetch guild info for sidebar when viewing a specific guild
+  useEffect(() => {
+    if (!guildId || !session) return
+
+    async function fetchGuild() {
+      try {
+        const res = await fetch("/api/guilds")
+        if (res.ok) {
+          const guilds = await res.json()
+          const guild = guilds.find((g: GuildInfo) => g.id === guildId)
+          if (guild) setGuildInfo(guild)
+        }
+      } catch { }
+    }
+    fetchGuild()
+  }, [guildId, session])
+
+  // Don't render sidebar for unauthenticated users (login screen)
+  if (status === "unauthenticated" || status === "loading") {
+    return <>{children}</>
+  }
+
+  return (
+    <div className="min-h-screen bg-black">
+      <DashboardSidebar
+        guildId={guildId}
+        guildName={guildInfo?.name}
+        guildIcon={guildInfo?.icon}
+      />
+      <div className={`transition-all duration-300 lg:ml-64 pt-16 lg:pt-0 min-h-screen`}>
+        {children}
+      </div>
+    </div>
+  )
 }
