@@ -1,5 +1,11 @@
 import mongoose, { Schema, Document, Model } from "mongoose"
 
+export interface IWebhook {
+    name: string
+    url: string
+    createdAt: Date
+}
+
 export interface IGuildSettings {
     welcome?: {
         enabled?: boolean
@@ -30,6 +36,7 @@ export interface IGuild extends Document {
     guildId: string
     prefix: string
     settings: IGuildSettings
+    webhooks: IWebhook[]
     createdAt: Date
     updatedAt: Date
 }
@@ -49,6 +56,16 @@ const guildSchema = new Schema<IGuild>(
         settings: {
             type: Object,
             default: {},
+        },
+        webhooks: {
+            type: [
+                {
+                    name: { type: String, required: true },
+                    url: { type: String, required: true },
+                    createdAt: { type: Date, default: Date.now },
+                },
+            ],
+            default: [],
         },
     },
     { timestamps: true }

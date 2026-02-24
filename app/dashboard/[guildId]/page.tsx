@@ -14,6 +14,8 @@ import {
     faSpinner,
     faDoorOpen,
     faChartLine,
+    faBullhorn,
+    faGift,
 } from "@fortawesome/free-solid-svg-icons"
 
 interface GuildSettings {
@@ -61,10 +63,26 @@ export default function GuildOverviewPage() {
         {
             href: `/dashboard/${guildId}/settings`,
             icon: faGear,
-            label: "General Settings",
-            desc: "Prefix, language, and core configuration",
+            label: "Settings",
+            desc: "Prefix and server configuration",
             color: "from-[#8b5cf6]/15 to-[#7c3aed]/15",
             borderColor: "border-[#8b5cf6]/20 hover:border-[#8b5cf6]/40",
+        },
+        {
+            href: `/dashboard/${guildId}/announce`,
+            icon: faBullhorn,
+            label: "Announce",
+            desc: "Send messages and embeds via webhooks",
+            color: "from-blue-500/15 to-blue-600/15",
+            borderColor: "border-blue-500/20 hover:border-blue-500/40",
+        },
+        {
+            href: `/dashboard/${guildId}/giveaways`,
+            icon: faGift,
+            label: "Giveaways",
+            desc: "Create and manage server giveaways",
+            color: "from-emerald-500/15 to-emerald-600/15",
+            borderColor: "border-emerald-500/20 hover:border-emerald-500/40",
         },
     ]
 
@@ -75,28 +93,10 @@ export default function GuildOverviewPage() {
             value: data?.prefix || "!!",
             color: "text-[#a78bfa]",
         },
-        {
-            icon: faShieldHalved,
-            label: "Moderation",
-            value: data?.settings?.moderation?.enabled ? "Enabled" : "Disabled",
-            color: data?.settings?.moderation?.enabled ? "text-green-400" : "text-gray-500",
-        },
-        {
-            icon: faDoorOpen,
-            label: "Welcome",
-            value: data?.settings?.welcome?.enabled ? "Enabled" : "Disabled",
-            color: data?.settings?.welcome?.enabled ? "text-green-400" : "text-gray-500",
-        },
-        {
-            icon: faChartLine,
-            label: "Leveling",
-            value: data?.settings?.leveling?.enabled ? "Enabled" : "Disabled",
-            color: data?.settings?.leveling?.enabled ? "text-green-400" : "text-gray-500",
-        },
     ]
 
     return (
-        <div className="min-h-screen bg-black p-6 lg:p-10">
+        <div className="min-h-screen bg-black">
             <div className="max-w-5xl mx-auto">
                 {/* Header */}
                 <motion.div

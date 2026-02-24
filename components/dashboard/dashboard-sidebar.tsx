@@ -19,6 +19,8 @@ import {
     faHouse,
     faBars,
     faXmark,
+    faBullhorn,
+    faGift,
 } from "@fortawesome/free-solid-svg-icons"
 
 interface SidebarProps {
@@ -29,6 +31,8 @@ interface SidebarProps {
 
 const sidebarLinks = (guildId: string) => [
     { href: `/dashboard/${guildId}`, label: "Overview", icon: faGaugeHigh },
+    { href: `/dashboard/${guildId}/announce`, label: "Announce", icon: faBullhorn },
+    { href: `/dashboard/${guildId}/giveaways`, label: "Giveaways", icon: faGift },
     { href: `/dashboard/${guildId}/settings`, label: "Settings", icon: faGear },
 ]
 
@@ -93,8 +97,8 @@ export function DashboardSidebar({ guildId, guildName, guildIcon }: SidebarProps
                             key={link.href}
                             href={link.href}
                             className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${isActive
-                                    ? "bg-[#8b5cf6]/15 text-[#a78bfa] border border-[#8b5cf6]/20"
-                                    : "text-gray-400 hover:text-white hover:bg-white/[0.04]"
+                                ? "bg-[#8b5cf6]/15 text-[#a78bfa] border border-[#8b5cf6]/20"
+                                : "text-gray-400 hover:text-white hover:bg-white/[0.04]"
                                 }`}
                         >
                             <FontAwesomeIcon icon={link.icon} className={`w-4 h-4 flex-shrink-0 ${isActive ? "text-[#8b5cf6]" : ""}`} />
