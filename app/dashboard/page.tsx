@@ -10,6 +10,7 @@ import {
   faMagnifyingGlass,
   faServer,
   faSpinner,
+  faRotateRight
 } from "@fortawesome/free-solid-svg-icons"
 import { ServerCard } from "@/components/dashboard/server-card"
 
@@ -24,16 +25,29 @@ interface Guild {
 export default function DashboardPage() {
   const { status } = useSession()
   const [search, setSearch] = useState("")
+  const [isRefreshing, setIsRefreshing] = useState(false)
 
-  const { data: guilds = [], isLoading: loading } = useQuery<Guild[]>({
+  const { data: guilds = [], isLoading: loading, refetch } = useQuery<Guild[]>({
     queryKey: ["guilds"],
     queryFn: async () => {
-      const res = await fetch("/api/guilds")
+      // If we are manually refreshing, append the refresh=true flag
+      const url = isRefreshing ? "/api/guilds?refresh=true" : "/api/guilds"
+      const res = await fetch(url)
       if (!res.ok) throw new Error("Failed to fetch guilds")
       return res.json()
     },
     enabled: status === "authenticated",
   })
+
+  const handleRefresh = async () => {
+    if (isRefreshing) return
+    setIsRefreshing(true)
+    try {
+      await refetch()
+    } finally {
+      setIsRefreshing(false)
+    }
+  }
 
   const filtered = guilds
     .filter((g) => g.name.toLowerCase().includes(search.toLowerCase()))
@@ -107,14 +121,14 @@ export default function DashboardPage() {
           </p>
         </motion.div>
 
-        {/* Search */}
+        {/* Toolbar: Search & Refresh */}
         <motion.div
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
-          className="mb-8"
+          className="mb-8 flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between"
         >
-          <div className="relative max-w-md">
+          <div className="relative w-full max-w-md">
             <FontAwesomeIcon
               icon={faMagnifyingGlass}
               className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none"
@@ -127,6 +141,20 @@ export default function DashboardPage() {
               className="w-full pl-11 pr-4 py-3 glass rounded-xl border border-white/[0.06] focus:border-[#8b5cf6]/25 focus:ring-2 focus:ring-[#8b5cf6]/10 focus:outline-none text-white placeholder-gray-500 text-sm transition-all"
             />
           </div>
+
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={handleRefresh}
+            disabled={isRefreshing || loading}
+            className="flex items-center gap-2 px-5 py-3 glass rounded-xl border border-white/[0.06] hover:border-[#8b5cf6]/30 text-gray-300 hover:text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed group"
+          >
+            <FontAwesomeIcon
+              icon={isRefreshing ? faSpinner : faRotateRight}
+              className={`w-3.5 h-3.5 text-[#8b5cf6] ${isRefreshing ? 'animate-spin' : 'group-hover:rotate-180 transition-transform duration-500'}`}
+            />
+            <span className="text-sm font-medium">Refresh Servers</span>
+          </motion.button>
         </motion.div>
 
         {loading ? (

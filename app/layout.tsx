@@ -143,7 +143,7 @@ export default function RootLayout({
         "Demon Bot is the ultimate all-in-one Discord bot for modern communities, featuring advanced moderation, anime content, server utilities, giveaways, and entertainment. Developed by Arya Sharma (FragNite).",
       url: "https://demonbot.vercel.app",
       sameAs: [
-        "https://discord.com/oauth2/authorize?client_id=906513888088444962",
+        "https://discord.com/oauth2/authorize?client_id=836880109478608897",
       ],
       author: {
         "@type": "Person",

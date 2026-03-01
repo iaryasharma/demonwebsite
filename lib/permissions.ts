@@ -52,12 +52,12 @@ export async function getAccessTokenFromRequest(request: Request): Promise<strin
 const userGuildsCache = new Map<string, { promise: Promise<UserGuild[]>, expiry: number }>()
 const CACHE_TTL_MS = 60000 // 60 seconds
 
-export async function fetchUserGuilds(accessToken: string): Promise<UserGuild[]> {
+export async function fetchUserGuilds(accessToken: string, force = false): Promise<UserGuild[]> {
     const now = Date.now()
     const cached = userGuildsCache.get(accessToken)
 
     // Return the cached promise if it hasn't expired to handle concurrent parallel fetches!
-    if (cached && cached.expiry > now) {
+    if (!force && cached && cached.expiry > now) {
         return cached.promise
     }
 
@@ -79,9 +79,9 @@ export async function fetchUserGuilds(accessToken: string): Promise<UserGuild[]>
 const botGuildsCache = { promise: null as Promise<Set<string>> | null, expiry: 0 }
 const BOT_GUILDS_TTL_MS = 2 * 60 * 1000 // 2 minutes (Reduced from 5)
 
-export async function fetchBotGuilds(): Promise<Set<string>> {
+export async function fetchBotGuilds(force = false): Promise<Set<string>> {
     const now = Date.now()
-    if (botGuildsCache.promise && botGuildsCache.expiry > now) {
+    if (!force && botGuildsCache.promise && botGuildsCache.expiry > now) {
         return botGuildsCache.promise
     }
 

@@ -10,9 +10,12 @@ export async function GET(request: Request) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
+    const { searchParams } = new URL(request.url)
+    const forceRefresh = searchParams.get("refresh") === "true"
+
     try {
-        // Fetch user's guilds from Discord API (Using cached wrapper to prevent 429s)
-        const guilds = await fetchUserGuilds(accessToken)
+        // Fetch user's guilds from Discord API
+        const guilds = await fetchUserGuilds(accessToken, forceRefresh)
 
         // Filter to guilds where user has MANAGE_GUILD permission (bit 0x20)
         const manageableGuilds = guilds.filter(
@@ -20,7 +23,7 @@ export async function GET(request: Request) {
         )
 
         // Fetch bot's guilds from Discord API
-        const botGuildIds = await fetchBotGuilds()
+        const botGuildIds = await fetchBotGuilds(forceRefresh)
 
         // Map to a clean shape — do NOT expose raw permissions
         // We use Promise.all to handle potential direct presence checks for guilds not in cache
