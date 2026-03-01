@@ -48,6 +48,7 @@ export async function editMessage(
                 method: "PATCH",
                 headers: getHeaders(),
                 body: JSON.stringify(payload),
+                cache: "no-store"
             }
         )
 
@@ -77,6 +78,7 @@ export async function deleteMessage(
             {
                 method: "DELETE",
                 headers: getHeaders(),
+                cache: "no-store"
             }
         )
 
@@ -107,6 +109,7 @@ export async function sendMessage(
                 method: "POST",
                 headers: getHeaders(),
                 body: JSON.stringify(payload),
+                cache: "no-store"
             }
         )
 
@@ -134,6 +137,7 @@ export async function getBotUser(): Promise<{
     try {
         const res = await fetch(`${DISCORD_API}/users/@me`, {
             headers: getHeaders(),
+            cache: "no-store"
         })
 
         if (!res.ok) return null

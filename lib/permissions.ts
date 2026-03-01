@@ -63,6 +63,7 @@ export async function fetchUserGuilds(accessToken: string, force = false): Promi
 
     const fetchPromise = fetch(`${DISCORD_API}/users/@me/guilds?with_counts=true`, {
         headers: { Authorization: `Bearer ${accessToken}` },
+        cache: "no-store"
     }).then(async (res) => {
         if (!res.ok) return []
         return res.json()
@@ -94,7 +95,8 @@ export async function fetchBotGuilds(force = false): Promise<Set<string>> {
         while (true) {
             const url = `${DISCORD_API}/users/@me/guilds?limit=200${after ? `&after=${after}` : ""}`
             const res = await fetch(url, {
-                headers: { Authorization: `Bot ${token}` }
+                headers: { Authorization: `Bot ${token}` },
+                cache: "no-store"
             })
             if (!res.ok) break
             const data = await res.json()
@@ -126,10 +128,15 @@ export async function isBotInGuild(guildId: string): Promise<boolean> {
 
     try {
         const res = await fetch(`${DISCORD_API}/guilds/${guildId}`, {
-            headers: { Authorization: `Bot ${token}` }
+            headers: { Authorization: `Bot ${token}` },
+            cache: "no-store"
         })
+        if (!res.ok) {
+            console.log(`[Presence Check] Guild ${guildId} returned status ${res.status}`)
+        }
         return res.ok
-    } catch {
+    } catch (error) {
+        console.error(`[Presence Check] Error fetching guild ${guildId}:`, error)
         return false
     }
 }

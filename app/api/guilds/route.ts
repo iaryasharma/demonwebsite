@@ -4,6 +4,8 @@ import { getAccessTokenFromRequest, requireManageGuild, fetchUserGuilds, fetchBo
 import { connectToDatabase } from "@/lib/mongodb"
 import Guild from "@/lib/models/Guild"
 
+export const dynamic = "force-dynamic"
+
 export async function GET(request: Request) {
     const accessToken = await getAccessTokenFromRequest(request)
     if (!accessToken) {
@@ -17,10 +19,11 @@ export async function GET(request: Request) {
         // Fetch user's guilds from Discord API
         const guilds = await fetchUserGuilds(accessToken, forceRefresh)
 
-        // Filter to guilds where user has MANAGE_GUILD permission (bit 0x20)
-        const manageableGuilds = guilds.filter(
-            (g: any) => (parseInt(g.permissions) & 0x20) === 0x20
-        )
+        // Filter to guilds where user has MANAGE_GUILD (0x20), ADMINISTRATOR (0x8) or is OWNER
+        const manageableGuilds = guilds.filter((g: any) => {
+            const perms = parseInt(g.permissions)
+            return (perms & 0x20) === 0x20 || (perms & 0x8) === 0x8 || g.owner === true
+        })
 
         // Fetch bot's guilds from Discord API
         const botGuildIds = await fetchBotGuilds(forceRefresh)
