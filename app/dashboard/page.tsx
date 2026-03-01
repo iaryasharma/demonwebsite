@@ -2,6 +2,7 @@
 
 import { useState, useRef } from "react"
 import { useSession, signIn } from "next-auth/react"
+import { useSearchParams } from "next/navigation"
 import { useQuery } from "@tanstack/react-query"
 import { motion, AnimatePresence } from "framer-motion"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
@@ -33,6 +34,8 @@ async function fetchGuilds(forceRefresh: boolean): Promise<Guild[]> {
 
 export default function DashboardPage() {
   const { status } = useSession()
+  const searchParams = useSearchParams()
+  const callbackUrl = searchParams.get("callbackUrl") ?? "/dashboard"
   const [search, setSearch] = useState("")
   const [isRefreshing, setIsRefreshing] = useState(false)
   const forceRefreshRef = useRef(false)
@@ -99,7 +102,7 @@ export default function DashboardPage() {
             <motion.button
               whileHover={{ scale: 1.02, y: -2 }}
               whileTap={{ scale: 0.98 }}
-              onClick={() => signIn("discord")}
+              onClick={() => signIn("discord", { callbackUrl })}
               className="w-full py-4 px-6 rounded-xl bg-gradient-to-r from-[#5865F2] to-[#4752C4] text-white font-semibold text-lg flex items-center justify-center gap-3 hover:shadow-lg hover:shadow-[#5865F2]/25 transition-shadow"
             >
               <FontAwesomeIcon icon={faDiscord} className="w-5 h-5" />

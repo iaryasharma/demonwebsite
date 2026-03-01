@@ -5,7 +5,9 @@
  *  1. Rate limit every API request by IP
  *  2. Block CORS requests from foreign origins on /api/* routes
  *  3. Require a valid NextAuth session for all /api/guilds/* routes
- *  4. Set security response headers on every response
+ *  4. Require a valid NextAuth session for all /dashboard/* sub-routes
+ *     (/dashboard itself is public — it renders the sign-in prompt)
+ *  5. Set security response headers on every response
  */
 
 import { NextResponse } from "next/server"
@@ -137,7 +139,26 @@ export async function middleware(request: NextRequest) {
         }
     }
 
-    // ── 4. Pass through — apply headers to the forwarded response ────────────
+    // ── 4. Auth guard for protected dashboard page routes ────────────────────
+    // /dashboard itself is intentionally public (renders the Discord sign-in prompt).
+    // Every deeper path — /dashboard/[guildId] and any sub-module — requires a
+    // valid session. Unauthenticated visitors are redirected back to /dashboard.
+    if (pathname.startsWith("/dashboard/")) {
+        const token = await getToken({
+            req: request,
+            secret: process.env.NEXTAUTH_SECRET,
+        })
+
+        if (!token) {
+            const loginUrl = new URL("/dashboard", request.url)
+            loginUrl.searchParams.set("callbackUrl", pathname)
+            const res = NextResponse.redirect(loginUrl)
+            applySecurityHeaders(res, pathname)
+            return res
+        }
+    }
+
+    // ── 5. Pass through — apply headers to the forwarded response ────────────
     const response = NextResponse.next()
 
     // Rate limit headers (informational)
