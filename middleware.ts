@@ -15,8 +15,8 @@ import { checkRateLimit } from "@/lib/rate-limit"
 
 // ─── Public API routes (no auth required) ──────────────────────────────────
 const PUBLIC_API_PREFIXES = [
-    "/api/auth",       // NextAuth sign-in / callback / session endpoints
-    "/api/bot-stats",  // Public stats widget — rate-limited but open
+    "/api/auth",        // NextAuth sign-in / callback / session endpoints
+    "/api/bot-stats",   // Public stats widget — rate-limited but open
 ]
 
 // ─── Allowed origins for CORS ───────────────────────────────────────────────

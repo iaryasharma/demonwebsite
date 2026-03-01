@@ -19,6 +19,8 @@ import Link from "next/link"
 import { ChannelPicker } from "@/components/dashboard/settings/channel-picker"
 import isEqual from "lodash/isEqual"
 import cloneDeep from "lodash/cloneDeep"
+import { SaveBar } from "@/components/dashboard/save-bar"
+import { toast } from "sonner"
 
 interface LoggingConfig {
     enabled: boolean
@@ -89,7 +91,6 @@ export default function LoggingModulePage({
     const [config, setConfig] = useState<LoggingConfig | null>(null)
     const [originalConfig, setOriginalConfig] = useState<LoggingConfig | null>(null)
     const [saving, setSaving] = useState(false)
-    const [saveSuccess, setSaveSuccess] = useState(false)
 
     const hasUnsavedChanges = config && originalConfig && !isEqual(config, originalConfig)
 
@@ -121,13 +122,21 @@ export default function LoggingModulePage({
             })
             if (res.ok) {
                 setOriginalConfig(cloneDeep(config))
-                setSaveSuccess(true)
-                setTimeout(() => setSaveSuccess(false), 3000)
+                toast.success("Logging configuration saved!")
+            } else {
+                toast.error("Failed to save logging configuration")
             }
         } catch (error) {
             console.error("Failed to save logging config:", error)
+            toast.error("An error occurred while saving")
         } finally {
             setSaving(false)
+        }
+    }
+
+    const handleDiscard = () => {
+        if (originalConfig) {
+            setConfig(cloneDeep(originalConfig))
         }
     }
 
@@ -363,84 +372,15 @@ export default function LoggingModulePage({
                         ))}
                     </div>
                 </div>
-
-                {/* Save Button */}
-                <div className="pt-6 border-t border-white/[0.06] flex flex-col gap-4">
-                    <AnimatePresence mode="popLayout">
-                        {hasUnsavedChanges && (
-                            <motion.div
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, y: 10 }}
-                                className="p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-xl"
-                            >
-                                <p className="text-yellow-400 text-sm font-medium text-center">
-                                    ⚠️ You have unsaved changes.
-                                </p>
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
-
-                    <div className="flex items-center justify-end gap-4 w-full">
-                        {saveSuccess && (
-                            <span className="text-green-400 text-sm flex items-center gap-2">
-                                <FontAwesomeIcon icon={faCircleCheck} />
-                                Settings saved
-                            </span>
-                        )}
-                        <button
-                            onClick={handleSave}
-                            disabled={saving || !hasUnsavedChanges}
-                            className={`px-6 py-3 rounded-xl font-semibold flex items-center gap-2 transition-all ${hasUnsavedChanges
-                                ? "bg-gradient-to-r from-[#8b5cf6] to-[#7c3aed] text-white hover:shadow-lg hover:shadow-[#8b5cf6]/20"
-                                : "bg-white/[0.05] text-gray-400 cursor-not-allowed"
-                                }`}
-                        >
-                            {saving ? (
-                                <FontAwesomeIcon icon={faSpinner} className="w-4 h-4 animate-spin" />
-                            ) : (
-                                <FontAwesomeIcon icon={faSave} className="w-4 h-4" />
-                            )}
-                            Save Changes
-                        </button>
-                    </div>
-                </div>
             </motion.div>
 
-            {/* Floating Action Bar (Mobile/Bottom) */}
-            <AnimatePresence>
-                {hasUnsavedChanges && (
-                    <motion.div
-                        initial={{ opacity: 0, y: 100 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 100 }}
-                        className="fixed bottom-0 left-0 right-0 lg:left-64 z-50 p-4 bg-gray-900/95 backdrop-blur-xl border-t border-white/[0.1] shadow-2xl"
-                    >
-                        <div className="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-                            <div className="text-yellow-400 font-medium flex items-center gap-2">
-                                ⚠️ <span>You have unsaved changes in Logging</span>
-                            </div>
-                            <div className="flex items-center gap-3 w-full sm:w-auto">
-                                <button
-                                    onClick={() => setConfig(cloneDeep(originalConfig))}
-                                    disabled={saving}
-                                    className="flex-1 sm:flex-none px-4 py-2 bg-white/5 hover:bg-white/10 text-white rounded-lg text-sm font-medium transition-colors"
-                                >
-                                    Discard
-                                </button>
-                                <button
-                                    onClick={handleSave}
-                                    disabled={saving}
-                                    className="flex-1 sm:flex-none px-6 py-2 bg-[#8b5cf6] hover:bg-[#7c3aed] text-white rounded-lg text-sm font-medium transition-colors shadow-lg shadow-[#8b5cf6]/25 flex items-center justify-center gap-2"
-                                >
-                                    {saving && <FontAwesomeIcon icon={faSpinner} className="animate-spin" />}
-                                    Save Changes
-                                </button>
-                            </div>
-                        </div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
+            <SaveBar
+                isVisible={!!hasUnsavedChanges || saving}
+                isSaving={saving}
+                onSave={handleSave}
+                onDiscard={handleDiscard}
+                message="You have unsaved changes in Logging"
+            />
         </div>
     )
 }

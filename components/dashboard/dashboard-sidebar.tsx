@@ -52,7 +52,7 @@ export function DashboardSidebar({ guildId, guildName, guildIcon, collapsed, onT
     const sidebarContent = (
         <div className="flex flex-col h-full">
             {/* Header */}
-            <div className="p-4 border-b border-white/[0.06]">
+            <div className="h-16 flex items-center px-4 border-b border-white/[0.06]">
                 <Link href="/dashboard" className="flex items-center gap-3 group">
                     <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-[#8b5cf6] to-[#7c3aed] flex items-center justify-center flex-shrink-0">
                         <FontAwesomeIcon icon={faHouse} className="w-4 h-4 text-white" />

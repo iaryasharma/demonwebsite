@@ -16,6 +16,8 @@ import {
     faCalendarDays,
     faHashtag
 } from "@fortawesome/free-solid-svg-icons"
+import { toast } from "sonner"
+import { SaveBar } from "@/components/dashboard/save-bar"
 import Link from "next/link"
 import { ChannelPicker } from "@/components/dashboard/settings/channel-picker"
 import isEqual from "lodash/isEqual"
@@ -65,7 +67,6 @@ export default function AutoRolePage({
     const [config, setConfig] = useState<AutoRoleConfig | null>(null)
     const [originalConfig, setOriginalConfig] = useState<AutoRoleConfig | null>(null)
     const [saving, setSaving] = useState(false)
-    const [saveSuccess, setSaveSuccess] = useState(false)
 
     const hasUnsavedChanges = config && originalConfig && !isEqual(config, originalConfig)
 
@@ -108,13 +109,21 @@ export default function AutoRolePage({
             })
             if (res.ok) {
                 setOriginalConfig(cloneDeep(config))
-                setSaveSuccess(true)
-                setTimeout(() => setSaveSuccess(false), 3000)
+                toast.success("Auto-role settings saved!")
+            } else {
+                toast.error("Failed to save auto-role settings")
             }
         } catch (error) {
             console.error("Failed to save autorole config:", error)
+            toast.error("An error occurred while saving")
         } finally {
             setSaving(false)
+        }
+    }
+
+    const handleDiscard = () => {
+        if (originalConfig) {
+            setConfig(cloneDeep(originalConfig))
         }
     }
 
@@ -376,50 +385,7 @@ export default function AutoRolePage({
                         </div>
 
                         <div className="pt-6 border-t border-white/[0.06]">
-                            <AnimatePresence mode="popLayout">
-                                {hasUnsavedChanges && (
-                                    <motion.div
-                                        initial={{ opacity: 0, y: 10 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        exit={{ opacity: 0, y: 10 }}
-                                        className="mb-4 p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-xl"
-                                    >
-                                        <p className="text-yellow-400 text-sm font-medium text-center">
-                                            ⚠️ You have unsaved changes.
-                                        </p>
-                                    </motion.div>
-                                )}
-                            </AnimatePresence>
-
-                            <button
-                                onClick={handleSave}
-                                disabled={saving || !hasUnsavedChanges}
-                                className={`w-full py-3 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all ${hasUnsavedChanges
-                                    ? "bg-gradient-to-r from-[#8b5cf6] to-[#7c3aed] text-white hover:shadow-lg hover:shadow-[#8b5cf6]/20"
-                                    : "bg-white/[0.05] text-gray-400 cursor-not-allowed"
-                                    }`}
-                            >
-                                {saving ? (
-                                    <FontAwesomeIcon icon={faSpinner} className="w-4 h-4 animate-spin" />
-                                ) : (
-                                    <FontAwesomeIcon icon={faSave} className="w-4 h-4" />
-                                )}
-                                {saving ? "Saving..." : "Save Changes"}
-                            </button>
-
-                            <AnimatePresence>
-                                {saveSuccess && (
-                                    <motion.p
-                                        initial={{ opacity: 0, y: -10 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        exit={{ opacity: 0 }}
-                                        className="text-green-400 text-sm text-center mt-3 flex items-center justify-center gap-2"
-                                    >
-                                        <FontAwesomeIcon icon={faCircleCheck} />
-                                        Settings saved successfully!
-                                    </motion.p>
-                                )}
-                            </AnimatePresence>
+                            <p className="text-sm text-gray-400">Settings are managed via the floating dock at the bottom of the screen.</p>
                         </div>
                     </motion.div>
                 </div>

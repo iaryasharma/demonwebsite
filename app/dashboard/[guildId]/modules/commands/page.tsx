@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from "react"
 import { useSession } from "next-auth/react"
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
@@ -19,6 +19,8 @@ import {
     faSearch,
 } from "@fortawesome/free-solid-svg-icons"
 import Link from "next/link"
+import { SaveBar } from "@/components/dashboard/save-bar"
+import { toast } from "sonner"
 
 interface ChannelData {
     id: string
@@ -45,8 +47,8 @@ export default function CommandStateModulePage({
     // Local state: the set of disabled channel ids (mutable before save)
     const [disabledSet, setDisabledSet] = useState<Set<string>>(new Set())
     const [isDirty, setIsDirty] = useState(false)
-    const [successMessage, setSuccessMessage] = useState("")
     const [searchTerm, setSearchTerm] = useState("")
+    const [saving, setSaving] = useState(false)
 
     // ─── Queries ───────────────────────────────────────────────
     const { data: channels = [], isLoading: channelsLoading } = useQuery<ChannelData[]>({
@@ -57,7 +59,7 @@ export default function CommandStateModulePage({
             return res.json()
         },
         enabled: status === "authenticated" && !!guildId,
-        staleTime: 3 * 60 * 1000, // 3 min — reuse cached data between module navigations
+        staleTime: 3 * 60 * 1000,
     })
 
     const { data: commandState, isLoading: stateLoading } = useQuery<{ disabledChannels: string[] }>({
@@ -68,7 +70,7 @@ export default function CommandStateModulePage({
             return res.json()
         },
         enabled: status === "authenticated" && !!guildId,
-        staleTime: 60 * 1000, // 1 min
+        staleTime: 60 * 1000,
     })
 
     // Seed local state from server data (once loaded)
@@ -84,7 +86,6 @@ export default function CommandStateModulePage({
     }, [status, router])
 
     // ─── Derived values ────────────────────────────────────────
-    // Only text & announcement channels are controllable by disable (type 0 & 5)
     const textChannels = useMemo(() =>
         channels.filter(c => c.type === 0 || c.type === 5),
         [channels]
@@ -98,28 +99,6 @@ export default function CommandStateModulePage({
     const allEnabled = disabledSet.size === 0
     const allDisabled = textChannels.length > 0 && disabledSet.size >= textChannels.length
 
-    // ─── Mutations ─────────────────────────────────────────────
-    const saveMutation = useMutation({
-        mutationFn: async (disabled: string[]) => {
-            const res = await fetch(`/api/guilds/${guildId}/modules/command-state`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ disabledChannels: disabled })
-            })
-            if (!res.ok) {
-                const data = await res.json()
-                throw new Error(data.error || "Failed to update command state")
-            }
-            return res.json()
-        },
-        onSuccess: (data) => {
-            queryClient.setQueryData(["command-state", guildId], data)
-            setIsDirty(false)
-            setSuccessMessage("Channel permissions saved!")
-            setTimeout(() => setSuccessMessage(""), 3000)
-        }
-    })
-
     // ─── Handlers ──────────────────────────────────────────────
     const markDirty = (newSet: Set<string>) => {
         const original = new Set(commandState?.disabledChannels || [])
@@ -131,9 +110,9 @@ export default function CommandStateModulePage({
         setDisabledSet(prev => {
             const next = new Set(prev)
             if (next.has(channelId)) {
-                next.delete(channelId) // re-enable
+                next.delete(channelId)
             } else {
-                next.add(channelId) // disable
+                next.add(channelId)
             }
             markDirty(next)
             return next
@@ -152,8 +131,35 @@ export default function CommandStateModulePage({
         markDirty(next)
     }
 
-    const handleSave = () => {
-        saveMutation.mutate([...disabledSet])
+    const handleSave = async () => {
+        setSaving(true)
+        try {
+            const res = await fetch(`/api/guilds/${guildId}/modules/command-state`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ disabledChannels: [...disabledSet] })
+            })
+            if (!res.ok) {
+                const data = await res.json()
+                throw new Error(data.error || "Failed to update command state")
+            }
+            const data = await res.json()
+            queryClient.setQueryData(["command-state", guildId], data)
+            setIsDirty(false)
+            toast.success("Channel permissions saved!")
+        } catch (error: any) {
+            console.error("Failed to save command state:", error)
+            toast.error(error.message || "An error occurred while saving")
+        } finally {
+            setSaving(false)
+        }
+    }
+
+    const handleDiscard = () => {
+        if (commandState) {
+            setDisabledSet(new Set(commandState.disabledChannels || []))
+            setIsDirty(false)
+        }
     }
 
     // ─── Loading state ─────────────────────────────────────────
@@ -245,7 +251,6 @@ export default function CommandStateModulePage({
                                     transition={{ delay: i * 0.02 }}
                                     className="flex items-center justify-between px-5 py-4 hover:bg-white/[0.02] transition-colors group"
                                 >
-                                    {/* Channel info */}
                                     <div className="flex items-center gap-3">
                                         <div className={`w-9 h-9 rounded-lg flex shrink-0 items-center justify-center transition-colors ${isDisabled ? "bg-red-500/10" : "bg-white/5"}`}>
                                             <ChannelTypeIcon type={channel.type} />
@@ -259,8 +264,6 @@ export default function CommandStateModulePage({
                                             </p>
                                         </div>
                                     </div>
-
-                                    {/* Toggle button */}
                                     <button
                                         onClick={() => toggleChannel(channel.id)}
                                         className="flex items-center gap-2.5 relative"
@@ -282,50 +285,13 @@ export default function CommandStateModulePage({
             </div>
 
             {/* Sticky Save Bar */}
-            <AnimatePresence>
-                {(isDirty || successMessage || saveMutation.isPending) && (
-                    <motion.div
-                        initial={{ y: 100 }}
-                        animate={{ y: 0 }}
-                        exit={{ y: 100 }}
-                        transition={{ type: "spring", stiffness: 400, damping: 35 }}
-                        className="fixed bottom-0 left-0 right-0 z-50"
-                    >
-                        <div className="mx-auto max-w-5xl px-6 pb-6 md:pl-72">
-                            <div className="flex items-center justify-between p-4 rounded-2xl bg-[#0d0d14] border border-[#8b5cf6]/40 shadow-2xl shadow-[#8b5cf6]/10 backdrop-blur-md">
-                                <div className="flex items-center gap-3 text-white">
-                                    {successMessage ? (
-                                        <>
-                                            <FontAwesomeIcon icon={faCheckCircle} className="w-5 h-5 text-green-400 shrink-0" />
-                                            <span className="font-medium">{successMessage}</span>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <div className="w-2 h-2 rounded-full bg-yellow-400 animate-pulse shrink-0" />
-                                            <span className="text-gray-300">
-                                                Unsaved changes — {[...disabledSet].length} channels disabled
-                                            </span>
-                                        </>
-                                    )}
-                                </div>
-                                {!successMessage && (
-                                    <button
-                                        onClick={handleSave}
-                                        disabled={saveMutation.isPending}
-                                        className="ml-4 px-6 py-2.5 bg-[#8b5cf6] hover:bg-[#7c3aed] text-white rounded-xl font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 shrink-0"
-                                    >
-                                        {saveMutation.isPending
-                                            ? <FontAwesomeIcon icon={faSpinner} className="w-4 h-4 animate-spin" />
-                                            : <FontAwesomeIcon icon={faSave} className="w-4 h-4" />
-                                        }
-                                        Save Changes
-                                    </button>
-                                )}
-                            </div>
-                        </div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
+            <SaveBar
+                isVisible={isDirty || saving}
+                isSaving={saving}
+                onSave={handleSave}
+                onDiscard={handleDiscard}
+                message={`Unsaved changes — ${disabledSet.size} channels disabled`}
+            />
         </div>
     )
 }

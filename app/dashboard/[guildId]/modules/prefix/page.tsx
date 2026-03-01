@@ -14,7 +14,15 @@ import {
     faRotateLeft,
     faCheckCircle,
 } from "@fortawesome/free-solid-svg-icons"
+import { SaveBar } from "@/components/dashboard/save-bar"
 import Link from "next/link"
+
+import { toast } from "sonner"
+import { cloneDeep, isEqual } from "lodash"
+
+interface PrefixConfig {
+    prefix: string;
+}
 
 export default function PrefixModulePage({
     params
@@ -26,26 +34,28 @@ export default function PrefixModulePage({
     const { guildId } = React.use(params)
     const queryClient = useQueryClient()
 
-    const [inputPrefix, setInputPrefix] = useState("")
-    const [unsavedChanges, setUnsavedChanges] = useState(false)
-    const [successMessage, setSuccessMessage] = useState("")
+    const [config, setConfig] = useState<PrefixConfig | null>(null)
+    const [originalConfig, setOriginalConfig] = useState<PrefixConfig | null>(null)
+    const [saving, setSaving] = useState(false)
 
-    const { data: currentPrefix, isLoading } = useQuery<{ prefix: string }>({
+    const hasUnsavedChanges = config && originalConfig && !isEqual(config, originalConfig)
+
+    const { data: serverConfig, isLoading: configLoading } = useQuery<PrefixConfig>({
         queryKey: ["prefix", guildId],
         queryFn: async () => {
             const res = await fetch(`/api/guilds/${guildId}/prefix`)
-            if (!res.ok) throw new Error("Failed to fetch prefix")
+            if (!res.ok) throw new Error("Failed to fetch prefix config")
             return res.json()
         },
-        enabled: status === "authenticated" && !!guildId
+        enabled: !!guildId && status === "authenticated"
     })
 
     useEffect(() => {
-        if (currentPrefix) {
-            setInputPrefix(currentPrefix.prefix)
-            setUnsavedChanges(false)
+        if (serverConfig && !originalConfig) {
+            setConfig(cloneDeep(serverConfig))
+            setOriginalConfig(cloneDeep(serverConfig))
         }
-    }, [currentPrefix])
+    }, [serverConfig, originalConfig])
 
     useEffect(() => {
         if (status === "unauthenticated") {
@@ -53,45 +63,54 @@ export default function PrefixModulePage({
         }
     }, [status, router])
 
-    const saveMutation = useMutation({
-        mutationFn: async (newPrefix: string) => {
+    const handleSave = async () => {
+        if (!config) return
+        setSaving(true)
+        try {
             const res = await fetch(`/api/guilds/${guildId}/prefix`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ prefix: newPrefix })
+                body: JSON.stringify(config),
             })
-            if (!res.ok) {
-                const data = await res.json()
-                throw new Error(data.error || "Failed to update prefix")
+            if (res.ok) {
+                const updatedConfig = await res.json();
+                setOriginalConfig(cloneDeep(updatedConfig));
+                setConfig(cloneDeep(updatedConfig)); // Update config to reflect any server-side changes
+                queryClient.invalidateQueries({ queryKey: ["prefix", guildId] });
+                queryClient.invalidateQueries({ queryKey: ["guild-settings", guildId] });
+                toast.success("Prefix updated successfully!");
+            } else {
+                const errorData = await res.json();
+                toast.error(errorData.error || "Failed to update prefix");
             }
-            return res.json()
-        },
-        onSuccess: (data) => {
-            queryClient.invalidateQueries({ queryKey: ["prefix", guildId] })
-            queryClient.invalidateQueries({ queryKey: ["guild-settings", guildId] })
-            setUnsavedChanges(false)
-            setSuccessMessage("Prefix updated successfully!")
-            setTimeout(() => setSuccessMessage(""), 3000)
+        } catch (error) {
+            console.error("Failed to save prefix config:", error)
+            toast.error("An error occurred while saving");
+        } finally {
+            setSaving(false)
         }
-    })
-
-    const handleSave = () => {
-        if (!inputPrefix.trim()) return
-        saveMutation.mutate(inputPrefix.trim().substring(0, 5))
     }
 
     const handleReset = () => {
-        setInputPrefix("!!")
-        setUnsavedChanges("!!" !== currentPrefix?.prefix)
+        if (config) {
+            setConfig({ ...config, prefix: "!!" });
+        } else {
+            setConfig({ prefix: "!!" });
+        }
+    }
+
+    const handleDiscard = () => {
+        if (originalConfig) {
+            setConfig(cloneDeep(originalConfig))
+        }
     }
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const val = e.target.value.substring(0, 5)
-        setInputPrefix(val)
-        setUnsavedChanges(val !== currentPrefix?.prefix)
+        setConfig(prev => prev ? { ...prev, prefix: val } : { prefix: val })
     }
 
-    if (status === "loading" || isLoading) {
+    if (status === "loading" || configLoading || !config) {
         return (
             <div className="min-h-[500px] flex items-center justify-center">
                 <FontAwesomeIcon icon={faSpinner} className="w-8 h-8 text-[#8b5cf6] animate-spin" />
@@ -130,7 +149,7 @@ export default function PrefixModulePage({
                         <div className="flex gap-4">
                             <input
                                 type="text"
-                                value={inputPrefix}
+                                value={config.prefix}
                                 onChange={handleInputChange}
                                 maxLength={5}
                                 placeholder="!!"
@@ -146,49 +165,15 @@ export default function PrefixModulePage({
                         </div>
                     </div>
                 </div>
-
-                {/* Save Bar */}
-                <AnimatePresence>
-                    {(unsavedChanges || successMessage || saveMutation.isPending) && (
-                        <motion.div
-                            initial={{ y: 100 }}
-                            animate={{ y: 0 }}
-                            exit={{ y: 100 }}
-                            className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-r from-[#8b5cf6]/20 to-[#6d28d9]/20 backdrop-blur-md border-t border-[#8b5cf6]/30"
-                        >
-                            <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-3 text-white">
-                                    {successMessage ? (
-                                        <>
-                                            <FontAwesomeIcon icon={faCheckCircle} className="w-5 h-5 text-green-400" />
-                                            <span>{successMessage}</span>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <div className="w-2 h-2 rounded-full bg-yellow-400 animate-pulse" />
-                                            <span>You have unsaved changes</span>
-                                        </>
-                                    )}
-                                </div>
-                                {!successMessage && (
-                                    <button
-                                        onClick={handleSave}
-                                        disabled={saveMutation.isPending || !inputPrefix.trim()}
-                                        className="px-6 py-2 bg-[#8b5cf6] hover:bg-[#7c3aed] text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-                                    >
-                                        {saveMutation.isPending ? (
-                                            <FontAwesomeIcon icon={faSpinner} className="w-4 h-4 animate-spin" />
-                                        ) : (
-                                            <FontAwesomeIcon icon={faSave} className="w-4 h-4" />
-                                        )}
-                                        Save Changes
-                                    </button>
-                                )}
-                            </div>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
             </div>
+
+            <SaveBar
+                isVisible={!!hasUnsavedChanges || saving}
+                isSaving={saving}
+                onSave={handleSave}
+                onDiscard={handleDiscard}
+                message="You have unsaved changes in Prefix"
+            />
         </div>
     )
 }

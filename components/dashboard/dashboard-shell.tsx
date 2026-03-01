@@ -36,16 +36,20 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
         return <>{children}</>
     }
 
+    const showSidebar = !!guildId
+
     return (
         <div className="min-h-screen bg-black">
-            <DashboardSidebar
-                guildId={guildId}
-                guildName={guildInfo?.name}
-                guildIcon={guildInfo?.icon}
-                collapsed={sidebarCollapsed}
-                onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
-            />
-            <div className={`transition-all duration-300 ${sidebarCollapsed ? "lg:ml-[72px]" : "lg:ml-64"} min-h-screen flex flex-col`}>
+            {showSidebar && (
+                <DashboardSidebar
+                    guildId={guildId}
+                    guildName={guildInfo?.name}
+                    guildIcon={guildInfo?.icon}
+                    collapsed={sidebarCollapsed}
+                    onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
+                />
+            )}
+            <div className={`transition-all duration-300 ${showSidebar ? (sidebarCollapsed ? "lg:ml-[72px]" : "lg:ml-64") : ""} min-h-screen flex flex-col`}>
                 <DashboardNavbar />
                 <div className="p-4 sm:p-6 lg:p-8 flex-1">
                     {children}

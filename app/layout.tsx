@@ -7,6 +7,7 @@ import { SessionProvider } from "@/components/session-provider"
 import { RootLayoutShell } from "@/components/root-layout-shell"
 import QueryProvider from "@/components/providers/query-provider"
 import { DevToolsShield } from "@/components/security/devtools-shield"
+import { Toaster } from "sonner"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -326,6 +327,7 @@ export default function RootLayout({
             </SmoothScrollProvider>
           </QueryProvider>
         </SessionProvider>
+        <Toaster position="top-right" richColors closeButton />
         <DevToolsShield />
       </body>
     </html>

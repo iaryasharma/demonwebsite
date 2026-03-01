@@ -1,8 +1,5 @@
 import { NextResponse } from "next/server"
-import { getToken } from "next-auth/jwt"
-import { getAccessTokenFromRequest, requireManageGuild, fetchUserGuilds, fetchBotGuilds, isBotInGuild } from "@/lib/permissions"
-import { connectToDatabase } from "@/lib/mongodb"
-import Guild from "@/lib/models/Guild"
+import { getAccessTokenFromRequest, fetchUserGuilds, fetchBotGuilds } from "@/lib/permissions"
 
 export const dynamic = "force-dynamic"
 
@@ -16,42 +13,50 @@ export async function GET(request: Request) {
     const forceRefresh = searchParams.get("refresh") === "true"
 
     try {
-        // Fetch user's guilds from Discord API
-        const guilds = await fetchUserGuilds(accessToken, forceRefresh)
+        // Fetch user guilds and bot guilds in parallel — fully independent
+        const [allUserGuilds, botGuildIds] = await Promise.all([
+            fetchUserGuilds(accessToken, forceRefresh),
+            fetchBotGuilds(), // always fresh — no cache
+        ])
 
-        // Filter to guilds where user has MANAGE_GUILD (0x20), ADMINISTRATOR (0x8) or is OWNER
-        const manageableGuilds = guilds.filter((g: any) => {
-            const perms = parseInt(g.permissions)
-            return (perms & 0x20) === 0x20 || (perms & 0x8) === 0x8 || g.owner === true
+        console.log(`[/api/guilds] userGuilds=${allUserGuilds.length} botGuilds=${botGuildIds.size}`)
+
+        // Keep only guilds where the user can manage the server
+        const manageableGuilds = (allUserGuilds as any[]).filter((g) => {
+            const perms = BigInt(g.permissions ?? "0")
+            return (
+                g.owner === true ||
+                (perms & BigInt(0x8)) === BigInt(0x8) ||   // ADMINISTRATOR
+                (perms & BigInt(0x20)) === BigInt(0x20)     // MANAGE_GUILD
+            )
         })
 
-        // Fetch bot's guilds from Discord API
-        const botGuildIds = await fetchBotGuilds(forceRefresh)
-
-        // Map to a clean shape — do NOT expose raw permissions
-        // We use Promise.all to handle potential direct presence checks for guilds not in cache
-        const result = await Promise.all(manageableGuilds.map(async (g: any) => {
-            // If in cache, immediately true. If not, we do a direct check.
-            let botPresent = botGuildIds.has(g.id)
-            if (!botPresent) {
-                // Double check for recently joined guilds
-                botPresent = await isBotInGuild(g.id)
-            }
-
+        const result = manageableGuilds.map((g: any) => {
+            const guildId = String(g.id) // ensure string comparison
+            const botPresent = botGuildIds.has(guildId)
+            console.log(`[/api/guilds] ${botPresent ? "HIT " : "MISS"}: ${guildId} "${g.name}"`)
             return {
-                id: g.id,
+                id: guildId,
                 name: g.name,
                 icon: g.icon
-                    ? `https://cdn.discordapp.com/icons/${g.id}/${g.icon}.${g.icon.startsWith("a_") ? "gif" : "webp"}?size=128`
+                    ? `https://cdn.discordapp.com/icons/${guildId}/${g.icon}.${g.icon.startsWith("a_") ? "gif" : "webp"}?size=128`
                     : null,
-                memberCount: g.approximate_member_count || null,
-                botPresent
+                memberCount: g.approximate_member_count ?? null,
+                botPresent,
             }
-        }))
+        })
 
-        return NextResponse.json(result)
+        // Bot-present servers first, then alphabetically within each group
+        result.sort((a, b) => {
+            if (b.botPresent !== a.botPresent) return b.botPresent ? 1 : -1
+            return a.name.localeCompare(b.name)
+        })
+
+        const response = NextResponse.json(result)
+        response.headers.set("Cache-Control", "no-store, max-age=0")
+        return response
     } catch (error) {
-        console.error("Error fetching guilds:", error)
+        console.error("[/api/guilds] Error:", error)
         return NextResponse.json({ error: "Internal server error" }, { status: 500 })
     }
 }
