@@ -3,7 +3,7 @@ import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/auth"
 import { connectToDatabase } from "@/lib/mongodb"
 import Guild from "@/lib/models/Guild"
-import { getAccessTokenFromRequest, requireManageGuild } from "@/lib/permissions"
+import { getAccessTokenFromRequest, requireManageGuild, validateGuildId } from "@/lib/permissions"
 
 export async function GET(
     req: NextRequest,
@@ -16,6 +16,11 @@ export async function GET(
         }
 
         const { guildId } = await props.params
+
+        if (!validateGuildId(guildId)) {
+            return NextResponse.json({ error: "Invalid guild ID" }, { status: 400 })
+        }
+
         const accessToken = await getAccessTokenFromRequest(req)
         if (!accessToken) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
@@ -53,6 +58,10 @@ export async function POST(
 
         const { guildId } = await props.params
 
+        if (!validateGuildId(guildId)) {
+            return NextResponse.json({ error: "Invalid guild ID" }, { status: 400 })
+        }
+
         const accessToken = await getAccessTokenFromRequest(req)
         if (!accessToken) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
@@ -67,8 +76,14 @@ export async function POST(
         const body = await req.json()
         const { prefix } = body
 
-        if (!prefix || prefix.length > 5) {
-            return NextResponse.json({ error: "Invalid prefix length (max 5)" }, { status: 400 })
+        // Validate: must be a non-empty string, max 5 printable non-whitespace chars
+        if (
+            typeof prefix !== "string" ||
+            prefix.trim().length === 0 ||
+            prefix.length > 5 ||
+            /[\x00-\x1F\x7F]/.test(prefix) // reject control characters
+        ) {
+            return NextResponse.json({ error: "Invalid prefix: must be 1-5 printable non-whitespace characters" }, { status: 400 })
         }
 
         await connectToDatabase()

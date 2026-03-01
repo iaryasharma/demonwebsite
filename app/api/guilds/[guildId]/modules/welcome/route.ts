@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server"
-import { getAccessTokenFromRequest, requireManageGuild } from "@/lib/permissions"
+import { getAccessTokenFromRequest, requireManageGuild, validateGuildId } from "@/lib/permissions"
 import { connectToDatabase } from "@/lib/mongodb"
 import Welcome from "@/lib/models/Welcome"
+import { parseBody, pickAllowed, hasMongoOperators } from "@/lib/api-helpers"
 
 export async function GET(
     request: Request,
@@ -13,6 +14,10 @@ export async function GET(
     }
 
     const { guildId } = await context.params
+
+    if (!validateGuildId(guildId)) {
+        return NextResponse.json({ error: "Invalid guild ID" }, { status: 400 })
+    }
 
     if (!(await requireManageGuild(accessToken, guildId))) {
         return NextResponse.json({ error: "Forbidden" }, { status: 403 })
@@ -45,22 +50,28 @@ export async function POST(
 
     const { guildId } = await context.params
 
+    if (!validateGuildId(guildId)) {
+        return NextResponse.json({ error: "Invalid guild ID" }, { status: 400 })
+    }
+
     if (!(await requireManageGuild(accessToken, guildId))) {
         return NextResponse.json({ error: "Forbidden" }, { status: 403 })
     }
 
     try {
-        const body = await request.json()
-        await connectToDatabase()
+        const parsed = await parseBody(request)
+        if (!parsed.ok) return NextResponse.json({ error: parsed.error }, { status: parsed.status })
 
-        // Strip out any _id, __v, or guildId that might come from the client to prevent updates to unallowed fields
-        delete body._id
-        delete body.__v
-        delete body.guildId
+        if (hasMongoOperators(parsed.data)) {
+            return NextResponse.json({ error: "Invalid field values" }, { status: 400 })
+        }
+
+        const safe = pickAllowed(parsed.data as Record<string, unknown>, "welcome")
+        await connectToDatabase()
 
         const welcome = await Welcome.findOneAndUpdate(
             { guildId },
-            { $set: body },
+            { $set: safe },
             { upsert: true, new: true, setDefaultsOnInsert: true }
         ).lean()
 

@@ -33,6 +33,7 @@ import { MessagePreview } from "@/components/dashboard/embed-preview"
 interface Webhook {
     name: string
     url: string
+    avatarUrl: string | null
     createdAt: string
 }
 
@@ -56,11 +57,10 @@ export default function AnnouncePage() {
     const guildId = params?.guildId as string
 
     // Webhook state
-    // Webhook state
     const [selectedWebhook, setSelectedWebhook] = useState<string>("")
-    const [newWebhookName, setNewWebhookName] = useState("")
     const [newWebhookUrl, setNewWebhookUrl] = useState("")
     const [showAddWebhook, setShowAddWebhook] = useState(false)
+    const [addingWebhook, setAddingWebhook] = useState(false)
 
     // Message state
     const [activeTab, setActiveTab] = useState<MessageTab>("normal")
@@ -100,13 +100,14 @@ export default function AnnouncePage() {
     }, [webhooks, selectedWebhook])
 
     const addWebhook = async () => {
-        if (!newWebhookName || !newWebhookUrl) return
+        if (!newWebhookUrl) return
 
+        setAddingWebhook(true)
         try {
             const res = await fetch(`/api/guilds/${guildId}/webhooks`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ name: newWebhookName, url: newWebhookUrl }),
+                body: JSON.stringify({ url: newWebhookUrl }),
             })
 
             if (res.ok) {
@@ -115,7 +116,6 @@ export default function AnnouncePage() {
                 if (!selectedWebhook && data.length > 0) {
                     setSelectedWebhook(data[data.length - 1].url)
                 }
-                setNewWebhookName("")
                 setNewWebhookUrl("")
                 setShowAddWebhook(false)
             } else {
@@ -124,6 +124,8 @@ export default function AnnouncePage() {
             }
         } catch (error) {
             console.error("Error adding webhook:", error)
+        } finally {
+            setAddingWebhook(false)
         }
     }
 
@@ -172,9 +174,10 @@ export default function AnnouncePage() {
         }, 0)
     }
 
-    // Get webhook name for selected webhook
-    const selectedWebhookName =
-        webhooks.find((w) => w.url === selectedWebhook)?.name || "Demon Bot"
+    // Get the selected webhook object for name + avatar in preview
+    const selectedWebhookObj = webhooks.find((w) => w.url === selectedWebhook)
+    const selectedWebhookName = selectedWebhookObj?.name || "Webhook"
+    const selectedWebhookAvatar = selectedWebhookObj?.avatarUrl || undefined
 
     const buildPayload = (): Record<string, any> | null => {
         if (activeTab === "normal") {
@@ -330,6 +333,7 @@ export default function AnnouncePage() {
                     content={getPreviewContent()}
                     embed={getPreviewEmbed()}
                     botName={selectedWebhookName}
+                    botAvatar={selectedWebhookAvatar}
                 />
             </div>
         </div>
@@ -439,23 +443,22 @@ export default function AnnouncePage() {
                                     <div className="p-3 rounded-lg border border-white/[0.06] bg-white/[0.02] space-y-2">
                                         <input
                                             className={inputClass}
-                                            placeholder="Webhook name (e.g. Announcements)"
-                                            value={newWebhookName}
-                                            onChange={(e) => setNewWebhookName(e.target.value)}
-                                        />
-                                        <input
-                                            className={inputClass}
                                             placeholder="https://discord.com/api/webhooks/..."
                                             value={newWebhookUrl}
                                             onChange={(e) => setNewWebhookUrl(e.target.value)}
                                         />
+                                        <p className="text-[10px] text-gray-500">
+                                            Bot name and avatar are fetched automatically from the webhook URL.
+                                        </p>
                                         <div className="flex gap-2">
                                             <button
                                                 onClick={addWebhook}
-                                                disabled={!newWebhookName || !newWebhookUrl}
-                                                className="px-3 py-1.5 rounded-md bg-[#8b5cf6] text-white text-xs font-medium hover:bg-[#7c3aed] transition-colors disabled:opacity-40"
+                                                disabled={!newWebhookUrl || addingWebhook}
+                                                className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-[#8b5cf6] text-white text-xs font-medium hover:bg-[#7c3aed] transition-colors disabled:opacity-40"
                                             >
-                                                Save
+                                                {addingWebhook ? (
+                                                    <FontAwesomeIcon icon={faSpinner} className="w-3 h-3 animate-spin" />
+                                                ) : "Save"}
                                             </button>
                                             <button
                                                 onClick={() => setShowAddWebhook(false)}
@@ -490,11 +493,24 @@ export default function AnnouncePage() {
                                             : "border-white/[0.04] hover:bg-white/[0.03]"
                                             }`}
                                     >
-                                        <div className="min-w-0">
-                                            <p className="text-xs font-medium text-white truncate">{wh.name}</p>
-                                            <p className="text-[10px] text-gray-500 truncate font-mono">
-                                                {wh.url.slice(0, 50)}...
-                                            </p>
+                                        <div className="flex items-center gap-2.5 min-w-0">
+                                            {wh.avatarUrl ? (
+                                                <img
+                                                    src={wh.avatarUrl}
+                                                    alt={wh.name}
+                                                    className="w-6 h-6 rounded-full flex-shrink-0 object-cover"
+                                                />
+                                            ) : (
+                                                <div className="w-6 h-6 rounded-full flex-shrink-0 bg-[#5865f2] flex items-center justify-center text-white text-[9px] font-bold">
+                                                    {wh.name.charAt(0).toUpperCase()}
+                                                </div>
+                                            )}
+                                            <div className="min-w-0">
+                                                <p className="text-xs font-medium text-white truncate">{wh.name}</p>
+                                                <p className="text-[10px] text-gray-500 truncate font-mono">
+                                                    {wh.url.slice(0, 45)}...
+                                                </p>
+                                            </div>
                                         </div>
                                         <button
                                             onClick={(e) => {

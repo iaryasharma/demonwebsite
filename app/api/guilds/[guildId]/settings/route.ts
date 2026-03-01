@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { getAccessTokenFromRequest, requireManageGuild } from "@/lib/permissions"
+import { getAccessTokenFromRequest, requireManageGuild, validateGuildId } from "@/lib/permissions"
 import { connectToDatabase } from "@/lib/mongodb"
 import Guild from "@/lib/models/Guild"
 
@@ -13,6 +13,10 @@ export async function GET(
     }
 
     const { guildId } = await params
+
+    if (!validateGuildId(guildId)) {
+        return NextResponse.json({ error: "Invalid guild ID" }, { status: 400 })
+    }
 
     if (!(await requireManageGuild(accessToken, guildId))) {
         return NextResponse.json({ error: "Forbidden" }, { status: 403 })
@@ -48,6 +52,10 @@ export async function POST(
     }
 
     const { guildId } = await params
+
+    if (!validateGuildId(guildId)) {
+        return NextResponse.json({ error: "Invalid guild ID" }, { status: 400 })
+    }
 
     if (!(await requireManageGuild(accessToken, guildId))) {
         return NextResponse.json({ error: "Forbidden" }, { status: 403 })

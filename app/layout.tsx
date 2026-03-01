@@ -6,6 +6,7 @@ import { SmoothScrollProvider } from "@/components/smooth-scroll-provider"
 import { SessionProvider } from "@/components/session-provider"
 import { RootLayoutShell } from "@/components/root-layout-shell"
 import QueryProvider from "@/components/providers/query-provider"
+import { DevToolsShield } from "@/components/security/devtools-shield"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -166,6 +167,7 @@ export default function RootLayout({
             </SmoothScrollProvider>
           </QueryProvider>
         </SessionProvider>
+        <DevToolsShield />
       </body>
     </html>
   )

@@ -8,6 +8,17 @@ import { NextRequest } from "next/server"
 
 const DISCORD_API = "https://discord.com/api/v10"
 
+// Discord snowflake IDs are 17-20 digit numeric strings
+const SNOWFLAKE_RE = /^\d{17,20}$/
+
+/**
+ * Validate that a guild/channel/role ID looks like a valid Discord snowflake.
+ * Rejects strings that could be used for NoSQL injection or path traversal.
+ */
+export function validateGuildId(id: string): boolean {
+    return typeof id === "string" && SNOWFLAKE_RE.test(id)
+}
+
 // Discord permission bits
 const MANAGE_GUILD = 0x20
 const ADMINISTRATOR = 0x8

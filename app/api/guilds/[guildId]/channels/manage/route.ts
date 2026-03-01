@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { getAccessTokenFromRequest, requireManageGuild } from "@/lib/permissions"
+import { getAccessTokenFromRequest, requireManageGuild, validateGuildId } from "@/lib/permissions"
 
 const DISCORD_API = "https://discord.com/api/v10"
 
@@ -13,6 +13,10 @@ export async function POST(
     }
 
     const { guildId } = await params
+
+    if (!validateGuildId(guildId)) {
+        return NextResponse.json({ error: "Invalid guild ID" }, { status: 400 })
+    }
 
     if (!(await requireManageGuild(accessToken, guildId))) {
         return NextResponse.json({ error: "Forbidden" }, { status: 403 })
@@ -31,7 +35,15 @@ export async function POST(
         const body = await request.json()
         const { channelId, action, duration } = body
 
-        if (!channelId || !["lock", "unlock", "slowmode"].includes(action)) {
+        // Validate channelId is a Discord snowflake — prevents SSRF via crafted URL segments
+        if (!channelId || !validateGuildId(channelId)) {
+            return NextResponse.json(
+                { error: "Invalid channelId" },
+                { status: 400 }
+            )
+        }
+
+        if (!["lock", "unlock", "slowmode"].includes(action)) {
             return NextResponse.json(
                 { error: "channelId and action (lock|unlock|slowmode) are required" },
                 { status: 400 }

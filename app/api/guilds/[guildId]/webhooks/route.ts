@@ -5,6 +5,13 @@ import Guild from "@/lib/models/Guild"
 
 const DISCORD_WEBHOOK_REGEX = /^https:\/\/discord\.com\/api\/webhooks\/\d+\/.+$/
 
+interface StoredWebhook {
+    name: string
+    url: string
+    avatarUrl: string | null
+    createdAt: Date
+}
+
 export async function GET(
     request: Request,
     { params }: { params: Promise<{ guildId: string }> }
@@ -46,14 +53,30 @@ export async function POST(
     }
 
     try {
-        const { name, url } = await request.json()
+        const { url } = await request.json()
 
-        if (!name || !url) {
-            return NextResponse.json({ error: "Name and URL are required" }, { status: 400 })
+        if (!url) {
+            return NextResponse.json({ error: "Webhook URL is required" }, { status: 400 })
         }
 
         if (!DISCORD_WEBHOOK_REGEX.test(url)) {
             return NextResponse.json({ error: "Invalid Discord webhook URL" }, { status: 400 })
+        }
+
+        // Fetch the webhook info from Discord to get real name + avatar
+        let name = "Webhook"
+        let avatarUrl: string | null = null
+        try {
+            const whRes = await fetch(url)
+            if (whRes.ok) {
+                const whData = await whRes.json()
+                if (whData.name) name = whData.name
+                if (whData.avatar && whData.id) {
+                    avatarUrl = `https://cdn.discordapp.com/avatars/${whData.id}/${whData.avatar}.png`
+                }
+            }
+        } catch {
+            // Non-fatal — fall back to generic name
         }
 
         await connectToDatabase()
@@ -62,7 +85,7 @@ export async function POST(
             { guildId },
             {
                 $push: {
-                    webhooks: { name, url, createdAt: new Date() },
+                    webhooks: { name, url, avatarUrl, createdAt: new Date() },
                 },
             },
             { upsert: true, new: true, setDefaultsOnInsert: true }

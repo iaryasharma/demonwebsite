@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server"
-import { getAccessTokenFromRequest, requireManageGuild } from "@/lib/permissions"
+import { getAccessTokenFromRequest, requireManageGuild, validateGuildId } from "@/lib/permissions"
 import { connectToDatabase } from "@/lib/mongodb"
 import Giveaway from "@/lib/models/Giveaway"
 import { editMessage, sendMessage } from "@/lib/discord"
 import { buildEndedEmbed, buildWinnerNotification } from "@/lib/giveaway-embeds"
+import { validateObjectId } from "@/lib/api-helpers"
 
 export async function POST(
     request: Request,
@@ -15,6 +16,13 @@ export async function POST(
     }
 
     const { guildId, giveawayId } = await params
+
+    if (!validateGuildId(guildId)) {
+        return NextResponse.json({ error: "Invalid guild ID" }, { status: 400 })
+    }
+    if (!validateObjectId(giveawayId)) {
+        return NextResponse.json({ error: "Invalid giveaway ID" }, { status: 400 })
+    }
 
     if (!(await requireManageGuild(accessToken, guildId))) {
         return NextResponse.json({ error: "Forbidden" }, { status: 403 })
@@ -40,17 +48,21 @@ export async function POST(
             return NextResponse.json({ error: result.reason }, { status: 400 })
         }
 
-        // Update Discord message with new winners
-        const endedEmbed = buildEndedEmbed(giveaway)
-        await editMessage(giveaway.channelId, giveaway.messageId, {
-            embeds: [endedEmbed],
-            components: [],
-        })
+        // Try to update Discord message (non-fatal if message is stale)
+        try {
+            const endedEmbed = buildEndedEmbed(giveaway)
+            await editMessage(giveaway.channelId, giveaway.messageId, {
+                embeds: [endedEmbed],
+                components: [],
+            })
 
-        // Send reroll notification if winners exist
-        if (giveaway.winners.length > 0) {
-            const notification = buildWinnerNotification(giveaway, true)
-            await sendMessage(giveaway.channelId, notification)
+            // Send reroll notification if winners exist
+            if (giveaway.winners.length > 0) {
+                const notification = buildWinnerNotification(giveaway, true)
+                await sendMessage(giveaway.channelId, notification)
+            }
+        } catch (discordErr) {
+            console.warn("Could not update giveaway Discord message (non-fatal):", discordErr)
         }
 
         return NextResponse.json({

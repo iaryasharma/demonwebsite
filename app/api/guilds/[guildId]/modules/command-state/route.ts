@@ -3,7 +3,7 @@ import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/auth"
 import { connectToDatabase } from "@/lib/mongodb"
 import Guild from "@/lib/models/Guild"
-import { getAccessTokenFromRequest, requireManageGuild } from "@/lib/permissions"
+import { getAccessTokenFromRequest, requireManageGuild, validateGuildId } from "@/lib/permissions"
 
 export async function GET(
     req: NextRequest,
@@ -14,6 +14,11 @@ export async function GET(
         if (!(session?.user as any)?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 
         const { guildId } = await props.params
+
+        if (!validateGuildId(guildId)) {
+            return NextResponse.json({ error: "Invalid guild ID" }, { status: 400 })
+        }
+
         const accessToken = await getAccessTokenFromRequest(req)
         if (!accessToken) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 
@@ -45,6 +50,11 @@ export async function POST(
         if (!(session?.user as any)?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 
         const { guildId } = await props.params
+
+        if (!validateGuildId(guildId)) {
+            return NextResponse.json({ error: "Invalid guild ID" }, { status: 400 })
+        }
+
         const accessToken = await getAccessTokenFromRequest(req)
         if (!accessToken) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 

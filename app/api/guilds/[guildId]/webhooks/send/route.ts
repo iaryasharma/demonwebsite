@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { getAccessTokenFromRequest, requireManageGuild } from "@/lib/permissions"
+import { getAccessTokenFromRequest, requireManageGuild, validateGuildId } from "@/lib/permissions"
 
 // Simple in-memory rate limiter: max 5 sends per guild per minute
 const rateLimits = new Map<string, { count: number; resetAt: number }>()
@@ -30,6 +30,10 @@ export async function POST(
 
     const { guildId } = await params
 
+    if (!validateGuildId(guildId)) {
+        return NextResponse.json({ error: "Invalid guild ID" }, { status: 400 })
+    }
+
     if (!(await requireManageGuild(accessToken, guildId))) {
         return NextResponse.json({ error: "Forbidden" }, { status: 403 })
     }
@@ -42,7 +46,12 @@ export async function POST(
     }
 
     try {
-        const { webhookUrl, payload } = await request.json()
+        // Guard body size: reject requests over 5 KB to prevent content-bombing
+        const rawBody = await request.text()
+        if (rawBody.length > 5_120) {
+            return NextResponse.json({ error: "Payload too large (max 5 KB)" }, { status: 413 })
+        }
+        const { webhookUrl, payload } = JSON.parse(rawBody)
 
         if (!webhookUrl || !payload) {
             return NextResponse.json(

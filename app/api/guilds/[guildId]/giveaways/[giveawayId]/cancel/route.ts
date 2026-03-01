@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server"
-import { getAccessTokenFromRequest, requireManageGuild } from "@/lib/permissions"
+import { getAccessTokenFromRequest, requireManageGuild, validateGuildId } from "@/lib/permissions"
 import { connectToDatabase } from "@/lib/mongodb"
 import Giveaway from "@/lib/models/Giveaway"
 import { editMessage } from "@/lib/discord"
 import { buildCancelledEmbed } from "@/lib/giveaway-embeds"
+import { validateObjectId } from "@/lib/api-helpers"
 
 export async function POST(
     request: Request,
@@ -15,6 +16,13 @@ export async function POST(
     }
 
     const { guildId, giveawayId } = await params
+
+    if (!validateGuildId(guildId)) {
+        return NextResponse.json({ error: "Invalid guild ID" }, { status: 400 })
+    }
+    if (!validateObjectId(giveawayId)) {
+        return NextResponse.json({ error: "Invalid giveaway ID" }, { status: 400 })
+    }
 
     if (!(await requireManageGuild(accessToken, guildId))) {
         return NextResponse.json({ error: "Forbidden" }, { status: 403 })
@@ -46,12 +54,17 @@ export async function POST(
             }
         )
 
-        // Update Discord message with cancelled embed
-        const cancelledEmbed = buildCancelledEmbed(giveaway)
-        await editMessage(giveaway.channelId, giveaway.messageId, {
-            embeds: [cancelledEmbed],
-            components: [],
-        })
+        // Try to update Discord message — non-fatal if it fails
+        // (bot-created giveaway messages may already be stale/deleted)
+        try {
+            const cancelledEmbed = buildCancelledEmbed(giveaway)
+            await editMessage(giveaway.channelId, giveaway.messageId, {
+                embeds: [cancelledEmbed],
+                components: [],
+            })
+        } catch (discordErr) {
+            console.warn("Could not update giveaway Discord message (non-fatal):", discordErr)
+        }
 
         return NextResponse.json({
             success: true,
