@@ -1,6 +1,6 @@
 ﻿"use client"
 
-import { useState, useRef } from "react"
+import { useState, useRef, Suspense } from "react"
 import { useSession, signIn } from "next-auth/react"
 import { useSearchParams } from "next/navigation"
 import { useQuery } from "@tanstack/react-query"
@@ -32,7 +32,7 @@ async function fetchGuilds(forceRefresh: boolean): Promise<Guild[]> {
   return res.json()
 }
 
-export default function DashboardPage() {
+function DashboardContent() {
   const { status } = useSession()
   const searchParams = useSearchParams()
   const callbackUrl = searchParams.get("callbackUrl") ?? "/dashboard"
@@ -324,5 +324,17 @@ export default function DashboardPage() {
         )}
       </div>
     </div>
+  )
+}
+
+export default function DashboardPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-black">
+        <FontAwesomeIcon icon={faSpinner} className="w-8 h-8 text-[#8b5cf6] animate-spin" />
+      </div>
+    }>
+      <DashboardContent />
+    </Suspense>
   )
 }
