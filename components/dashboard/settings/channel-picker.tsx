@@ -60,11 +60,11 @@ export function ChannelPicker({ guildId, value, onChange, disabled }: ChannelPic
                     value={value || ""}
                     onChange={(e) => onChange(e.target.value || null)}
                     disabled={disabled}
-                    className="w-full pl-10 pr-10 py-3 appearance-none bg-black/50 border border-white/[0.06] rounded-xl text-white focus:outline-none focus:border-[#8b5cf6]/50 transition-colors disabled:opacity-50 cursor-pointer"
+                    className="w-full pl-10 pr-10 py-3 appearance-none bg-[#0a0a0a] border border-white/[0.06] rounded-xl text-white focus:outline-none focus:border-[#8b5cf6]/50 transition-colors disabled:opacity-50 cursor-pointer"
                 >
-                    <option value="" className="bg-gray-900">Select a channel...</option>
+                    <option value="" style={{ background: '#0a0a0a', color: '#fff' }}>Select a channel...</option>
                     {channels.map(channel => (
-                        <option key={channel.id} value={channel.id} className="bg-gray-900">
+                        <option key={channel.id} value={channel.id} style={{ background: '#0a0a0a', color: '#fff' }}>
                             {channel.name}
                         </option>
                     ))}

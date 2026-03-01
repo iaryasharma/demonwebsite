@@ -1,16 +1,13 @@
 "use client"
 
 import React, { useState, useEffect } from "react"
-import { useSession } from "next-auth/react"
 import { useQuery } from "@tanstack/react-query"
 import { motion, AnimatePresence } from "framer-motion"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import {
     faRightFromBracket,
-    faSave,
     faArrowLeft,
     faSpinner,
-    faCircleCheck,
     faCircleInfo,
     faArrowUpRightFromSquare
 } from "@fortawesome/free-solid-svg-icons"
@@ -45,7 +42,6 @@ export default function LeaveModulePage({
     params: Promise<{ guildId: string }>
 }) {
     const { guildId } = React.use(params)
-    const { data: session } = useSession()
     const [config, setConfig] = useState<LeaveConfig | null>(null)
     const [originalConfig, setOriginalConfig] = useState<LeaveConfig | null>(null)
     const [saving, setSaving] = useState(false)

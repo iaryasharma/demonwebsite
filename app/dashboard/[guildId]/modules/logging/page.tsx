@@ -1,16 +1,13 @@
 "use client"
 
 import React, { useState, useEffect } from "react"
-import { useSession } from "next-auth/react"
 import { useQuery } from "@tanstack/react-query"
 import { motion, AnimatePresence } from "framer-motion"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import {
     faClipboardList,
-    faSave,
     faArrowLeft,
     faSpinner,
-    faCircleCheck,
     faLayerGroup,
     faFilter,
     faBullseye
@@ -100,7 +97,6 @@ export default function LoggingModulePage({
     params: Promise<{ guildId: string }>
 }) {
     const { guildId } = React.use(params)
-    const { data: session } = useSession()
     const [config, setConfig] = useState<LoggingConfig | null>(null)
     const [originalConfig, setOriginalConfig] = useState<LoggingConfig | null>(null)
     const [saving, setSaving] = useState(false)

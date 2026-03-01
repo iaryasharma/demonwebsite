@@ -1,16 +1,13 @@
 "use client"
 
 import React, { useState, useEffect } from "react"
-import { useSession } from "next-auth/react"
 import { useQuery } from "@tanstack/react-query"
 import { motion, AnimatePresence } from "framer-motion"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import {
     faShieldHalved,
-    faSave,
     faArrowLeft,
     faSpinner,
-    faCircleCheck,
     faImage,
     faPalette,
     faFont,
@@ -22,6 +19,7 @@ import {
     faWrench,
     faHashtag,
     faTriangleExclamation,
+    faCircleCheck,
     faCircleXmark,
     faPaperPlane,
     faCircleInfo,
@@ -70,7 +68,6 @@ export default function VerificationPage({
     params: Promise<{ guildId: string }>
 }) {
     const { guildId } = React.use(params)
-    const { data: session } = useSession()
 
     const [config, setConfig] = useState<VerificationConfig | null>(null)
     const [originalConfig, setOriginalConfig] = useState<VerificationConfig | null>(null)
@@ -299,14 +296,14 @@ export default function VerificationPage({
                         />
                     </div>
 
-                    <div className="space-y-2 md:col-span-2">
+                    <div className="space-y-3 md:col-span-2">
                         <div className="flex items-start gap-3 bg-blue-500/10 border border-blue-500/20 rounded-xl p-4">
                             <FontAwesomeIcon icon={faCircleInfo} className="w-4 h-4 mt-0.5 shrink-0 text-blue-400" />
                             <div className="flex-1 min-w-0">
                                 <p className="text-sm font-medium text-blue-200 mb-0.5">Verification Event Logging</p>
                                 <p className="text-xs text-blue-300/70">
-                                    Member join, verification success/failure, and account-age rejection events are dispatched through the
-                                    central Logging module. Configure the channel under the <span className="font-semibold">Members</span> or
+                                    Verification success/failure and member join events are dispatched through the central Logging module.
+                                    Configure those under the <span className="font-semibold">Members</span> or
                                     <span className="font-semibold"> Verification</span> category there.
                                 </p>
                             </div>
@@ -317,6 +314,15 @@ export default function VerificationPage({
                                 Go to Logging
                                 <FontAwesomeIcon icon={faArrowUpRightFromSquare} className="w-3 h-3" />
                             </Link>
+                        </div>
+                        <div className="space-y-1">
+                            <label className="block font-medium text-white text-sm">Account Rejection Alert Channel <span className="text-gray-500 font-normal text-xs">(optional)</span></label>
+                            <p className="text-xs text-gray-400 mb-2">Direct channel for instant alerts when a member is denied due to account age. Separate from the Logging module.</p>
+                            <ChannelPicker
+                                guildId={guildId}
+                                value={config.logChannelId || ""}
+                                onChange={(val) => setConfig({ ...config, logChannelId: val || null })}
+                            />
                         </div>
                     </div>
                 </div>

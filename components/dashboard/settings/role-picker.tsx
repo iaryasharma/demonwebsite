@@ -62,11 +62,11 @@ export function RolePicker({ guildId, value, onChange, disabled, placeholder = "
                     value={value || ""}
                     onChange={(e) => onChange(e.target.value || null)}
                     disabled={disabled}
-                    className="w-full pl-10 pr-10 py-3 appearance-none bg-black/50 border border-white/[0.06] rounded-xl text-white focus:outline-none focus:border-[#8b5cf6]/50 transition-colors disabled:opacity-50 cursor-pointer"
+                    className="w-full pl-10 pr-10 py-3 appearance-none bg-[#0a0a0a] border border-white/[0.06] rounded-xl text-white focus:outline-none focus:border-[#8b5cf6]/50 transition-colors disabled:opacity-50 cursor-pointer"
                 >
-                    <option value="" className="bg-gray-900">{placeholder}</option>
+                    <option value="" style={{ background: '#0a0a0a', color: '#fff' }}>{placeholder}</option>
                     {roles.map(role => (
-                        <option key={role.id} value={role.id} className="bg-gray-900">
+                        <option key={role.id} value={role.id} style={{ background: '#0a0a0a', color: '#fff' }}>
                             {role.name}
                         </option>
                     ))}
