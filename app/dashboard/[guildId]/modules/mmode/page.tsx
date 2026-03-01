@@ -110,9 +110,12 @@ export default function MModeModulePage({
                     <h3 className="text-yellow-500 font-semibold mb-1">What happens when enabled?</h3>
                     <ul className="text-yellow-500/80 text-sm list-disc list-inside space-y-1">
                         <li>All public text and voice channels are temporarily locked.</li>
-                        <li>A designated read-only `maintenance-mode-chat` is created.</li>
-                        <li>A `Maintenance mode VC` is spawned for members to connect to.</li>
-                        <li>This action utilizes Discord's REST APIs, which might take a few seconds to execute fully.</li>
+                        <li>A designated read-only <code className="text-yellow-400 bg-yellow-500/10 px-1 rounded">maintenance-mode-chat</code> channel is created.</li>
+                        <li>A <code className="text-yellow-400 bg-yellow-500/10 px-1 rounded">Maintenance mode VC</code> is spawned for members to connect to.</li>
+                        <li>This action utilizes Discord&apos;s REST APIs, which might take a few seconds to execute fully.</li>
+                        <li className="font-semibold text-yellow-400">
+                            All slash and prefix commands will receive <span className="underline">no response</span> — Discord will show &quot;Interaction Failed&quot; to users. This is expected but may appear as if the bot is broken.
+                        </li>
                     </ul>
                 </div>
             </div>

@@ -161,50 +161,30 @@ export default function WelcomeModulePage({
                 transition={{ delay: 0.1 }}
                 className="glass rounded-2xl border border-white/[0.06] p-6 space-y-8"
             >
-                {/* General Settings */}
+                {/* Plain Text Settings */}
                 <div className="space-y-4">
-                    <h3 className="text-xl font-bold text-white border-b border-white/[0.06] pb-2">General Settings</h3>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
-                        <div className="space-y-2">
-                            <label className="block text-sm font-medium text-gray-300">Main Channel</label>
-                            <ChannelPicker
-                                guildId={guildId}
-                                value={config.channelId || ""}
-                                onChange={(val: string | null) => setConfig({ ...config, channelId: val || null })}
-                            />
-                            <p className="text-xs text-gray-500 mt-1">Fallback channel for embeds when no separate embed channel is set.</p>
-                        </div>
+                    <div className="flex items-center justify-between border-b border-white/[0.06] pb-2">
+                        <h3 className="text-xl font-bold text-white">Plain Text Message</h3>
+                        <label className="flex items-center cursor-pointer gap-2">
+                            <span className="text-xs text-gray-400">Enable Plain</span>
+                            <div className="relative">
+                                <input
+                                    type="checkbox"
+                                    className="sr-only"
+                                    checked={config.plainEnabled}
+                                    onChange={(e) => setConfig({ ...config, plainEnabled: e.target.checked })}
+                                />
+                                <div className={`block w-10 h-6 rounded-full transition-colors ${config.plainEnabled ? 'bg-[#8b5cf6]' : 'bg-gray-700'}`}></div>
+                                <div className={`dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform ${config.plainEnabled ? 'transform translate-x-4' : ''}`}></div>
+                            </div>
+                        </label>
                     </div>
 
-                    <div className="space-y-2 pt-2">
-                        <div className="flex items-center justify-between">
-                            <label className="block text-sm font-medium text-gray-300">Plain Text Message</label>
-                            <label className="flex items-center cursor-pointer gap-2">
-                                <span className="text-xs text-gray-400">Enable Plain</span>
-                                <div className="relative">
-                                    <input
-                                        type="checkbox"
-                                        className="sr-only"
-                                        checked={config.plainEnabled}
-                                        onChange={(e) => setConfig({ ...config, plainEnabled: e.target.checked })}
-                                    />
-                                    <div className={`block w-10 h-6 rounded-full transition-colors ${config.plainEnabled ? 'bg-[#8b5cf6]' : 'bg-gray-700'}`}></div>
-                                    <div className={`dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform ${config.plainEnabled ? 'transform translate-x-4' : ''}`}></div>
-                                </div>
-                            </label>
-                        </div>
-                        <textarea
-                            value={config.message}
-                            onChange={(e) => setConfig({ ...config, message: e.target.value })}
-                            className="w-full h-32 bg-black/50 border border-white/[0.06] rounded-xl p-4 text-white focus:outline-none focus:border-[#8b5cf6]/50 transition-colors"
-                            placeholder="Welcome {user} to {server}!"
-                        />
-                        <p className="text-xs text-gray-500 mt-1">Variables: <code className="bg-white/10 px-1 rounded text-gray-300">{`{user}`}</code>, <code className="bg-white/10 px-1 rounded text-gray-300">{`{server}`}</code>, <code className="bg-white/10 px-1 rounded text-gray-300">{`{memberCount}`}</code></p>
-                        {config.plainEnabled && (
-                            <div className="space-y-1 pt-1">
-                                <label className="flex items-center gap-2 text-xs font-medium text-gray-300">
-                                    <FontAwesomeIcon icon={faHashtag} className="w-3 h-3 text-gray-400" />
+                    {config.plainEnabled && (
+                        <div className="space-y-4 bg-black/20 p-4 rounded-xl border border-white/[0.03]">
+                            <div className="space-y-1">
+                                <label className="flex items-center gap-2 text-sm font-medium text-gray-300">
+                                    <FontAwesomeIcon icon={faHashtag} className="w-3.5 h-3.5 text-gray-400" />
                                     Plain Text Channel
                                 </label>
                                 <ChannelPicker
@@ -212,18 +192,28 @@ export default function WelcomeModulePage({
                                     value={config.plainChannelId || ""}
                                     onChange={(val: string | null) => setConfig({ ...config, plainChannelId: val || null })}
                                 />
-                                <p className="text-xs text-gray-500">Required — plain text only fires when this channel is set.</p>
+                                <p className="text-xs text-gray-500">Channel where the plain text message will be sent.</p>
                             </div>
-                        )}
-                    </div>
+                            <div className="space-y-2">
+                                <label className="block text-sm font-medium text-gray-300">Message</label>
+                                <textarea
+                                    value={config.message}
+                                    onChange={(e) => setConfig({ ...config, message: e.target.value })}
+                                    className="w-full h-32 bg-black/50 border border-white/[0.06] rounded-xl p-4 text-white focus:outline-none focus:border-[#8b5cf6]/50 transition-colors"
+                                    placeholder="Welcome {user} to {server}!"
+                                />
+                                <p className="text-xs text-gray-500">Variables: <code className="bg-white/10 px-1 rounded text-gray-300">{`{user}`}</code>, <code className="bg-white/10 px-1 rounded text-gray-300">{`{server}`}</code>, <code className="bg-white/10 px-1 rounded text-gray-300">{`{memberCount}`}</code></p>
+                            </div>
+                        </div>
+                    )}
                 </div>
 
                 {/* Embed Settings */}
                 <div className="space-y-4 pt-4 border-t border-white/[0.06]">
-                    <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center justify-between border-b border-white/[0.06] pb-2">
                         <h3 className="text-xl font-bold text-white">Embed Welcome</h3>
-                        <label className="flex items-center cursor-pointer">
-                            <span className="mr-3 text-sm font-medium text-gray-300">Enable Embeds</span>
+                        <label className="flex items-center cursor-pointer gap-2">
+                            <span className="text-xs text-gray-400">Enable Embeds</span>
                             <div className="relative">
                                 <input
                                     type="checkbox"
@@ -238,89 +228,91 @@ export default function WelcomeModulePage({
                     </div>
 
                     {config.embedEnabled && (
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-black/20 p-4 rounded-xl border border-white/[0.03]">
-                            <div className="space-y-2">
-                                <label className="block text-sm font-medium text-gray-300">Embed Title</label>
-                                <input
-                                    type="text"
-                                    value={config.embedTitle}
-                                    onChange={(e) => setConfig({ ...config, embedTitle: e.target.value })}
-                                    className="w-full bg-black/50 border border-white/[0.06] rounded-xl p-3 text-white focus:outline-none focus:border-[#8b5cf6]/50 transition-colors"
-                                    placeholder="Welcome to {server}!"
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <label className="block text-sm font-medium text-gray-300">Embed Color (Hex)</label>
-                                <div className="flex gap-3">
-                                    <input
-                                        type="color"
-                                        value={config.embedColor}
-                                        onChange={(e) => setConfig({ ...config, embedColor: e.target.value })}
-                                        className="w-12 h-12 rounded-xl cursor-pointer bg-transparent border-0"
-                                    />
-                                    <input
-                                        type="text"
-                                        value={config.embedColor}
-                                        onChange={(e) => setConfig({ ...config, embedColor: e.target.value })}
-                                        className="flex-1 bg-black/50 border border-white/[0.06] rounded-xl p-3 text-white focus:outline-none focus:border-[#8b5cf6]/50 transition-colors"
-                                    />
-                                </div>
-                            </div>
-                            <div className="space-y-2 md:col-span-2">
-                                <label className="block text-sm font-medium text-gray-300">Embed Description</label>
-                                <textarea
-                                    value={config.embedDescription}
-                                    onChange={(e) => setConfig({ ...config, embedDescription: e.target.value })}
-                                    className="w-full h-32 bg-black/50 border border-white/[0.06] rounded-xl p-4 text-white focus:outline-none focus:border-[#8b5cf6]/50 transition-colors"
-                                    placeholder="Welcome {user}! You are member #{memberCount}."
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <label className="block text-sm font-medium text-gray-300">Embed Image URL</label>
-                                <input
-                                    type="text"
-                                    value={config.embedImage || ""}
-                                    onChange={(e) => setConfig({ ...config, embedImage: e.target.value || null })}
-                                    className="w-full bg-black/50 border border-white/[0.06] rounded-xl p-3 text-white focus:outline-none focus:border-[#8b5cf6]/50 transition-colors"
-                                    placeholder="https://example.com/image.png"
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <label className="block text-sm font-medium text-gray-300">Embed Footer</label>
-                                <input
-                                    type="text"
-                                    value={config.embedFooter}
-                                    onChange={(e) => setConfig({ ...config, embedFooter: e.target.value })}
-                                    className="w-full bg-black/50 border border-white/[0.06] rounded-xl p-3 text-white focus:outline-none focus:border-[#8b5cf6]/50 transition-colors"
-                                    placeholder="Enjoy your stay!"
-                                />
-                            </div>
-                            <div className="pt-2">
-                                <label className="flex items-center cursor-pointer">
-                                    <span className="mr-3 text-sm font-medium text-gray-300">Show User Avatar as Thumbnail</span>
-                                    <div className="relative">
-                                        <input
-                                            type="checkbox"
-                                            className="sr-only"
-                                            checked={config.embedThumbnail}
-                                            onChange={(e) => setConfig({ ...config, embedThumbnail: e.target.checked })}
-                                        />
-                                        <div className={`block w-10 h-6 rounded-full transition-colors ${config.embedThumbnail ? 'bg-[#8b5cf6]' : 'bg-gray-700'}`}></div>
-                                        <div className={`dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform ${config.embedThumbnail ? 'transform translate-x-4' : ''}`}></div>
-                                    </div>
-                                </label>
-                            </div>
-                            <div className="space-y-1 md:col-span-2">
-                                <label className="flex items-center gap-2 text-xs font-medium text-gray-300">
-                                    <FontAwesomeIcon icon={faHashtag} className="w-3 h-3 text-gray-400" />
-                                    Embed Channel <span className="text-gray-500 font-normal">(optional override)</span>
+                        <div className="space-y-4 bg-black/20 p-4 rounded-xl border border-white/[0.03]">
+                            <div className="space-y-1">
+                                <label className="flex items-center gap-2 text-sm font-medium text-gray-300">
+                                    <FontAwesomeIcon icon={faHashtag} className="w-3.5 h-3.5 text-gray-400" />
+                                    Embed Channel
                                 </label>
                                 <ChannelPicker
                                     guildId={guildId}
                                     value={config.embedChannelId || ""}
                                     onChange={(val: string | null) => setConfig({ ...config, embedChannelId: val || null })}
                                 />
-                                <p className="text-xs text-gray-500">Send the embed to a different channel than the main channel.</p>
+                                <p className="text-xs text-gray-500">Channel where the embed will be sent.</p>
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="space-y-2">
+                                    <label className="block text-sm font-medium text-gray-300">Embed Title</label>
+                                    <input
+                                        type="text"
+                                        value={config.embedTitle}
+                                        onChange={(e) => setConfig({ ...config, embedTitle: e.target.value })}
+                                        className="w-full bg-black/50 border border-white/[0.06] rounded-xl p-3 text-white focus:outline-none focus:border-[#8b5cf6]/50 transition-colors"
+                                        placeholder="Welcome to {server}!"
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="block text-sm font-medium text-gray-300">Embed Color (Hex)</label>
+                                    <div className="flex gap-3">
+                                        <input
+                                            type="color"
+                                            value={config.embedColor}
+                                            onChange={(e) => setConfig({ ...config, embedColor: e.target.value })}
+                                            className="w-12 h-12 rounded-xl cursor-pointer bg-transparent border-0"
+                                        />
+                                        <input
+                                            type="text"
+                                            value={config.embedColor}
+                                            onChange={(e) => setConfig({ ...config, embedColor: e.target.value })}
+                                            className="flex-1 bg-black/50 border border-white/[0.06] rounded-xl p-3 text-white focus:outline-none focus:border-[#8b5cf6]/50 transition-colors"
+                                        />
+                                    </div>
+                                </div>
+                                <div className="space-y-2 md:col-span-2">
+                                    <label className="block text-sm font-medium text-gray-300">Embed Description</label>
+                                    <textarea
+                                        value={config.embedDescription}
+                                        onChange={(e) => setConfig({ ...config, embedDescription: e.target.value })}
+                                        className="w-full h-32 bg-black/50 border border-white/[0.06] rounded-xl p-4 text-white focus:outline-none focus:border-[#8b5cf6]/50 transition-colors"
+                                        placeholder="Welcome {user}! You are member #{memberCount}."
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="block text-sm font-medium text-gray-300">Embed Image URL</label>
+                                    <input
+                                        type="text"
+                                        value={config.embedImage || ""}
+                                        onChange={(e) => setConfig({ ...config, embedImage: e.target.value || null })}
+                                        className="w-full bg-black/50 border border-white/[0.06] rounded-xl p-3 text-white focus:outline-none focus:border-[#8b5cf6]/50 transition-colors"
+                                        placeholder="https://example.com/image.png"
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="block text-sm font-medium text-gray-300">Embed Footer</label>
+                                    <input
+                                        type="text"
+                                        value={config.embedFooter}
+                                        onChange={(e) => setConfig({ ...config, embedFooter: e.target.value })}
+                                        className="w-full bg-black/50 border border-white/[0.06] rounded-xl p-3 text-white focus:outline-none focus:border-[#8b5cf6]/50 transition-colors"
+                                        placeholder="Enjoy your stay!"
+                                    />
+                                </div>
+                                <div className="pt-2">
+                                    <label className="flex items-center cursor-pointer">
+                                        <span className="mr-3 text-sm font-medium text-gray-300">Show User Avatar as Thumbnail</span>
+                                        <div className="relative">
+                                            <input
+                                                type="checkbox"
+                                                className="sr-only"
+                                                checked={config.embedThumbnail}
+                                                onChange={(e) => setConfig({ ...config, embedThumbnail: e.target.checked })}
+                                            />
+                                            <div className={`block w-10 h-6 rounded-full transition-colors ${config.embedThumbnail ? 'bg-[#8b5cf6]' : 'bg-gray-700'}`}></div>
+                                            <div className={`dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform ${config.embedThumbnail ? 'transform translate-x-4' : ''}`}></div>
+                                        </div>
+                                    </label>
+                                </div>
                             </div>
                         </div>
                     )}

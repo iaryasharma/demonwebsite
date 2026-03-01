@@ -3,15 +3,19 @@
 import { motion } from "framer-motion";
 import { Check, X } from "lucide-react";
 
-const features = [
-  { name: "Basic Commands", free: true, prime: true, pro: true },
-  { name: "Moderation", free: true, prime: true, pro: true },
-  { name: "Anime Search", free: true, prime: true, pro: true },
-  { name: "Custom Prefix", free: false, prime: true, pro: true },
+const features: { name: string; free: boolean; prime: boolean; pro: boolean; comingSoon?: boolean }[] = [
+  { name: "All Core Commands", free: true, prime: true, pro: true },
+  { name: "Moderation Suite", free: true, prime: true, pro: true },
+  { name: "Standard Giveaways", free: true, prime: true, pro: true },
+  { name: "Custom Prefix", free: true, prime: true, pro: true },
+  { name: "Dashboard Access", free: true, prime: true, pro: true },
   { name: "Custom Welcome Images", free: false, prime: true, pro: true },
-  { name: "Advanced Giveaways", free: false, prime: true, pro: true },
-  { name: "Auto Recovery", free: false, prime: false, pro: true },
-  { name: "Premium Support", free: false, prime: false, pro: true },
+  { name: "Advanced Giveaway Builder", free: false, prime: true, pro: true },
+  { name: "No-prefix Mode", free: false, prime: true, pro: true, comingSoon: true },
+  { name: "Reduced Command Cooldowns", free: false, prime: true, pro: true, comingSoon: true },
+  { name: "Auto Recovery", free: false, prime: false, pro: true, comingSoon: true },
+  { name: "Dedicated Support Channel", free: false, prime: false, pro: true },
+  { name: "Early Access to Features", free: false, prime: false, pro: true },
 ];
 
 function CellIcon({ available }: { available: boolean }) {
@@ -62,7 +66,14 @@ export function FeatureComparison() {
                   className={`border-b border-white/[0.03] hover:bg-white/[0.015] transition-colors ${i === features.length - 1 ? "border-b-0" : ""
                     }`}
                 >
-                  <td className="py-3.5 px-6 text-sm text-gray-300">{f.name}</td>
+                  <td className="py-3.5 px-6 text-sm text-gray-300">
+                    <span>{f.name}</span>
+                    {f.comingSoon && (
+                      <span className="ml-2 text-[10px] font-semibold text-amber-400 bg-amber-500/10 border border-amber-500/20 px-1.5 py-0.5 rounded-full align-middle">
+                        Soon
+                      </span>
+                    )}
+                  </td>
                   <td className="py-3.5 px-4 text-center">
                     <CellIcon available={f.free} />
                   </td>

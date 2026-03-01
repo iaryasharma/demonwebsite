@@ -10,6 +10,7 @@ const INVITE_URL =
 interface PlanFeature {
   text: string;
   highlight?: boolean;
+  comingSoon?: boolean;
 }
 
 const plans = [
@@ -25,11 +26,12 @@ const plans = [
     iconBg: "from-[#8b5cf6]/10 to-indigo-500/10",
     badge: null,
     features: [
-      { text: "Everything from free plan" },
-      { text: "No-prefix commands" },
-      { text: "Customized giveaways" },
-      { text: "Unlimited usage" },
-      { text: "Welcome images" },
+      { text: "Everything from the free plan" },
+      { text: "Custom welcome images" },
+      { text: "Advanced giveaway embed builder" },
+      { text: "Full dashboard module access" },
+      { text: "No-prefix mode", comingSoon: true },
+      { text: "Reduced command cooldowns", comingSoon: true },
     ] as PlanFeature[],
   },
   {
@@ -45,12 +47,10 @@ const plans = [
     badge: "Most Popular",
     features: [
       { text: "Everything from Demon Prime" },
-      { text: "No-prefix commands" },
-      { text: "Customized giveaways" },
-      { text: "Unlimited usage" },
-      { text: "Welcome images" },
-      { text: "Auto Recovery", highlight: true },
-      { text: "Premium Support", highlight: true },
+      { text: "Dedicated support channel", highlight: true },
+      { text: "Early access to new features", highlight: true },
+      { text: "Auto recovery on crashes", highlight: true, comingSoon: true },
+      { text: "Multi-server premium", comingSoon: true },
     ] as PlanFeature[],
   },
 ];
@@ -121,8 +121,11 @@ export function PricingCards() {
                     </div>
                     <span className={`text-sm ${f.highlight ? "text-purple-300 font-medium" : "text-gray-300"}`}>
                       {f.text}
-                    </span>
-                  </li>
+                    </span>                    {f.comingSoon && (
+                      <span className="ml-auto text-[10px] font-semibold text-amber-400 bg-amber-500/10 border border-amber-500/20 px-1.5 py-0.5 rounded-full whitespace-nowrap">
+                        Soon
+                      </span>
+                    )}                  </li>
                 ))}
               </ul>
             </div>
