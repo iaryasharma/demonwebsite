@@ -22,7 +22,8 @@ import {
     faWrench,
     faHashtag,
     faTriangleExclamation,
-    faCircleXmark
+    faCircleXmark,
+    faPaperPlane
 } from "@fortawesome/free-solid-svg-icons"
 import Link from "next/link"
 import { ChannelPicker } from "@/components/dashboard/settings/channel-picker"
@@ -75,6 +76,8 @@ export default function VerificationPage({
     const [saveSuccess, setSaveSuccess] = useState(false)
     const [lockingChannels, setLockingChannels] = useState(false)
     const [lockResult, setLockResult] = useState<{ ok: boolean; message: string } | null>(null)
+    const [postingEmbed, setPostingEmbed] = useState(false)
+    const [postEmbedResult, setPostEmbedResult] = useState<{ ok: boolean; message: string } | null>(null)
 
     const hasUnsavedChanges = config && originalConfig && !isEqual(config, originalConfig)
 
@@ -116,6 +119,27 @@ export default function VerificationPage({
             console.error("Failed to save verification config:", error)
         } finally {
             setSaving(false)
+        }
+    }
+
+    const handlePostEmbed = async () => {
+        if (!config?.channelId) return
+        setPostingEmbed(true)
+        setPostEmbedResult(null)
+        try {
+            const res = await fetch(`/api/guilds/${guildId}/modules/verification/post-embed`, {
+                method: "POST",
+            })
+            const data = await res.json()
+            if (res.ok) {
+                setPostEmbedResult({ ok: true, message: "Verification embed posted successfully!" })
+            } else {
+                setPostEmbedResult({ ok: false, message: data.error || "Failed to post embed" })
+            }
+        } catch {
+            setPostEmbedResult({ ok: false, message: "Network error — try again" })
+        } finally {
+            setPostingEmbed(false)
         }
     }
 
@@ -375,6 +399,37 @@ export default function VerificationPage({
                             className="w-full bg-black/40 border border-white/[0.06] text-white text-sm rounded-lg focus:ring-[#8b5cf6] focus:border-[#8b5cf6] block p-2.5"
                         />
                     </div>
+                </div>
+
+                {/* Post Verification Embed */}
+                <div className="pt-4 border-t border-white/[0.06] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div>
+                        <p className="text-sm font-medium text-white">Post Verification Embed</p>
+                        <p className="text-xs text-gray-400 mt-0.5">Sends (or re-posts) the embed with a Verify button to your verification channel. Save settings first.</p>
+                        {postEmbedResult && (
+                            <div className={`mt-2 text-xs flex items-center gap-2 ${
+                                postEmbedResult.ok ? "text-green-400" : "text-red-400"
+                            }`}>
+                                <FontAwesomeIcon
+                                    icon={postEmbedResult.ok ? faCircleCheck : faCircleXmark}
+                                    className="w-3.5 h-3.5 shrink-0"
+                                />
+                                {postEmbedResult.message}
+                            </div>
+                        )}
+                    </div>
+                    <button
+                        onClick={handlePostEmbed}
+                        disabled={postingEmbed || !config.channelId || !config.roleId}
+                        title={!config.channelId ? "Set a verification channel first" : !config.roleId ? "Set a verified role first" : undefined}
+                        className="shrink-0 flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#8b5cf6]/20 hover:bg-[#8b5cf6]/30 disabled:opacity-50 disabled:cursor-not-allowed text-purple-300 text-sm font-medium border border-[#8b5cf6]/30 transition-all"
+                    >
+                        {postingEmbed ? (
+                            <><FontAwesomeIcon icon={faSpinner} className="animate-spin w-4 h-4" /> Posting…</>
+                        ) : (
+                            <><FontAwesomeIcon icon={faPaperPlane} className="w-4 h-4" /> Post Embed</>
+                        )}
+                    </button>
                 </div>
             </motion.div>
 
