@@ -31,11 +31,15 @@ export async function GET(
     }
 
     try {
+        // Allow force-refresh via ?refresh=true (bypasses server-side cache)
+        const url = new URL(request.url)
+        const forceRefresh = url.searchParams.get("refresh") === "true"
+
         const cacheKey = `${guildId}`
         const now = Date.now()
         const cached = rolesCache.get(cacheKey)
 
-        if (cached && cached.expiry > now) {
+        if (!forceRefresh && cached && cached.expiry > now) {
             try {
                 return NextResponse.json(await cached.promise)
             } catch {

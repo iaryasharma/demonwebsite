@@ -17,6 +17,7 @@ import {
     faMicrophone,
     faBullhorn,
     faSearch,
+    faRotateRight,
 } from "@fortawesome/free-solid-svg-icons"
 import Link from "next/link"
 import { SaveBar } from "@/components/dashboard/save-bar"
@@ -51,16 +52,25 @@ export default function CommandStateModulePage({
     const [saving, setSaving] = useState(false)
 
     // ─── Queries ───────────────────────────────────────────────
-    const { data: channels = [], isLoading: channelsLoading } = useQuery<ChannelData[]>({
+    const { data: channels = [], isLoading: channelsLoading, isFetching: channelsFetching, refetch: refetchChannels } = useQuery<ChannelData[]>({
         queryKey: ["channels", guildId],
-        queryFn: async () => {
-            const res = await fetch(`/api/guilds/${guildId}/channels`)
+        queryFn: async ({ meta }) => {
+            const forceRefresh = meta?.forceRefresh === true
+            const url = forceRefresh
+                ? `/api/guilds/${guildId}/channels?refresh=true`
+                : `/api/guilds/${guildId}/channels`
+            const res = await fetch(url)
             if (!res.ok) throw new Error("Failed to fetch channels")
             return res.json()
         },
         enabled: status === "authenticated" && !!guildId,
-        staleTime: 3 * 60 * 1000,
+        staleTime: 5 * 60 * 1000, // 5 minutes
     })
+
+    const handleRefreshChannels = () => {
+        queryClient.invalidateQueries({ queryKey: ["channels", guildId] })
+        refetchChannels({ meta: { forceRefresh: true } } as any)
+    }
 
     const { data: commandState, isLoading: stateLoading } = useQuery<{ disabledChannels: string[] }>({
         queryKey: ["command-state", guildId],
@@ -205,6 +215,15 @@ export default function CommandStateModulePage({
                     />
                 </div>
                 <div className="flex gap-3 shrink-0">
+                    <button
+                        type="button"
+                        onClick={handleRefreshChannels}
+                        disabled={channelsFetching}
+                        title="Refresh channel list"
+                        className="px-4 py-3 bg-white/[0.04] border border-white/10 rounded-xl text-gray-400 hover:text-white hover:border-[#8b5cf6]/50 transition-colors disabled:opacity-40 flex items-center gap-2"
+                    >
+                        <FontAwesomeIcon icon={faRotateRight} className={`w-4 h-4 ${channelsFetching ? 'animate-spin' : ''}`} />
+                    </button>
                     <button
                         onClick={enableAll}
                         disabled={allEnabled}

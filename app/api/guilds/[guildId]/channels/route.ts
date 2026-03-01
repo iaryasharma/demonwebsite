@@ -23,10 +23,14 @@ export async function GET(
         return NextResponse.json({ error: "Forbidden" }, { status: 403 })
     }
 
+    // Allow force-refresh via ?refresh=true (bypasses server-side cache)
+    const url = new URL(request.url)
+    const forceRefresh = url.searchParams.get("refresh") === "true"
+
     // Return from cache if still valid
     const now = Date.now()
     const cached = channelCache.get(guildId)
-    if (cached && cached.expiry > now) {
+    if (!forceRefresh && cached && cached.expiry > now) {
         return NextResponse.json(cached.data, {
             headers: { "X-Cache": "HIT" }
         })

@@ -27,58 +27,71 @@ interface LoggingConfig {
     mode: 'single' | 'multi' | 'granular'
     channelId: string | null
     channels: {
-        moderation: string | null
-        messages: string | null
-        members: string | null
-        server: string | null
+        moderation:   string | null
+        messages:     string | null
+        members:      string | null
+        server:       string | null
         verification: string | null
+        autorole:     string | null
     }
     eventChannels: {
-        memberJoin: string | null
-        memberLeave: string | null
-        ban: string | null
-        unban: string | null
-        kick: string | null
+        memberJoin:    string | null
+        memberLeave:   string | null
+        ban:           string | null
+        unban:         string | null
+        kick:          string | null
         messageDelete: string | null
-        messageEdit: string | null
-        modCommand: string | null
-        verification: string | null
-        roleCreate: string | null
-        roleDelete: string | null
+        messageEdit:   string | null
+        modCommand:    string | null
+        verification:  string | null
+        autorole:      string | null
+        roleCreate:    string | null
+        roleDelete:    string | null
+        roleUpdate:    string | null
         channelCreate: string | null
         channelDelete: string | null
+        channelUpdate: string | null
+        serverUpdate:  string | null
     }
     events: {
-        memberJoin: boolean
-        memberLeave: boolean
-        ban: boolean
-        unban: boolean
-        kick: boolean
+        memberJoin:    boolean
+        memberLeave:   boolean
+        ban:           boolean
+        unban:         boolean
+        kick:          boolean
         messageDelete: boolean
-        messageEdit: boolean
-        modCommand: boolean
-        verification: boolean
-        roleCreate: boolean
-        roleDelete: boolean
+        messageEdit:   boolean
+        modCommand:    boolean
+        verification:  boolean
+        autorole:      boolean
+        roleCreate:    boolean
+        roleDelete:    boolean
+        roleUpdate:    boolean
         channelCreate: boolean
         channelDelete: boolean
+        channelUpdate: boolean
+        serverUpdate:  boolean
     }
 }
 
 const EVENT_LABELS: Record<keyof LoggingConfig['events'], string> = {
-    memberJoin: 'Member Join',
-    memberLeave: 'Member Leave',
-    ban: 'Ban',
-    unban: 'Unban',
-    kick: 'Kick',
+    memberJoin:    'Member Join',
+    memberLeave:   'Member Leave',
+    ban:           'Ban',
+    unban:         'Unban',
+    kick:          'Kick',
     messageDelete: 'Message Delete',
-    messageEdit: 'Message Edit',
-    modCommand: 'Mod Command',
-    verification: 'Verification',
-    roleCreate: 'Role Create',
-    roleDelete: 'Role Delete',
+    messageEdit:   'Message Edit',
+    modCommand:    'Mod Command',
+    verification:  'Verification',
+    autorole:      'Auto-Role',
+    roleCreate:    'Role Create',
+    roleDelete:    'Role Delete',
+    roleUpdate:    'Role Update',
     channelCreate: 'Channel Create',
-    channelDelete: 'Channel Delete'
+    channelDelete: 'Channel Delete',
+    channelUpdate: 'Channel Update',
+    serverUpdate:  'Server Update',
 }
 
 export default function LoggingModulePage({
@@ -240,7 +253,7 @@ export default function LoggingModulePage({
                                 <FontAwesomeIcon icon={faLayerGroup} className={`w-5 h-5 ${config.mode === 'multi' ? 'text-[#8b5cf6]' : 'text-gray-400'}`} />
                                 <span className={`text-lg ${config.mode === 'multi' ? 'text-white' : 'text-gray-300'}`}>Multi</span>
                             </div>
-                            <p className="text-xs text-gray-400 font-normal">Events routed into 5 distinct categories.</p>
+                            <p className="text-xs text-gray-400 font-normal">Events routed into 6 distinct categories.</p>
                         </label>
 
                         {/* Granular Mode Card */}
@@ -257,7 +270,7 @@ export default function LoggingModulePage({
                                 <FontAwesomeIcon icon={faBullseye} className={`w-5 h-5 ${config.mode === 'granular' ? 'text-[#8b5cf6]' : 'text-gray-400'}`} />
                                 <span className={`text-lg ${config.mode === 'granular' ? 'text-white' : 'text-gray-300'}`}>Granular</span>
                             </div>
-                            <p className="text-xs text-gray-400 font-normal">Every 13 events can have an isolated channel.</p>
+                            <p className="text-xs text-gray-400 font-normal">Every 17 events can have an isolated channel.</p>
                         </label>
                     </div>
                 </div>
@@ -321,6 +334,14 @@ export default function LoggingModulePage({
                                     guildId={guildId}
                                     value={config.channels.verification || ""}
                                     onChange={(val: string | null) => setConfig({ ...config, channels: { ...config.channels, verification: val || null } })}
+                                />
+                            </div>
+                            <div className="space-y-1">
+                                <label className="block text-sm font-medium text-gray-300">Auto-Role Assignments</label>
+                                <ChannelPicker
+                                    guildId={guildId}
+                                    value={config.channels.autorole || ""}
+                                    onChange={(val: string | null) => setConfig({ ...config, channels: { ...config.channels, autorole: val || null } })}
                                 />
                             </div>
                         </div>

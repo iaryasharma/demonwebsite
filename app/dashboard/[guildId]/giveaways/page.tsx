@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react"
 import { useSession } from "next-auth/react"
-import { useQuery } from "@tanstack/react-query"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { useParams } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
@@ -116,26 +116,47 @@ export default function GiveawaysPage() {
         enabled: !!session && !!guildId
     })
 
-    const { data: channels = [], isLoading: channelsLoading } = useQuery<ChannelData[]>({
+    const queryClient = useQueryClient()
+
+    const { data: channels = [], isLoading: channelsLoading, isFetching: channelsFetching, refetch: refetchChannels } = useQuery<ChannelData[]>({
         queryKey: ["channels", guildId],
-        queryFn: async () => {
-            const res = await fetch(`/api/guilds/${guildId}/channels`)
+        queryFn: async ({ meta }) => {
+            const forceRefresh = meta?.forceRefresh === true
+            const url = forceRefresh
+                ? `/api/guilds/${guildId}/channels?refresh=true`
+                : `/api/guilds/${guildId}/channels`
+            const res = await fetch(url)
             if (!res.ok) throw new Error("Failed to fetch channels")
             return res.json()
         },
         enabled: showCreate && !!guildId,
-        staleTime: 3 * 60 * 1000, // 3 minutes
+        staleTime: 5 * 60 * 1000, // 5 minutes
     })
 
-    const { data: roles = [], isLoading: rolesLoading } = useQuery<RoleData[]>({
+    const { data: roles = [], isLoading: rolesLoading, isFetching: rolesFetching, refetch: refetchRoles } = useQuery<RoleData[]>({
         queryKey: ["roles", guildId],
-        queryFn: async () => {
-            const res = await fetch(`/api/guilds/${guildId}/roles`)
+        queryFn: async ({ meta }) => {
+            const forceRefresh = meta?.forceRefresh === true
+            const url = forceRefresh
+                ? `/api/guilds/${guildId}/roles?refresh=true`
+                : `/api/guilds/${guildId}/roles`
+            const res = await fetch(url)
             if (!res.ok) throw new Error("Failed to fetch roles")
             return res.json()
         },
-        enabled: showCreate && !!guildId
+        enabled: showCreate && !!guildId,
+        staleTime: 5 * 60 * 1000, // 5 minutes
     })
+
+    const handleRefreshChannels = () => {
+        queryClient.invalidateQueries({ queryKey: ["channels", guildId] })
+        refetchChannels({ meta: { forceRefresh: true } } as any)
+    }
+
+    const handleRefreshRoles = () => {
+        queryClient.invalidateQueries({ queryKey: ["roles", guildId] })
+        refetchRoles({ meta: { forceRefresh: true } } as any)
+    }
 
     useEffect(() => {
         if (channels.length > 0 && !formChannel) {
@@ -268,9 +289,20 @@ export default function GiveawaysPage() {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 {/* Channel */}
                                 <div>
-                                    <label className="flex items-center gap-1.5 text-xs font-medium text-gray-400 mb-1.5">
-                                        <FontAwesomeIcon icon={faHashtag} className="w-3 h-3" />
-                                        Channel <span className="text-red-400">*</span>
+                                    <label className="flex items-center justify-between mb-1.5">
+                                        <span className="flex items-center gap-1.5 text-xs font-medium text-gray-400">
+                                            <FontAwesomeIcon icon={faHashtag} className="w-3 h-3" />
+                                            Channel <span className="text-red-400">*</span>
+                                        </span>
+                                        <button
+                                            type="button"
+                                            onClick={handleRefreshChannels}
+                                            disabled={channelsFetching}
+                                            title="Refresh channel list"
+                                            className="p-1 rounded-lg text-gray-500 hover:text-gray-300 transition-colors disabled:opacity-40"
+                                        >
+                                            <FontAwesomeIcon icon={faRotateRight} className={`w-3 h-3 ${channelsFetching ? 'animate-spin' : ''}`} />
+                                        </button>
                                     </label>
                                     {channelsLoading ? (
                                         <div className={`${inputClass} flex items-center gap-2 text-gray-500`}>
@@ -385,9 +417,20 @@ export default function GiveawaysPage() {
 
                             {/* Required Role */}
                             <div>
-                                <label className="flex items-center gap-1.5 text-xs font-medium text-gray-400 mb-1.5">
-                                    <FontAwesomeIcon icon={faUserShield} className="w-3 h-3" />
-                                    Required Role
+                                <label className="flex items-center justify-between mb-1.5">
+                                    <span className="flex items-center gap-1.5 text-xs font-medium text-gray-400">
+                                        <FontAwesomeIcon icon={faUserShield} className="w-3 h-3" />
+                                        Required Role
+                                    </span>
+                                    <button
+                                        type="button"
+                                        onClick={handleRefreshRoles}
+                                        disabled={rolesFetching}
+                                        title="Refresh role list"
+                                        className="p-1 rounded-lg text-gray-500 hover:text-gray-300 transition-colors disabled:opacity-40"
+                                    >
+                                        <FontAwesomeIcon icon={faRotateRight} className={`w-3 h-3 ${rolesFetching ? 'animate-spin' : ''}`} />
+                                    </button>
                                 </label>
                                 {rolesLoading ? (
                                     <div className={`${inputClass} flex items-center gap-2 text-gray-500`}>

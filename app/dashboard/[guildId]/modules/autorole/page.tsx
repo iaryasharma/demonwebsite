@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react"
 import { useSession } from "next-auth/react"
-import { useQuery } from "@tanstack/react-query"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { motion, AnimatePresence } from "framer-motion"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import {
@@ -14,7 +14,8 @@ import {
     faClock,
     faShieldHalved,
     faCalendarDays,
-    faHashtag
+    faHashtag,
+    faRotateRight
 } from "@fortawesome/free-solid-svg-icons"
 import { toast } from "sonner"
 import { SaveBar } from "@/components/dashboard/save-bar"
@@ -63,6 +64,7 @@ export default function AutoRolePage({
 }) {
     const { guildId } = React.use(params)
     const { data: session } = useSession()
+    const queryClient = useQueryClient()
 
     const [config, setConfig] = useState<AutoRoleConfig | null>(null)
     const [originalConfig, setOriginalConfig] = useState<AutoRoleConfig | null>(null)
@@ -80,16 +82,25 @@ export default function AutoRolePage({
         enabled: !!guildId,
     })
 
-    const { data: roles = [], isLoading: rolesLoading } = useQuery<Role[]>({
+    const { data: roles = [], isLoading: rolesLoading, isFetching: rolesFetching, refetch: refetchRoles } = useQuery<Role[]>({
         queryKey: ["roles", guildId],
-        queryFn: async () => {
-            const res = await fetch(`/api/guilds/${guildId}/roles`)
+        queryFn: async ({ meta }) => {
+            const forceRefresh = meta?.forceRefresh === true
+            const url = forceRefresh
+                ? `/api/guilds/${guildId}/roles?refresh=true`
+                : `/api/guilds/${guildId}/roles`
+            const res = await fetch(url)
             if (!res.ok) throw new Error("Failed to fetch roles")
             return res.json()
         },
         enabled: !!guildId,
-        staleTime: 3 * 60 * 1000, // 3 minutes
+        staleTime: 5 * 60 * 1000, // 5 minutes
     })
+
+    const handleRefreshRoles = () => {
+        queryClient.invalidateQueries({ queryKey: ["roles", guildId] })
+        refetchRoles({ meta: { forceRefresh: true } } as any)
+    }
 
     useEffect(() => {
         if (serverConfig && !originalConfig) {
@@ -213,9 +224,20 @@ export default function AutoRolePage({
                                 <h3 className="text-xl font-bold text-white mb-1">Roles to Assign</h3>
                                 <p className="text-sm text-gray-400">Select which roles members receive upon joining. Maximun 10.</p>
                             </div>
-                            <span className={`text-sm font-medium px-3 py-1 rounded-full ${config.roleIds.length >= 10 ? 'bg-red-500/20 text-red-400' : 'bg-[#8b5cf6]/20 text-[#8b5cf6]'}`}>
-                                {config.roleIds.length}/10 selected
-                            </span>
+                            <div className="flex items-center gap-2">
+                                <button
+                                    type="button"
+                                    onClick={handleRefreshRoles}
+                                    disabled={rolesFetching}
+                                    title="Refresh role list"
+                                    className="p-2 rounded-xl bg-black/40 border border-white/[0.06] text-gray-400 hover:text-white hover:border-[#8b5cf6]/50 transition-colors disabled:opacity-40"
+                                >
+                                    <FontAwesomeIcon icon={faRotateRight} className={`w-3.5 h-3.5 ${rolesFetching ? 'animate-spin' : ''}`} />
+                                </button>
+                                <span className={`text-sm font-medium px-3 py-1 rounded-full ${config.roleIds.length >= 10 ? 'bg-red-500/20 text-red-400' : 'bg-[#8b5cf6]/20 text-[#8b5cf6]'}`}>
+                                    {config.roleIds.length}/10 selected
+                                </span>
+                            </div>
                         </div>
 
                         <div className="bg-black/40 rounded-xl border border-white/[0.06] p-4 max-h-[300px] overflow-y-auto custom-scrollbar">

@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react"
 import { useSession } from "next-auth/react"
-import { useQuery } from "@tanstack/react-query"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { motion } from "framer-motion"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import {
@@ -16,7 +16,8 @@ import {
     faShieldHalved,
     faCheck,
     faTimes,
-    faArrowRight
+    faArrowRight,
+    faRotateRight
 } from "@fortawesome/free-solid-svg-icons"
 import Link from "next/link"
 
@@ -89,6 +90,7 @@ export default function ServerSettingsPage({
 }) {
     const { guildId } = React.use(params)
     const { data: session, status } = useSession()
+    const queryClient = useQueryClient()
 
     const { data: settings, isLoading: settingsLoading } = useQuery<ServerSettings>({
         queryKey: ["server-settings", guildId],
@@ -100,27 +102,42 @@ export default function ServerSettingsPage({
         enabled: status === "authenticated" && !!guildId
     })
 
-    const { data: channels = [], isLoading: channelsLoading } = useQuery<Channel[]>({
+    const { data: channels = [], isLoading: channelsLoading, isFetching: channelsFetching, refetch: refetchChannels } = useQuery<Channel[]>({
         queryKey: ["channels", guildId],
-        queryFn: async () => {
-            const res = await fetch(`/api/guilds/${guildId}/channels`)
+        queryFn: async ({ meta }) => {
+            const forceRefresh = meta?.forceRefresh === true
+            const url = forceRefresh
+                ? `/api/guilds/${guildId}/channels?refresh=true`
+                : `/api/guilds/${guildId}/channels`
+            const res = await fetch(url)
             if (!res.ok) throw new Error("Failed to fetch channels")
             return res.json()
         },
         enabled: status === "authenticated" && !!guildId,
-        staleTime: 3 * 60 * 1000, // 3 minutes
+        staleTime: 5 * 60 * 1000, // 5 minutes
     })
 
-    const { data: roles = [], isLoading: rolesLoading } = useQuery<Role[]>({
+    const { data: roles = [], isLoading: rolesLoading, isFetching: rolesFetching, refetch: refetchRoles } = useQuery<Role[]>({
         queryKey: ["roles", guildId],
-        queryFn: async () => {
-            const res = await fetch(`/api/guilds/${guildId}/roles`)
+        queryFn: async ({ meta }) => {
+            const forceRefresh = meta?.forceRefresh === true
+            const url = forceRefresh
+                ? `/api/guilds/${guildId}/roles?refresh=true`
+                : `/api/guilds/${guildId}/roles`
+            const res = await fetch(url)
             if (!res.ok) throw new Error("Failed to fetch roles")
             return res.json()
         },
         enabled: status === "authenticated" && !!guildId,
-        staleTime: 3 * 60 * 1000, // 3 minutes
+        staleTime: 5 * 60 * 1000, // 5 minutes
     })
+
+    const handleRefreshAll = () => {
+        queryClient.invalidateQueries({ queryKey: ["channels", guildId] })
+        queryClient.invalidateQueries({ queryKey: ["roles", guildId] })
+        refetchChannels({ meta: { forceRefresh: true } } as any)
+        refetchRoles({ meta: { forceRefresh: true } } as any)
+    }
 
     if (settingsLoading || channelsLoading || rolesLoading || status === "loading") {
         return (
@@ -138,15 +155,27 @@ export default function ServerSettingsPage({
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="flex items-center gap-4 mb-10 border-b border-white/[0.06] pb-6"
+                className="flex items-center justify-between gap-4 mb-10 border-b border-white/[0.06] pb-6"
             >
-                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#8b5cf6] to-[#7c3aed] flex items-center justify-center shadow-lg shadow-[#8b5cf6]/20">
-                    <FontAwesomeIcon icon={faGear} className="w-7 h-7 text-white" />
+                <div className="flex items-center gap-4">
+                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#8b5cf6] to-[#7c3aed] flex items-center justify-center shadow-lg shadow-[#8b5cf6]/20">
+                        <FontAwesomeIcon icon={faGear} className="w-7 h-7 text-white" />
+                    </div>
+                    <div>
+                        <h1 className="text-3xl font-bold text-white">Server Settings Overview</h1>
+                        <p className="text-gray-400 mt-1">A bird's-eye view of all bot configurations for this server.</p>
+                    </div>
                 </div>
-                <div>
-                    <h1 className="text-3xl font-bold text-white">Server Settings Overview</h1>
-                    <p className="text-gray-400 mt-1">A bird's-eye view of all bot configurations for this server.</p>
-                </div>
+                <button
+                    type="button"
+                    onClick={handleRefreshAll}
+                    disabled={channelsFetching || rolesFetching}
+                    title="Refresh channels &amp; roles"
+                    className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/[0.04] border border-white/[0.06] text-gray-400 hover:text-white hover:border-[#8b5cf6]/50 transition-colors disabled:opacity-40 shrink-0"
+                >
+                    <FontAwesomeIcon icon={faRotateRight} className={`w-4 h-4 ${channelsFetching || rolesFetching ? 'animate-spin' : ''}`} />
+                    <span className="text-sm">Refresh</span>
+                </button>
             </motion.div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

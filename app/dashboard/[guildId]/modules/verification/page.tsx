@@ -20,10 +20,13 @@ import {
     faClock,
     faCalendarDays,
     faWrench,
-    faHashtag
+    faHashtag,
+    faTriangleExclamation,
+    faCircleXmark
 } from "@fortawesome/free-solid-svg-icons"
 import Link from "next/link"
 import { ChannelPicker } from "@/components/dashboard/settings/channel-picker"
+import { RolePicker } from "@/components/dashboard/settings/role-picker"
 import isEqual from "lodash/isEqual"
 import cloneDeep from "lodash/cloneDeep"
 
@@ -43,13 +46,6 @@ interface VerificationConfig {
     type: 'button' | 'code' | 'captcha'
     minAccountAge: number
     logChannelId: string | null
-}
-
-interface Role {
-    id: string
-    name: string
-    color: number
-    position: number
 }
 
 // ── Helpers ─────────────────────────────────────────────
@@ -77,6 +73,8 @@ export default function VerificationPage({
     const [originalConfig, setOriginalConfig] = useState<VerificationConfig | null>(null)
     const [saving, setSaving] = useState(false)
     const [saveSuccess, setSaveSuccess] = useState(false)
+    const [lockingChannels, setLockingChannels] = useState(false)
+    const [lockResult, setLockResult] = useState<{ ok: boolean; message: string } | null>(null)
 
     const hasUnsavedChanges = config && originalConfig && !isEqual(config, originalConfig)
 
@@ -90,16 +88,7 @@ export default function VerificationPage({
         enabled: !!guildId,
     })
 
-    const { data: roles = [], isLoading: rolesLoading } = useQuery<Role[]>({
-        queryKey: ["roles", guildId],
-        queryFn: async () => {
-            const res = await fetch(`/api/guilds/${guildId}/roles`)
-            if (!res.ok) throw new Error("Failed to fetch roles")
-            return res.json()
-        },
-        enabled: !!guildId,
-        staleTime: 3 * 60 * 1000, // 3 minutes
-    })
+
 
     // Sync remote cache into local draft state precisely once per load
     useEffect(() => {
@@ -130,16 +119,39 @@ export default function VerificationPage({
         }
     }
 
-    if (configLoading || rolesLoading || !config) {
+    const handleLockChannels = async () => {
+        if (!config?.unverifiedRoleId || !config?.channelId) return
+        setLockingChannels(true)
+        setLockResult(null)
+        try {
+            const res = await fetch(`/api/guilds/${guildId}/modules/verification/lock-channels`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    unverifiedRoleId: config.unverifiedRoleId,
+                    verifyChannelId: config.channelId,
+                }),
+            })
+            const data = await res.json()
+            if (res.ok) {
+                setLockResult({ ok: true, message: data.message })
+            } else {
+                setLockResult({ ok: false, message: data.error || "Failed to apply channel restrictions" })
+            }
+        } catch {
+            setLockResult({ ok: false, message: "Network error — try again" })
+        } finally {
+            setLockingChannels(false)
+        }
+    }
+
+    if (configLoading || !config) {
         return (
             <div className="flex items-center justify-center py-20">
                 <FontAwesomeIcon icon={faSpinner} className="w-8 h-8 text-[#8b5cf6] animate-spin" />
             </div>
         )
     }
-
-    // Filter out @everyone role
-    const assignableRoles = roles.filter(r => r.id !== guildId).sort((a, b) => b.position - a.position)
 
     const getTypeDescription = () => {
         switch (config.type) {
@@ -243,31 +255,22 @@ export default function VerificationPage({
                     <div className="space-y-2">
                         <label className="block font-medium text-white mb-1">Verified Role</label>
                         <p className="text-xs text-gray-400 mb-2">Role given upon successful verification.</p>
-                        <select
+                        <RolePicker
+                            guildId={guildId}
                             value={config.roleId || ""}
-                            onChange={(e) => setConfig({ ...config, roleId: e.target.value || null })}
-                            className="w-full bg-black/40 border border-white/[0.06] text-white text-sm rounded-lg focus:ring-[#8b5cf6] focus:border-[#8b5cf6] block p-2.5"
-                        >
-                            <option value="">Select a role...</option>
-                            {assignableRoles.map((role) => (
-                                <option key={role.id} value={role.id}>{role.name}</option>
-                            ))}
-                        </select>
+                            onChange={(val) => setConfig({ ...config, roleId: val })}
+                        />
                     </div>
 
                     <div className="space-y-2">
                         <label className="block font-medium text-white mb-1">Unverified Role (Optional)</label>
                         <p className="text-xs text-gray-400 mb-2">Role assigned BEFORE verifying (like a quarantine role).</p>
-                        <select
+                        <RolePicker
+                            guildId={guildId}
                             value={config.unverifiedRoleId || ""}
-                            onChange={(e) => setConfig({ ...config, unverifiedRoleId: e.target.value || null })}
-                            className="w-full bg-black/40 border border-white/[0.06] text-white text-sm rounded-lg focus:ring-[#8b5cf6] focus:border-[#8b5cf6] block p-2.5"
-                        >
-                            <option value="">None (Don't use unverified role)</option>
-                            {assignableRoles.map((role) => (
-                                <option key={role.id} value={role.id}>{role.name}</option>
-                            ))}
-                        </select>
+                            onChange={(val) => setConfig({ ...config, unverifiedRoleId: val })}
+                            placeholder="None (Don't use unverified role)"
+                        />
                     </div>
 
                     <div className="space-y-2">
@@ -477,6 +480,70 @@ export default function VerificationPage({
                     </div>
                 </div>
             </motion.div>
+
+            {/* Channel Restrictions */}
+            {config.unverifiedRoleId && (
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.4 }}
+                    className="glass rounded-2xl border border-amber-500/20 p-6 space-y-4"
+                >
+                    <div className="flex items-center gap-3 border-b border-white/[0.06] pb-3">
+                        <FontAwesomeIcon icon={faLock} className="text-amber-400 w-5 h-5" />
+                        <h2 className="text-xl font-bold text-white">Channel Restrictions</h2>
+                    </div>
+
+                    <p className="text-sm text-gray-300">
+                        Apply Discord permission overwrites so the{" "}
+                        <span className="text-amber-300 font-medium">Unverified role</span> can only
+                        see the verification channel. All other channels will be completely hidden
+                        until a member verifies.
+                    </p>
+
+                    <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 text-sm text-amber-200 flex items-start gap-3">
+                        <FontAwesomeIcon icon={faTriangleExclamation} className="w-4 h-4 mt-0.5 shrink-0 text-amber-400" />
+                        <div>
+                            <p className="font-semibold mb-1">Save your settings first before applying channel restrictions.</p>
+                            <p className="text-amber-300/80">This immediately modifies Discord channel permissions for the unverified role across all channels.</p>
+                        </div>
+                    </div>
+
+                    {!config.channelId && (
+                        <div className="text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg px-4 py-3">
+                            A <strong>Verification Channel</strong> must be selected before applying restrictions.
+                        </div>
+                    )}
+
+                    {lockResult && (
+                        <div className={`text-sm rounded-xl px-4 py-3 flex items-center gap-3 ${
+                            lockResult.ok
+                                ? "bg-green-500/10 border border-green-500/20 text-green-300"
+                                : "bg-red-500/10 border border-red-500/20 text-red-300"
+                        }`}>
+                            <FontAwesomeIcon
+                                icon={lockResult.ok ? faCircleCheck : faCircleXmark}
+                                className="w-4 h-4 shrink-0"
+                            />
+                            {lockResult.message}
+                        </div>
+                    )}
+
+                    <div className="flex justify-end pt-2">
+                        <button
+                            onClick={handleLockChannels}
+                            disabled={lockingChannels || !config.channelId}
+                            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 disabled:opacity-50 disabled:cursor-not-allowed text-amber-200 text-sm font-medium border border-amber-500/30 transition-all"
+                        >
+                            {lockingChannels ? (
+                                <><FontAwesomeIcon icon={faSpinner} className="animate-spin w-4 h-4" /> Applying…</>
+                            ) : (
+                                <><FontAwesomeIcon icon={faLock} className="w-4 h-4" /> Apply Channel Restrictions</>
+                            )}
+                        </button>
+                    </div>
+                </motion.div>
+            )}
 
             {/* Floating Action Bar (Mobile/Bottom) */}
             <AnimatePresence>
