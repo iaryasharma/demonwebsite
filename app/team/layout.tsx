@@ -1,8 +1,8 @@
 import { Metadata } from "next"
 
 export const metadata: Metadata = {
-  title: "Development Team - Demon Bot | Meet the FragNite Developers",
-  description: "Meet the talented development team behind Demon Bot. Learn about the FragNite developers who created the ultimate Discord bot experience.",
+  title: "Team",
+  description: "Meet the passionate developers behind Demon Bot — Arya Sharma (FragNite) and the Demon development team dedicated to creating the best Discord bot experience.",
   keywords: [
     "Demon Bot team",
     "FragNite developers",
@@ -12,8 +12,8 @@ export const metadata: Metadata = {
     "Discord bot development"
   ],
   openGraph: {
-    title: "Demon Bot Development Team - FragNite",
-    description: "Meet the talented developers behind Demon Bot. The FragNite team creating amazing Discord experiences.",
+    title: "Demon Bot - Team",
+    description: "Meet the passionate developers behind Demon Bot — Arya Sharma (FragNite).",
     url: "https://demonbot.vercel.app/team",
     images: [
       {
@@ -25,8 +25,8 @@ export const metadata: Metadata = {
     ],
   },
   twitter: {
-    title: "Meet the Demon Bot Team - FragNite Developers",
-    description: "Discover the talented team behind Demon Bot and their passion for Discord community building.",
+    title: "Demon Bot - Team",
+    description: "Meet the developers behind Demon Bot — built by Arya Sharma (FragNite).",
     images: ["/Fragnite.jpg"],
   },
 }

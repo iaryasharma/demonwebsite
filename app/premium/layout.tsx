@@ -1,8 +1,8 @@
 import { Metadata } from "next"
 
 export const metadata: Metadata = {
-  title: "Premium Plans - Demon Bot | Unlock Advanced Features",
-  description: "Upgrade to Demon Bot Premium for exclusive features, priority support, and enhanced capabilities. Choose from Prime ($5) or Pro ($9.99) plans.",
+  title: "Premium",
+  description: "Upgrade to Demon Bot Premium for exclusive features, priority support, and enhanced capabilities. Choose from Prime or Pro plans.",
   keywords: [
     "Demon Bot premium",
     "Discord bot premium",
@@ -13,7 +13,7 @@ export const metadata: Metadata = {
     "premium Discord bot"
   ],
   openGraph: {
-    title: "Demon Bot Premium - Unlock Advanced Features",
+    title: "Demon Bot - Premium",
     description: "Get access to exclusive features with Demon Bot Premium. Priority support, advanced moderation, and more.",
     url: "https://demonbot.vercel.app/premium",
     images: [
@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     ],
   },
   twitter: {
-    title: "Demon Bot Premium - Advanced Discord Bot Features",
+    title: "Demon Bot - Premium",
     description: "Unlock premium features with Demon Bot Pro and Prime plans. Enhanced moderation and exclusive tools.",
     images: ["/Demon-Prime.png"],
   },
