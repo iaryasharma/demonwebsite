@@ -3,6 +3,9 @@ import { getAccessTokenFromRequest, requireManageGuild } from "@/lib/permissions
 
 const DISCORD_API = "https://discord.com/api/v10"
 
+const rolesCache = new Map<string, { promise: Promise<any>, expiry: number }>();
+const ROLES_CACHE_TTL = 300000; // 5 minutes
+
 export async function GET(
     request: Request,
     { params }: { params: Promise<{ guildId: string }> }
@@ -28,29 +31,38 @@ export async function GET(
     }
 
     try {
-        const res = await fetch(`${DISCORD_API}/guilds/${guildId}/roles`, {
-            headers: { Authorization: `Bot ${token}` },
-        })
+        const cacheKey = `${guildId}`
+        const now = Date.now()
+        const cached = rolesCache.get(cacheKey)
 
-        if (!res.ok) {
-            return NextResponse.json(
-                { error: "Failed to fetch roles" },
-                { status: res.status }
-            )
+        if (cached && cached.expiry > now) {
+            try {
+                return NextResponse.json(await cached.promise)
+            } catch {
+                // Ignore cache error, let it refetch
+            }
         }
 
-        const roles = await res.json()
+        const fetchPromise = fetch(`${DISCORD_API}/guilds/${guildId}/roles`, {
+            headers: { Authorization: `Bot ${token}` },
+        }).then(async (res) => {
+            if (!res.ok) throw new Error("Failed to fetch roles")
+            const roles = await res.json()
 
-        // Filter out @everyone (position 0) and managed roles (bot roles), sort by position desc
-        const filteredRoles = roles
-            .filter((r: any) => r.name !== "@everyone" && !r.managed)
-            .sort((a: any, b: any) => b.position - a.position)
-            .map((r: any) => ({
-                id: r.id,
-                name: r.name,
-                color: r.color ? `#${r.color.toString(16).padStart(6, "0")}` : null,
-                position: r.position,
-            }))
+            // Filter out @everyone (position 0) and managed roles (bot roles), sort by position desc
+            return roles
+                .filter((r: any) => r.name !== "@everyone" && !r.managed)
+                .sort((a: any, b: any) => b.position - a.position)
+                .map((r: any) => ({
+                    id: r.id,
+                    name: r.name,
+                    color: r.color ? `#${r.color.toString(16).padStart(6, "0")}` : null,
+                    position: r.position,
+                }))
+        })
+
+        rolesCache.set(cacheKey, { promise: fetchPromise, expiry: now + ROLES_CACHE_TTL })
+        const filteredRoles = await fetchPromise
 
         return NextResponse.json(filteredRoles)
     } catch (error) {

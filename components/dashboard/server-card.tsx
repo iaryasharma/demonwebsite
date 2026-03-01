@@ -22,7 +22,7 @@ export function ServerCard({ id, name, icon, memberCount, botPresent = true }: S
         <motion.div
             whileHover={{ y: -4, scale: 1.01 }}
             transition={{ type: "spring", stiffness: 400, damping: 25 }}
-            className="group relative"
+            className={`group relative ${!botPresent ? "opacity-60 grayscale-[50%]" : ""}`}
         >
             <div className="absolute inset-0 bg-gradient-to-br from-[#8b5cf6]/5 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl" />
             <div className="relative glass rounded-2xl border border-white/[0.06] hover:border-[#8b5cf6]/20 transition-all duration-300 p-5">

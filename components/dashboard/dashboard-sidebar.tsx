@@ -27,17 +27,21 @@ interface SidebarProps {
     guildId?: string
     guildName?: string
     guildIcon?: string | null
+    collapsed: boolean
+    onToggleCollapse: () => void
 }
+
+import { faCubes } from "@fortawesome/free-solid-svg-icons"
 
 const sidebarLinks = (guildId: string) => [
     { href: `/dashboard/${guildId}`, label: "Overview", icon: faGaugeHigh },
+    { href: `/dashboard/${guildId}/modules`, label: "Modules", icon: faCubes },
     { href: `/dashboard/${guildId}/announce`, label: "Announce", icon: faBullhorn },
     { href: `/dashboard/${guildId}/giveaways`, label: "Giveaways", icon: faGift },
     { href: `/dashboard/${guildId}/settings`, label: "Settings", icon: faGear },
 ]
 
-export function DashboardSidebar({ guildId, guildName, guildIcon }: SidebarProps) {
-    const [collapsed, setCollapsed] = useState(false)
+export function DashboardSidebar({ guildId, guildName, guildIcon, collapsed, onToggleCollapse }: SidebarProps) {
     const [mobileOpen, setMobileOpen] = useState(false)
     const pathname = usePathname()
     const { data: session } = useSession()
@@ -108,39 +112,12 @@ export function DashboardSidebar({ guildId, guildName, guildIcon }: SidebarProps
                 })}
             </nav>
 
-            {/* User section */}
-            {user && (
-                <div className="p-4 border-t border-white/[0.06]">
-                    <div className="flex items-center gap-3 mb-3">
-                        <div className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0">
-                            {user.image ? (
-                                <Image src={user.image} alt={user.name || ""} width={32} height={32} className="w-full h-full object-cover" />
-                            ) : (
-                                <div className="w-full h-full bg-[#8b5cf6]/20 flex items-center justify-center text-xs font-bold text-[#a78bfa]">
-                                    {user.name?.charAt(0) || "?"}
-                                </div>
-                            )}
-                        </div>
-                        {!collapsed && (
-                            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="min-w-0 flex-1">
-                                <p className="text-sm font-medium text-white truncate">{user.name}</p>
-                            </motion.div>
-                        )}
-                    </div>
-                    <button
-                        onClick={() => signOut({ callbackUrl: "/" })}
-                        className={`flex items-center gap-2 w-full px-3 py-2 rounded-lg text-sm text-gray-400 hover:text-red-400 hover:bg-red-500/5 transition-all ${collapsed ? "justify-center" : ""}`}
-                    >
-                        <FontAwesomeIcon icon={faArrowRightFromBracket} className="w-3.5 h-3.5" />
-                        {!collapsed && <span>Sign Out</span>}
-                    </button>
-                </div>
-            )}
+
 
             {/* Collapse toggle (desktop only) */}
             <div className="hidden lg:block p-3 border-t border-white/[0.06]">
                 <button
-                    onClick={() => setCollapsed(!collapsed)}
+                    onClick={onToggleCollapse}
                     className="flex items-center justify-center w-full py-2 rounded-lg text-gray-500 hover:text-white hover:bg-white/[0.04] transition-all"
                 >
                     <FontAwesomeIcon icon={collapsed ? faChevronRight : faChevronLeft} className="w-3.5 h-3.5" />
@@ -154,7 +131,7 @@ export function DashboardSidebar({ guildId, guildName, guildIcon }: SidebarProps
             {/* Mobile toggle */}
             <button
                 onClick={() => setMobileOpen(!mobileOpen)}
-                className="lg:hidden fixed top-20 left-4 z-50 w-10 h-10 rounded-lg glass border border-white/[0.06] flex items-center justify-center text-gray-400 hover:text-white transition-colors"
+                className="lg:hidden fixed top-3 left-4 z-50 w-10 h-10 rounded-lg glass border border-white/[0.06] flex items-center justify-center text-gray-400 hover:text-white transition-colors"
             >
                 <FontAwesomeIcon icon={mobileOpen ? faXmark : faBars} className="w-4 h-4" />
             </button>

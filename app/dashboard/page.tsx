@@ -1,7 +1,8 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { useSession, signIn } from "next-auth/react"
+import { useQuery } from "@tanstack/react-query"
 import { motion } from "framer-motion"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faDiscord } from "@fortawesome/free-brands-svg-icons"
@@ -17,35 +18,30 @@ interface Guild {
   name: string
   icon: string | null
   memberCount: number | null
+  botPresent?: boolean
 }
 
 export default function DashboardPage() {
-  const { data: session, status } = useSession()
-  const [guilds, setGuilds] = useState<Guild[]>([])
-  const [loading, setLoading] = useState(true)
+  const { status } = useSession()
   const [search, setSearch] = useState("")
 
-  useEffect(() => {
-    if (status !== "authenticated") return
+  const { data: guilds = [], isLoading: loading } = useQuery<Guild[]>({
+    queryKey: ["guilds"],
+    queryFn: async () => {
+      const res = await fetch("/api/guilds")
+      if (!res.ok) throw new Error("Failed to fetch guilds")
+      return res.json()
+    },
+    enabled: status === "authenticated",
+  })
 
-    async function fetchGuilds() {
-      try {
-        const res = await fetch("/api/guilds")
-        if (res.ok) {
-          const data = await res.json()
-          setGuilds(data)
-        }
-      } catch {
-      } finally {
-        setLoading(false)
-      }
-    }
-    fetchGuilds()
-  }, [status])
-
-  const filtered = guilds.filter((g) =>
-    g.name.toLowerCase().includes(search.toLowerCase())
-  )
+  const filtered = guilds
+    .filter((g) => g.name.toLowerCase().includes(search.toLowerCase()))
+    .sort((a, b) => {
+      // Sort by botPresent: true first
+      if (a.botPresent === b.botPresent) return 0
+      return a.botPresent ? -1 : 1
+    })
 
   // ── Not authenticated: Login screen ──
   if (status === "loading") {
@@ -170,7 +166,7 @@ export default function DashboardPage() {
                   name={guild.name}
                   icon={guild.icon}
                   memberCount={guild.memberCount}
-                  botPresent={true}
+                  botPresent={guild.botPresent ?? false}
                 />
               </motion.div>
             ))}

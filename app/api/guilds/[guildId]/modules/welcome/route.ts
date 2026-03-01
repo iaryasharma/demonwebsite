@@ -1,18 +1,18 @@
 import { NextResponse } from "next/server"
 import { getAccessTokenFromRequest, requireManageGuild } from "@/lib/permissions"
 import { connectToDatabase } from "@/lib/mongodb"
-import Guild from "@/lib/models/Guild"
+import Welcome from "@/lib/models/Welcome"
 
 export async function GET(
     request: Request,
-    { params }: { params: Promise<{ guildId: string }> }
+    context: { params: Promise<{ guildId: string }> }
 ) {
     const accessToken = await getAccessTokenFromRequest(request)
     if (!accessToken) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const { guildId } = await params
+    const { guildId } = await context.params
 
     if (!(await requireManageGuild(accessToken, guildId))) {
         return NextResponse.json({ error: "Forbidden" }, { status: 403 })
@@ -21,33 +21,29 @@ export async function GET(
     try {
         await connectToDatabase()
 
-        // Find or create guild doc
-        let guild = await Guild.findOne({ guildId })
-        if (!guild) {
-            guild = await Guild.create({ guildId, prefix: "!!", settings: {} })
+        let welcome = await Welcome.findOne({ guildId }).lean()
+        if (!welcome) {
+            welcome = await Welcome.create({ guildId, enabled: false })
+            welcome = welcome.toObject()
         }
 
-        return NextResponse.json({
-            guildId: guild.guildId,
-            prefix: guild.prefix,
-            settings: guild.settings,
-        })
+        return NextResponse.json(welcome)
     } catch (error) {
-        console.error("Error fetching guild settings:", error)
+        console.error("Error fetching welcome config:", error)
         return NextResponse.json({ error: "Internal server error" }, { status: 500 })
     }
 }
 
 export async function POST(
     request: Request,
-    { params }: { params: Promise<{ guildId: string }> }
+    context: { params: Promise<{ guildId: string }> }
 ) {
     const accessToken = await getAccessTokenFromRequest(request)
     if (!accessToken) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const { guildId } = await params
+    const { guildId } = await context.params
 
     if (!(await requireManageGuild(accessToken, guildId))) {
         return NextResponse.json({ error: "Forbidden" }, { status: 403 })
@@ -55,31 +51,22 @@ export async function POST(
 
     try {
         const body = await request.json()
-        const { prefix, settings } = body
-
         await connectToDatabase()
 
-        const updateData: any = {}
-        if (prefix !== undefined) updateData.prefix = prefix
-        if (settings !== undefined) {
-            // Merge settings rather than overwrite
-            const existing = await Guild.findOne({ guildId })
-            updateData.settings = { ...(existing?.settings || {}), ...settings }
-        }
+        // Strip out any _id, __v, or guildId that might come from the client to prevent updates to unallowed fields
+        delete body._id
+        delete body.__v
+        delete body.guildId
 
-        const guild = await Guild.findOneAndUpdate(
+        const welcome = await Welcome.findOneAndUpdate(
             { guildId },
-            { $set: updateData },
+            { $set: body },
             { upsert: true, new: true, setDefaultsOnInsert: true }
-        )
+        ).lean()
 
-        return NextResponse.json({
-            guildId: guild.guildId,
-            prefix: guild.prefix,
-            settings: guild.settings,
-        })
+        return NextResponse.json(welcome)
     } catch (error) {
-        console.error("Error updating guild settings:", error)
+        console.error("Error updating welcome config:", error)
         return NextResponse.json({ error: "Internal server error" }, { status: 500 })
     }
 }

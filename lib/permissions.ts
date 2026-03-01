@@ -12,7 +12,7 @@ const DISCORD_API = "https://discord.com/api/v10"
 const MANAGE_GUILD = 0x20
 const ADMINISTRATOR = 0x8
 
-interface UserGuild {
+export interface UserGuild {
     id: string
     permissions: string
 }
@@ -36,14 +36,68 @@ export async function getAccessTokenFromRequest(request: Request): Promise<strin
 
 /**
  * Fetch the user's guild list from Discord using their OAuth token.
+ * Uses a TTL-based Map cache to deduplicate concurrent requests and prevent 429s.
  */
-async function fetchUserGuilds(accessToken: string): Promise<UserGuild[]> {
-    const res = await fetch(`${DISCORD_API}/users/@me/guilds`, {
-        headers: { Authorization: `Bearer ${accessToken}` },
-    })
+const userGuildsCache = new Map<string, { promise: Promise<UserGuild[]>, expiry: number }>()
+const CACHE_TTL_MS = 60000 // 60 seconds
 
-    if (!res.ok) return []
-    return res.json()
+export async function fetchUserGuilds(accessToken: string): Promise<UserGuild[]> {
+    const now = Date.now()
+    const cached = userGuildsCache.get(accessToken)
+
+    // Return the cached promise if it hasn't expired to handle concurrent parallel fetches!
+    if (cached && cached.expiry > now) {
+        return cached.promise
+    }
+
+    const fetchPromise = fetch(`${DISCORD_API}/users/@me/guilds`, {
+        headers: { Authorization: `Bearer ${accessToken}` },
+    }).then(async (res) => {
+        if (!res.ok) return []
+        return res.json()
+    }).catch(() => [])
+
+    userGuildsCache.set(accessToken, { promise: fetchPromise, expiry: now + CACHE_TTL_MS })
+    return fetchPromise
+}
+
+/**
+ * Fetch all guilds the bot is currently in (Paginated).
+ * Uses a TTL-based cache.
+ */
+const botGuildsCache = { promise: null as Promise<Set<string>> | null, expiry: 0 }
+const BOT_GUILDS_TTL_MS = 5 * 60 * 1000 // 5 minutes
+
+export async function fetchBotGuilds(): Promise<Set<string>> {
+    const now = Date.now()
+    if (botGuildsCache.promise && botGuildsCache.expiry > now) {
+        return botGuildsCache.promise
+    }
+
+    const fetchPromise = (async () => {
+        const token = process.env.DISCORD_BOT_TOKEN
+        if (!token) return new Set<string>()
+
+        const botGuilds = new Set<string>()
+        let after = ""
+        while (true) {
+            const url = `${DISCORD_API}/users/@me/guilds?limit=200${after ? `&after=${after}` : ""}`
+            const res = await fetch(url, {
+                headers: { Authorization: `Bot ${token}` }
+            })
+            if (!res.ok) break
+            const data = await res.json()
+            if (!Array.isArray(data) || data.length === 0) break
+            for (const g of data) botGuilds.add(g.id)
+            if (data.length < 200) break
+            after = data[data.length - 1].id
+        }
+        return botGuilds
+    })()
+
+    botGuildsCache.promise = fetchPromise
+    botGuildsCache.expiry = now + BOT_GUILDS_TTL_MS
+    return fetchPromise
 }
 
 /**

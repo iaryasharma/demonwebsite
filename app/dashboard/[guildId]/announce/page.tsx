@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react"
 import { useSession } from "next-auth/react"
+import { useQuery } from "@tanstack/react-query"
 import { useParams } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
@@ -55,12 +56,11 @@ export default function AnnouncePage() {
     const guildId = params?.guildId as string
 
     // Webhook state
-    const [webhooks, setWebhooks] = useState<Webhook[]>([])
+    // Webhook state
     const [selectedWebhook, setSelectedWebhook] = useState<string>("")
     const [newWebhookName, setNewWebhookName] = useState("")
     const [newWebhookUrl, setNewWebhookUrl] = useState("")
     const [showAddWebhook, setShowAddWebhook] = useState(false)
-    const [webhookLoading, setWebhookLoading] = useState(true)
 
     // Message state
     const [activeTab, setActiveTab] = useState<MessageTab>("normal")
@@ -83,26 +83,21 @@ export default function AnnouncePage() {
     const textareaRef = useRef<HTMLTextAreaElement>(null)
     const embedDescRef = useRef<HTMLTextAreaElement>(null)
 
-    const fetchWebhooks = useCallback(async () => {
-        try {
+    const { data: webhooks = [], isLoading: webhookLoading, refetch: refetchWebhooks } = useQuery<Webhook[]>({
+        queryKey: ["webhooks", guildId],
+        queryFn: async () => {
             const res = await fetch(`/api/guilds/${guildId}/webhooks`)
-            if (res.ok) {
-                const data = await res.json()
-                setWebhooks(data)
-                if (data.length > 0 && !selectedWebhook) {
-                    setSelectedWebhook(data[0].url)
-                }
-            }
-        } catch (error) {
-            console.error("Error fetching webhooks:", error)
-        } finally {
-            setWebhookLoading(false)
-        }
-    }, [guildId, selectedWebhook])
+            if (!res.ok) throw new Error("Failed to fetch webhooks")
+            return res.json()
+        },
+        enabled: !!session && !!guildId
+    })
 
     useEffect(() => {
-        if (session && guildId) fetchWebhooks()
-    }, [session, guildId, fetchWebhooks])
+        if (webhooks.length > 0 && !selectedWebhook) {
+            setSelectedWebhook(webhooks[0].url)
+        }
+    }, [webhooks, selectedWebhook])
 
     const addWebhook = async () => {
         if (!newWebhookName || !newWebhookUrl) return
@@ -116,7 +111,7 @@ export default function AnnouncePage() {
 
             if (res.ok) {
                 const data = await res.json()
-                setWebhooks(data)
+                await refetchWebhooks()
                 if (!selectedWebhook && data.length > 0) {
                     setSelectedWebhook(data[data.length - 1].url)
                 }
@@ -141,10 +136,9 @@ export default function AnnouncePage() {
             })
 
             if (res.ok) {
-                const data = await res.json()
-                setWebhooks(data)
+                await refetchWebhooks()
                 if (selectedWebhook === url) {
-                    setSelectedWebhook(data.length > 0 ? data[0].url : "")
+                    setSelectedWebhook("")
                 }
             }
         } catch (error) {

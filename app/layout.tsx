@@ -5,6 +5,7 @@ import "./globals.css"
 import { SmoothScrollProvider } from "@/components/smooth-scroll-provider"
 import { SessionProvider } from "@/components/session-provider"
 import { RootLayoutShell } from "@/components/root-layout-shell"
+import QueryProvider from "@/components/providers/query-provider"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -157,11 +158,13 @@ export default function RootLayout({
         <link rel="preload" href="/demon-logo.png" as="image" />
         <link rel="preload" href="/sky.mp4" as="video" type="video/mp4" />
       </head>
-      <body className={`${inter.className} bg-black text-white overflow-x-hidden`}>
+      <body suppressHydrationWarning className={`${inter.className} bg-black text-white overflow-x-hidden`}>
         <SessionProvider>
-          <SmoothScrollProvider>
-            <RootLayoutShell>{children}</RootLayoutShell>
-          </SmoothScrollProvider>
+          <QueryProvider>
+            <SmoothScrollProvider>
+              <RootLayoutShell>{children}</RootLayoutShell>
+            </SmoothScrollProvider>
+          </QueryProvider>
         </SessionProvider>
       </body>
     </html>

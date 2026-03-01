@@ -1,626 +1,380 @@
 "use client"
 
-import { useEffect, useState, useCallback } from "react"
+import React, { useEffect, useState } from "react"
 import { useSession } from "next-auth/react"
-import { useParams, useRouter } from "next/navigation"
-import { motion, AnimatePresence } from "framer-motion"
+import { useQuery } from "@tanstack/react-query"
+import { motion } from "framer-motion"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import {
-    faFloppyDisk,
-    faRotateLeft,
+    faGear,
     faSpinner,
-    faCheck,
     faTerminal,
-    faHashtag,
-    faLock,
-    faLockOpen,
-    faClock,
-    faWrench,
-    faToggleOn,
-    faToggleOff,
-    faCircleExclamation,
+    faDoorOpen,
+    faDoorClosed,
+    faClipboardList,
+    faUserPlus,
+    faShieldHalved,
+    faCheck,
+    faTimes,
+    faArrowRight
 } from "@fortawesome/free-solid-svg-icons"
+import Link from "next/link"
 
-interface GuildData {
+interface ServerSettings {
     guildId: string
     prefix: string
-    settings: Record<string, any>
+    disabledChannels: string[]
+    modules: {
+        welcome: { enabled: boolean; channelId?: string | null; messageId?: string | null }
+        leave: { enabled: boolean; channelId?: string | null; messageId?: string | null }
+        logging: { enabled: boolean; channelId?: string | null; events?: Record<string, boolean> }
+        autorole: { enabled: boolean; roleIds?: string[]; delay?: number }
+        verification: { enabled: boolean; type?: string; roleId?: string | null; channelId?: string | null }
+    }
 }
 
 interface Channel {
     id: string
     name: string
-    position: number
-    parentId: string | null
 }
 
-function ToggleSwitch({
-    enabled,
-    onChange,
-    disabled,
-}: {
-    enabled: boolean
-    onChange: (v: boolean) => void
-    disabled?: boolean
-}) {
-    return (
-        <button
-            onClick={() => !disabled && onChange(!enabled)}
-            disabled={disabled}
-            className={`relative w-11 h-6 rounded-full transition-colors duration-200 ${disabled ? "opacity-50 cursor-not-allowed" : ""
-                } ${enabled ? "bg-[#8b5cf6]" : "bg-white/[0.08]"}`}
-        >
-            <div
-                className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform duration-200 ${enabled ? "translate-x-5" : ""
-                    }`}
-            />
-        </button>
-    )
+interface Role {
+    id: string
+    name: string
+    color: number
 }
 
-function StatusBadge({ text, color }: { text: string; color: string }) {
+function StatusBadge({ enabled }: { enabled: boolean }) {
+    if (enabled) {
+        return (
+            <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-green-500/15 text-green-400 border border-green-500/20 flex items-center gap-1.5 shrink-0">
+                <FontAwesomeIcon icon={faCheck} className="w-3 h-3" /> Enabled
+            </span>
+        )
+    }
     return (
-        <span className={`px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider ${color}`}>
-            {text}
+        <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-500/15 text-gray-400 border border-gray-500/20 flex items-center gap-1.5 shrink-0">
+            <FontAwesomeIcon icon={faTimes} className="w-3 h-3" /> Disabled
         </span>
     )
 }
 
-export default function SettingsPage() {
+function ChannelMention({ channelId, channels }: { channelId?: string | null, channels: Channel[] }) {
+    if (!channelId) return <span className="text-gray-500 italic">Not set</span>
+    const channel = channels.find(c => c.id === channelId)
+    return (
+        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-white/[0.05] border border-white/[0.05] text-blue-300 font-medium">
+            <span className="text-blue-500/50">#</span>
+            {channel ? channel.name : 'Unknown Channel'}
+        </span>
+    )
+}
+
+function RoleMention({ roleId, roles }: { roleId?: string | null, roles: Role[] }) {
+    if (!roleId) return <span className="text-gray-500 italic">Not set</span>
+    const role = roles.find(r => r.id === roleId)
+    const colorStr = role?.color ? `#${role.color.toString(16).padStart(6, '0')}` : '#99aab5'
+    return (
+        <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-white/[0.05] border border-white/[0.05] font-medium" style={{ color: colorStr }}>
+            <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: colorStr }} />
+            {role ? role.name : 'Unknown Role'}
+        </span>
+    )
+}
+
+export default function ServerSettingsPage({
+    params,
+}: {
+    params: Promise<{ guildId: string }>
+}) {
+    const { guildId } = React.use(params)
     const { data: session, status } = useSession()
-    const params = useParams()
-    const router = useRouter()
-    const guildId = params?.guildId as string
 
-    // Prefix state
-    const [data, setData] = useState<GuildData | null>(null)
-    const [original, setOriginal] = useState<GuildData | null>(null)
-    const [loading, setLoading] = useState(true)
-    const [saving, setSaving] = useState(false)
-    const [saved, setSaved] = useState(false)
+    const { data: settings, isLoading: settingsLoading } = useQuery<ServerSettings>({
+        queryKey: ["server-settings", guildId],
+        queryFn: async () => {
+            const res = await fetch(`/api/guilds/${guildId}/server-settings`)
+            if (!res.ok) throw new Error("Failed to fetch settings")
+            return res.json()
+        },
+        enabled: status === "authenticated" && !!guildId
+    })
 
-    // Channel management state
-    const [channels, setChannels] = useState<Channel[]>([])
-    const [channelsLoading, setChannelsLoading] = useState(true)
-    const [disabledChannels, setDisabledChannels] = useState<string[]>([])
-    const [togglingChannel, setTogglingChannel] = useState<string | null>(null)
+    const { data: channels = [], isLoading: channelsLoading } = useQuery<Channel[]>({
+        queryKey: ["channels", guildId],
+        queryFn: async () => {
+            const res = await fetch(`/api/guilds/${guildId}/channels`)
+            if (!res.ok) throw new Error("Failed to fetch channels")
+            return res.json()
+        },
+        enabled: status === "authenticated" && !!guildId,
+        staleTime: 3 * 60 * 1000, // 3 minutes
+    })
 
-    // Channel actions state
-    const [actionLoading, setActionLoading] = useState<string | null>(null)
-    const [slowmodeInputs, setSlowmodeInputs] = useState<Record<string, string>>({})
-    const [actionFeedback, setActionFeedback] = useState<{ channelId: string; message: string; type: "success" | "error" } | null>(null)
+    const { data: roles = [], isLoading: rolesLoading } = useQuery<Role[]>({
+        queryKey: ["roles", guildId],
+        queryFn: async () => {
+            const res = await fetch(`/api/guilds/${guildId}/roles`)
+            if (!res.ok) throw new Error("Failed to fetch roles")
+            return res.json()
+        },
+        enabled: status === "authenticated" && !!guildId,
+        staleTime: 3 * 60 * 1000, // 3 minutes
+    })
 
-    // Maintenance state
-    const [mmodeActive, setMmodeActive] = useState(false)
-    const [mmodeLoading, setMmodeLoading] = useState(true)
-    const [mmodeActionLoading, setMmodeActionLoading] = useState(false)
-
-    useEffect(() => {
-        if (status === "unauthenticated") {
-            router.push("/dashboard")
-            return
-        }
-        if (status !== "authenticated") return
-
-        async function fetchAll() {
-            try {
-                const [settingsRes, channelsRes, disabledRes, mmodeRes] = await Promise.all([
-                    fetch(`/api/guilds/${guildId}/settings`),
-                    fetch(`/api/guilds/${guildId}/channels`),
-                    fetch(`/api/guilds/${guildId}/settings/disabled-channels`),
-                    fetch(`/api/guilds/${guildId}/maintenance`),
-                ])
-
-                if (settingsRes.ok) {
-                    const json = await settingsRes.json()
-                    setData(json)
-                    setOriginal(JSON.parse(JSON.stringify(json)))
-                }
-                if (channelsRes.ok) {
-                    setChannels(await channelsRes.json())
-                }
-                if (disabledRes.ok) {
-                    const d = await disabledRes.json()
-                    setDisabledChannels(d.disabledChannels || [])
-                }
-                if (mmodeRes.ok) {
-                    const m = await mmodeRes.json()
-                    setMmodeActive(m.active)
-                }
-            } catch {
-            } finally {
-                setLoading(false)
-                setChannelsLoading(false)
-                setMmodeLoading(false)
-            }
-        }
-        fetchAll()
-    }, [guildId, status, router])
-
-    const hasChanges = JSON.stringify(data) !== JSON.stringify(original)
-
-    const handleSave = async () => {
-        if (!data) return
-        setSaving(true)
-        try {
-            const res = await fetch(`/api/guilds/${guildId}/settings`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ prefix: data.prefix, settings: data.settings }),
-            })
-            if (res.ok) {
-                const updated = await res.json()
-                setData(updated)
-                setOriginal(JSON.parse(JSON.stringify(updated)))
-                setSaved(true)
-                setTimeout(() => setSaved(false), 2000)
-            }
-        } catch {
-        } finally {
-            setSaving(false)
-        }
-    }
-
-    const handleDiscard = () => {
-        if (original) {
-            setData(JSON.parse(JSON.stringify(original)))
-        }
-    }
-
-    // Toggle command enable/disable for a channel
-    const toggleChannelCommands = useCallback(async (channelId: string) => {
-        setTogglingChannel(channelId)
-        const isCurrentlyDisabled = disabledChannels.includes(channelId)
-        const action = isCurrentlyDisabled ? "enable" : "disable"
-
-        try {
-            const res = await fetch(`/api/guilds/${guildId}/settings/disabled-channels`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ channelId, action }),
-            })
-            if (res.ok) {
-                const result = await res.json()
-                setDisabledChannels(result.disabledChannels)
-            }
-        } catch {
-        } finally {
-            setTogglingChannel(null)
-        }
-    }, [guildId, disabledChannels])
-
-    // Lock/unlock/slowmode a channel
-    const handleChannelAction = useCallback(async (channelId: string, action: string, duration?: string) => {
-        setActionLoading(`${channelId}-${action}`)
-        setActionFeedback(null)
-
-        try {
-            const res = await fetch(`/api/guilds/${guildId}/channels/manage`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ channelId, action, duration }),
-            })
-
-            if (res.ok) {
-                const channelName = channels.find(c => c.id === channelId)?.name || "channel"
-                let msg = ""
-                if (action === "lock") msg = `#${channelName} locked`
-                else if (action === "unlock") msg = `#${channelName} unlocked`
-                else if (action === "slowmode") msg = `Slowmode ${duration === "0" ? "disabled" : `set to ${duration}s`} in #${channelName}`
-                setActionFeedback({ channelId, message: msg, type: "success" })
-            } else {
-                const err = await res.json().catch(() => ({}))
-                setActionFeedback({ channelId, message: err.error || "Action failed", type: "error" })
-            }
-        } catch {
-            setActionFeedback({ channelId, message: "Network error", type: "error" })
-        } finally {
-            setActionLoading(null)
-            setTimeout(() => setActionFeedback(null), 3000)
-        }
-    }, [guildId, channels])
-
-    // Maintenance mode toggle
-    const toggleMmode = useCallback(async () => {
-        setMmodeActionLoading(true)
-        const action = mmodeActive ? "stop" : "start"
-
-        try {
-            const res = await fetch(`/api/guilds/${guildId}/maintenance`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ action }),
-            })
-            if (res.ok) {
-                setMmodeActive(!mmodeActive)
-            }
-        } catch {
-        } finally {
-            setMmodeActionLoading(false)
-        }
-    }, [guildId, mmodeActive])
-
-    if (status === "loading" || loading) {
+    if (settingsLoading || channelsLoading || rolesLoading || status === "loading") {
         return (
-            <div className="min-h-screen flex items-center justify-center">
-                <FontAwesomeIcon icon={faSpinner} className="w-6 h-6 text-[#8b5cf6] animate-spin" />
+            <div className="flex items-center justify-center py-20">
+                <FontAwesomeIcon icon={faSpinner} className="w-8 h-8 text-[#8b5cf6] animate-spin" />
             </div>
         )
     }
 
-    if (!data) return null
+    if (!settings) return <div>Failed to load settings data.</div>
 
     return (
-        <div className="min-h-screen bg-black">
-            <div className="max-w-3xl mx-auto">
-                {/* Header */}
+        <div className="max-w-4xl mx-auto space-y-8 pb-10">
+            {/* Header */}
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="flex items-center gap-4 mb-10 border-b border-white/[0.06] pb-6"
+            >
+                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#8b5cf6] to-[#7c3aed] flex items-center justify-center shadow-lg shadow-[#8b5cf6]/20">
+                    <FontAwesomeIcon icon={faGear} className="w-7 h-7 text-white" />
+                </div>
+                <div>
+                    <h1 className="text-3xl font-bold text-white">Server Settings Overview</h1>
+                    <p className="text-gray-400 mt-1">A bird's-eye view of all bot configurations for this server.</p>
+                </div>
+            </motion.div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* General Settings */}
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5 }}
-                    className="flex items-center justify-between mb-10"
+                    transition={{ delay: 0.05 }}
+                    className="glass rounded-2xl border border-white/[0.06] p-6 col-span-1 md:col-span-2 relative overflow-hidden group"
                 >
-                    <div>
-                        <h1 className="text-3xl font-bold text-white mb-2">Settings</h1>
-                        <p className="text-gray-500 text-sm">Configure Demon Bot for this server</p>
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-[#8b5cf6]/10 rounded-full blur-3xl -mr-16 -mt-16 transition-opacity opacity-50 group-hover:opacity-100" />
+
+                    <div className="flex items-center gap-3 mb-6 relative">
+                        <FontAwesomeIcon icon={faTerminal} className="w-5 h-5 text-[#a78bfa]" />
+                        <h2 className="text-xl font-bold text-white">General Information</h2>
                     </div>
 
-                    {/* Save/Discard */}
-                    {hasChanges && (
-                        <motion.div
-                            initial={{ opacity: 0, scale: 0.9 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            className="flex items-center gap-3"
-                        >
-                            <button
-                                onClick={handleDiscard}
-                                className="px-4 py-2 rounded-lg border border-white/[0.08] text-gray-400 text-sm hover:text-white hover:bg-white/[0.04] transition-all"
-                            >
-                                <FontAwesomeIcon icon={faRotateLeft} className="w-3.5 h-3.5 mr-2" />
-                                Discard
-                            </button>
-                            <button
-                                onClick={handleSave}
-                                disabled={saving}
-                                className="px-5 py-2 rounded-lg bg-gradient-to-r from-[#8b5cf6] to-[#7c3aed] text-white text-sm font-semibold hover:shadow-lg hover:shadow-[#8b5cf6]/20 transition-all disabled:opacity-50"
-                            >
-                                {saving ? (
-                                    <FontAwesomeIcon icon={faSpinner} className="w-3.5 h-3.5 mr-2 animate-spin" />
-                                ) : saved ? (
-                                    <FontAwesomeIcon icon={faCheck} className="w-3.5 h-3.5 mr-2" />
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 relative">
+                        <div>
+                            <p className="text-sm text-gray-500 mb-1">Bot Prefix</p>
+                            <p className="text-2xl font-mono text-white bg-black/30 w-fit px-4 py-1 rounded-lg border border-white/[0.05]">
+                                {settings.prefix}
+                            </p>
+                        </div>
+                        <div>
+                            <p className="text-sm text-gray-500 mb-1">Ignored Command Channels</p>
+                            <div className="flex flex-wrap gap-2">
+                                {settings.disabledChannels.length > 0 ? (
+                                    settings.disabledChannels.map(id => (
+                                        <ChannelMention key={id} channelId={id} channels={channels} />
+                                    ))
                                 ) : (
-                                    <FontAwesomeIcon icon={faFloppyDisk} className="w-3.5 h-3.5 mr-2" />
+                                    <span className="text-gray-400 bg-black/20 px-3 py-1 rounded border border-white/[0.03]">None specified. Bot responds in all channels.</span>
                                 )}
-                                {saving ? "Saving…" : saved ? "Saved!" : "Save Changes"}
-                            </button>
-                        </motion.div>
-                    )}
+                            </div>
+                        </div>
+                    </div>
                 </motion.div>
 
-                {/* Settings sections */}
-                <div className="space-y-8">
-                    {/* ── General ── */}
-                    <motion.section
-                        initial={{ opacity: 0, y: 15 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.05 }}
-                        className="glass rounded-xl border border-white/[0.06] overflow-hidden"
-                    >
-                        <div className="px-6 py-4 border-b border-white/[0.04] flex items-center gap-3">
-                            <FontAwesomeIcon icon={faTerminal} className="w-4 h-4 text-[#a78bfa]" />
-                            <h2 className="text-white font-semibold">General</h2>
+                {/* Welcome Module */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1 }}
+                    className="glass rounded-2xl border border-white/[0.06] p-6 flex flex-col hover:border-white/[0.1] transition-colors"
+                >
+                    <div className="flex items-center justify-between mb-6">
+                        <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-lg bg-pink-500/20 flex items-center justify-center">
+                                <FontAwesomeIcon icon={faDoorOpen} className="w-4 h-4 text-pink-400" />
+                            </div>
+                            <h2 className="text-lg font-bold text-white">Welcome</h2>
                         </div>
-                        <div className="p-6 space-y-5">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-400 mb-2">Bot Prefix</label>
-                                <input
-                                    type="text"
-                                    value={data.prefix}
-                                    onChange={(e) => setData({ ...data, prefix: e.target.value })}
-                                    maxLength={5}
-                                    className="w-full max-w-xs px-4 py-2.5 rounded-lg bg-black/40 border border-white/[0.06] focus:border-[#8b5cf6]/30 focus:ring-2 focus:ring-[#8b5cf6]/10 focus:outline-none text-white font-mono text-sm transition-all"
-                                />
-                                <p className="text-xs text-gray-600 mt-1.5">Maximum 5 characters</p>
+                        <StatusBadge enabled={settings.modules.welcome.enabled} />
+                    </div>
+
+                    <div className="flex-1 space-y-4">
+                        <div className="grid grid-cols-[100px_1fr] items-center gap-4 border-b border-white/[0.02] pb-3">
+                            <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Channel</span>
+                            <div><ChannelMention channelId={settings.modules.welcome.channelId} channels={channels} /></div>
+                        </div>
+                        <div className="grid grid-cols-[100px_1fr] items-center gap-4">
+                            <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Message</span>
+                            <span className="text-sm text-gray-300 truncate">{settings.modules.welcome.messageId ? "Custom ID Set" : "Default Embed"}</span>
+                        </div>
+                    </div>
+
+                    <Link href={`/dashboard/${guildId}/modules/welcome`} className="mt-6 text-sm text-[#8b5cf6] hover:text-[#a78bfa] font-medium flex items-center gap-2 group w-fit">
+                        Configure Welcome <FontAwesomeIcon icon={faArrowRight} className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+                    </Link>
+                </motion.div>
+
+                {/* Leave Module */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.15 }}
+                    className="glass rounded-2xl border border-white/[0.06] p-6 flex flex-col hover:border-white/[0.1] transition-colors"
+                >
+                    <div className="flex items-center justify-between mb-6">
+                        <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-lg bg-orange-500/20 flex items-center justify-center">
+                                <FontAwesomeIcon icon={faDoorClosed} className="w-4 h-4 text-orange-400" />
+                            </div>
+                            <h2 className="text-lg font-bold text-white">Leave</h2>
+                        </div>
+                        <StatusBadge enabled={settings.modules.leave.enabled} />
+                    </div>
+
+                    <div className="flex-1 space-y-4">
+                        <div className="grid grid-cols-[100px_1fr] items-center gap-4 border-b border-white/[0.02] pb-3">
+                            <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Channel</span>
+                            <div><ChannelMention channelId={settings.modules.leave.channelId} channels={channels} /></div>
+                        </div>
+                        <div className="grid grid-cols-[100px_1fr] items-center gap-4">
+                            <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Message</span>
+                            <span className="text-sm text-gray-300 truncate">{settings.modules.leave.messageId ? "Custom ID Set" : "Default Embed"}</span>
+                        </div>
+                    </div>
+
+                    <Link href={`/dashboard/${guildId}/modules/leave`} className="mt-6 text-sm text-[#8b5cf6] hover:text-[#a78bfa] font-medium flex items-center gap-2 group w-fit">
+                        Configure Leave <FontAwesomeIcon icon={faArrowRight} className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+                    </Link>
+                </motion.div>
+
+                {/* Auto Role Module */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 }}
+                    className="glass rounded-2xl border border-white/[0.06] p-6 flex flex-col hover:border-white/[0.1] transition-colors"
+                >
+                    <div className="flex items-center justify-between mb-6">
+                        <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-lg bg-emerald-500/20 flex items-center justify-center">
+                                <FontAwesomeIcon icon={faUserPlus} className="w-4 h-4 text-emerald-400" />
+                            </div>
+                            <h2 className="text-lg font-bold text-white">Auto Role</h2>
+                        </div>
+                        <StatusBadge enabled={settings.modules.autorole.enabled} />
+                    </div>
+
+                    <div className="flex-1 space-y-4">
+                        <div className="grid grid-cols-[100px_1fr] items-start gap-4 border-b border-white/[0.02] pb-3">
+                            <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider pt-1">Roles</span>
+                            <div className="flex flex-wrap gap-2">
+                                {settings.modules.autorole.roleIds && settings.modules.autorole.roleIds.length > 0 ? (
+                                    settings.modules.autorole.roleIds.map(id => <RoleMention key={id} roleId={id} roles={roles} />)
+                                ) : (
+                                    <span className="text-gray-500 text-sm">None selected</span>
+                                )}
                             </div>
                         </div>
-                    </motion.section>
-
-                    {/* ── Command Channels (Enable/Disable) ── */}
-                    <motion.section
-                        initial={{ opacity: 0, y: 15 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.1 }}
-                        className="glass rounded-xl border border-white/[0.06] overflow-hidden"
-                    >
-                        <div className="px-6 py-4 border-b border-white/[0.04] flex items-center gap-3">
-                            <FontAwesomeIcon icon={faHashtag} className="w-4 h-4 text-blue-400" />
-                            <h2 className="text-white font-semibold">Command Channels</h2>
-                            <span className="text-xs text-gray-500 ml-auto">
-                                {disabledChannels.length} channel{disabledChannels.length !== 1 ? "s" : ""} disabled
+                        <div className="grid grid-cols-[100px_1fr] items-center gap-4">
+                            <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Delay</span>
+                            <span className="text-sm text-gray-300 font-medium">
+                                {settings.modules.autorole.delay ? `${settings.modules.autorole.delay} seconds` : "Instant"}
                             </span>
                         </div>
-                        <div className="p-6">
-                            <p className="text-xs text-gray-500 mb-4">
-                                Toggle which channels the bot responds to commands in. Disabled channels will ignore all bot commands.
-                            </p>
-                            {channelsLoading ? (
-                                <div className="flex items-center justify-center py-8">
-                                    <FontAwesomeIcon icon={faSpinner} className="w-5 h-5 text-[#8b5cf6] animate-spin" />
-                                </div>
-                            ) : channels.length === 0 ? (
-                                <p className="text-gray-500 text-sm text-center py-4">No channels found</p>
-                            ) : (
-                                <div className="space-y-1 max-h-[320px] overflow-y-auto pr-1 custom-scrollbar">
-                                    {channels.map((ch) => {
-                                        const isDisabled = disabledChannels.includes(ch.id)
-                                        const isToggling = togglingChannel === ch.id
-                                        return (
-                                            <div
-                                                key={ch.id}
-                                                className={`flex items-center justify-between px-4 py-2.5 rounded-lg transition-colors ${isDisabled
-                                                        ? "bg-red-500/[0.06] border border-red-500/10"
-                                                        : "hover:bg-white/[0.03]"
-                                                    }`}
-                                            >
-                                                <div className="flex items-center gap-2.5 min-w-0">
-                                                    <span className="text-gray-500 text-xs shrink-0">#</span>
-                                                    <span className={`text-sm truncate ${isDisabled ? "text-gray-500 line-through" : "text-gray-200"}`}>
-                                                        {ch.name}
-                                                    </span>
-                                                    {isDisabled && (
-                                                        <StatusBadge text="disabled" color="bg-red-500/15 text-red-400" />
-                                                    )}
-                                                </div>
-                                                <div className="flex items-center gap-2 shrink-0 ml-3">
-                                                    {isToggling && (
-                                                        <FontAwesomeIcon icon={faSpinner} className="w-3 h-3 text-gray-400 animate-spin" />
-                                                    )}
-                                                    <ToggleSwitch
-                                                        enabled={!isDisabled}
-                                                        onChange={() => toggleChannelCommands(ch.id)}
-                                                        disabled={isToggling}
-                                                    />
-                                                </div>
-                                            </div>
-                                        )
-                                    })}
-                                </div>
-                            )}
+                    </div>
+
+                    <Link href={`/dashboard/${guildId}/modules/autorole`} className="mt-6 text-sm text-[#8b5cf6] hover:text-[#a78bfa] font-medium flex items-center gap-2 group w-fit">
+                        Configure Auto Role <FontAwesomeIcon icon={faArrowRight} className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+                    </Link>
+                </motion.div>
+
+                {/* Verification Module */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.25 }}
+                    className="glass rounded-2xl border border-white/[0.06] p-6 flex flex-col hover:border-white/[0.1] transition-colors"
+                >
+                    <div className="flex items-center justify-between mb-6">
+                        <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center">
+                                <FontAwesomeIcon icon={faShieldHalved} className="w-4 h-4 text-blue-400" />
+                            </div>
+                            <h2 className="text-lg font-bold text-white">Verification</h2>
                         </div>
-                    </motion.section>
+                        <StatusBadge enabled={settings.modules.verification.enabled} />
+                    </div>
 
-                    {/* ── Channel Management (Lock/Unlock + Slowmode) ── */}
-                    <motion.section
-                        initial={{ opacity: 0, y: 15 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.15 }}
-                        className="glass rounded-xl border border-white/[0.06] overflow-hidden"
-                    >
-                        <div className="px-6 py-4 border-b border-white/[0.04] flex items-center gap-3">
-                            <FontAwesomeIcon icon={faLock} className="w-4 h-4 text-yellow-400" />
-                            <h2 className="text-white font-semibold">Channel Management</h2>
+                    <div className="flex-1 space-y-4">
+                        <div className="grid grid-cols-[100px_1fr] items-center gap-4 border-b border-white/[0.02] pb-3">
+                            <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Channel</span>
+                            <div><ChannelMention channelId={settings.modules.verification.channelId} channels={channels} /></div>
                         </div>
-                        <div className="p-6">
-                            <p className="text-xs text-gray-500 mb-4">
-                                Lock or unlock channels and set slowmode. These actions take effect immediately on Discord.
-                            </p>
-
-                            {/* Feedback toast */}
-                            <AnimatePresence>
-                                {actionFeedback && (
-                                    <motion.div
-                                        initial={{ opacity: 0, y: -10 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        exit={{ opacity: 0, y: -10 }}
-                                        className={`mb-4 px-4 py-2.5 rounded-lg text-sm flex items-center gap-2 ${actionFeedback.type === "success"
-                                                ? "bg-green-500/10 border border-green-500/20 text-green-400"
-                                                : "bg-red-500/10 border border-red-500/20 text-red-400"
-                                            }`}
-                                    >
-                                        <FontAwesomeIcon
-                                            icon={actionFeedback.type === "success" ? faCheck : faCircleExclamation}
-                                            className="w-3.5 h-3.5"
-                                        />
-                                        {actionFeedback.message}
-                                    </motion.div>
-                                )}
-                            </AnimatePresence>
-
-                            {channelsLoading ? (
-                                <div className="flex items-center justify-center py-8">
-                                    <FontAwesomeIcon icon={faSpinner} className="w-5 h-5 text-[#8b5cf6] animate-spin" />
-                                </div>
-                            ) : channels.length === 0 ? (
-                                <p className="text-gray-500 text-sm text-center py-4">No channels found</p>
-                            ) : (
-                                <div className="space-y-2 max-h-[400px] overflow-y-auto pr-1 custom-scrollbar">
-                                    {channels.map((ch) => {
-                                        const isLocking = actionLoading === `${ch.id}-lock`
-                                        const isUnlocking = actionLoading === `${ch.id}-unlock`
-                                        const isSettingSlowmode = actionLoading === `${ch.id}-slowmode`
-                                        const slowmodeValue = slowmodeInputs[ch.id] ?? ""
-
-                                        return (
-                                            <div
-                                                key={ch.id}
-                                                className="px-4 py-3 rounded-lg hover:bg-white/[0.03] transition-colors border border-transparent hover:border-white/[0.04]"
-                                            >
-                                                <div className="flex items-center justify-between mb-2">
-                                                    <div className="flex items-center gap-2">
-                                                        <span className="text-gray-500 text-xs">#</span>
-                                                        <span className="text-sm text-gray-200">{ch.name}</span>
-                                                    </div>
-                                                    <div className="flex items-center gap-2">
-                                                        <button
-                                                            onClick={() => handleChannelAction(ch.id, "lock")}
-                                                            disabled={!!actionLoading}
-                                                            className="px-3 py-1 text-xs rounded-md bg-red-500/10 text-red-400 hover:bg-red-500/20 border border-red-500/15 transition-all disabled:opacity-40"
-                                                        >
-                                                            {isLocking ? (
-                                                                <FontAwesomeIcon icon={faSpinner} className="w-3 h-3 animate-spin" />
-                                                            ) : (
-                                                                <>
-                                                                    <FontAwesomeIcon icon={faLock} className="w-3 h-3 mr-1" />
-                                                                    Lock
-                                                                </>
-                                                            )}
-                                                        </button>
-                                                        <button
-                                                            onClick={() => handleChannelAction(ch.id, "unlock")}
-                                                            disabled={!!actionLoading}
-                                                            className="px-3 py-1 text-xs rounded-md bg-green-500/10 text-green-400 hover:bg-green-500/20 border border-green-500/15 transition-all disabled:opacity-40"
-                                                        >
-                                                            {isUnlocking ? (
-                                                                <FontAwesomeIcon icon={faSpinner} className="w-3 h-3 animate-spin" />
-                                                            ) : (
-                                                                <>
-                                                                    <FontAwesomeIcon icon={faLockOpen} className="w-3 h-3 mr-1" />
-                                                                    Unlock
-                                                                </>
-                                                            )}
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                                {/* Slowmode row */}
-                                                <div className="flex items-center gap-2 ml-5">
-                                                    <FontAwesomeIcon icon={faClock} className="w-3 h-3 text-gray-600" />
-                                                    <input
-                                                        type="number"
-                                                        min="0"
-                                                        max="21600"
-                                                        placeholder="0"
-                                                        value={slowmodeValue}
-                                                        onChange={(e) =>
-                                                            setSlowmodeInputs((prev) => ({
-                                                                ...prev,
-                                                                [ch.id]: e.target.value,
-                                                            }))
-                                                        }
-                                                        className="w-20 px-2.5 py-1 text-xs rounded-md bg-black/40 border border-white/[0.06] text-white focus:border-[#8b5cf6]/30 focus:outline-none"
-                                                    />
-                                                    <span className="text-[10px] text-gray-600">seconds</span>
-                                                    <button
-                                                        onClick={() => handleChannelAction(ch.id, "slowmode", slowmodeValue || "0")}
-                                                        disabled={!!actionLoading}
-                                                        className="px-2.5 py-1 text-xs rounded-md bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 border border-blue-500/15 transition-all disabled:opacity-40"
-                                                    >
-                                                        {isSettingSlowmode ? (
-                                                            <FontAwesomeIcon icon={faSpinner} className="w-3 h-3 animate-spin" />
-                                                        ) : (
-                                                            "Set"
-                                                        )}
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        )
-                                    })}
-                                </div>
-                            )}
+                        <div className="grid grid-cols-[100px_1fr] items-center gap-4 border-b border-white/[0.02] pb-3">
+                            <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Type</span>
+                            <span className="text-sm text-white capitalize bg-black/30 px-3 py-1 rounded w-fit border border-white/[0.05]">
+                                {settings.modules.verification.type || "button"}
+                            </span>
                         </div>
-                    </motion.section>
-
-                    {/* ── Maintenance Mode ── */}
-                    <motion.section
-                        initial={{ opacity: 0, y: 15 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.2 }}
-                        className="glass rounded-xl border border-white/[0.06] overflow-hidden"
-                    >
-                        <div className="px-6 py-4 border-b border-white/[0.04] flex items-center gap-3">
-                            <FontAwesomeIcon icon={faWrench} className="w-4 h-4 text-orange-400" />
-                            <h2 className="text-white font-semibold">Maintenance Mode</h2>
-                            {!mmodeLoading && (
-                                <StatusBadge
-                                    text={mmodeActive ? "active" : "inactive"}
-                                    color={
-                                        mmodeActive
-                                            ? "bg-orange-500/15 text-orange-400"
-                                            : "bg-gray-500/15 text-gray-500"
-                                    }
-                                />
-                            )}
+                        <div className="grid grid-cols-[100px_1fr] items-center gap-4">
+                            <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Verified Role</span>
+                            <div><RoleMention roleId={settings.modules.verification.roleId} roles={roles} /></div>
                         </div>
-                        <div className="p-6">
-                            <p className="text-xs text-gray-500 mb-5">
-                                Maintenance mode locks all channels and creates temporary maintenance channels for communication.
-                                This is a server-wide action.
-                            </p>
+                    </div>
 
-                            {mmodeLoading ? (
-                                <div className="flex items-center justify-center py-6">
-                                    <FontAwesomeIcon icon={faSpinner} className="w-5 h-5 text-[#8b5cf6] animate-spin" />
-                                </div>
-                            ) : (
-                                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-                                    <div className={`flex-1 p-4 rounded-lg border ${mmodeActive
-                                            ? "bg-orange-500/[0.06] border-orange-500/15"
-                                            : "bg-white/[0.02] border-white/[0.04]"
-                                        }`}>
-                                        <div className="flex items-center gap-3">
-                                            <div className={`w-2.5 h-2.5 rounded-full ${mmodeActive ? "bg-orange-400 animate-pulse" : "bg-gray-600"
-                                                }`} />
-                                            <span className="text-sm text-gray-300">
-                                                {mmodeActive
-                                                    ? "Server is in maintenance mode — all channels are locked"
-                                                    : "Server is operating normally"}
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <button
-                                        onClick={toggleMmode}
-                                        disabled={mmodeActionLoading}
-                                        className={`px-5 py-2.5 rounded-lg text-sm font-semibold transition-all disabled:opacity-50 shrink-0 ${mmodeActive
-                                                ? "bg-green-500/15 text-green-400 hover:bg-green-500/25 border border-green-500/20"
-                                                : "bg-orange-500/15 text-orange-400 hover:bg-orange-500/25 border border-orange-500/20"
-                                            }`}
-                                    >
-                                        {mmodeActionLoading ? (
-                                            <FontAwesomeIcon icon={faSpinner} className="w-4 h-4 animate-spin" />
-                                        ) : mmodeActive ? (
-                                            <>
-                                                <FontAwesomeIcon icon={faLockOpen} className="w-3.5 h-3.5 mr-2" />
-                                                End Maintenance
-                                            </>
-                                        ) : (
-                                            <>
-                                                <FontAwesomeIcon icon={faWrench} className="w-3.5 h-3.5 mr-2" />
-                                                Start Maintenance
-                                            </>
-                                        )}
-                                    </button>
-                                </div>
-                            )}
+                    <Link href={`/dashboard/${guildId}/modules/verification`} className="mt-6 text-sm text-[#8b5cf6] hover:text-[#a78bfa] font-medium flex items-center gap-2 group w-fit">
+                        Configure Verification <FontAwesomeIcon icon={faArrowRight} className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+                    </Link>
+                </motion.div>
+
+                {/* Logging Module (Full Width) */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3 }}
+                    className="glass rounded-2xl border border-white/[0.06] p-6 col-span-1 md:col-span-2 hover:border-white/[0.1] transition-colors"
+                >
+                    <div className="flex items-center justify-between mb-6">
+                        <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-lg bg-gray-500/20 flex items-center justify-center border border-white/[0.05]">
+                                <FontAwesomeIcon icon={faClipboardList} className="w-4 h-4 text-gray-400" />
+                            </div>
+                            <h2 className="text-lg font-bold text-white">Action Logging</h2>
                         </div>
-                    </motion.section>
-                </div>
+                        <StatusBadge enabled={settings.modules.logging.enabled} />
+                    </div>
 
-                {/* Bottom save bar (sticky) */}
-                {hasChanges && (
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="fixed bottom-0 left-0 right-0 lg:left-64 z-30 p-4 bg-gray-950/95 backdrop-blur-xl border-t border-white/[0.06]"
-                    >
-                        <div className="max-w-3xl mx-auto flex items-center justify-between">
-                            <p className="text-sm text-yellow-400/80">You have unsaved changes</p>
-                            <div className="flex gap-3">
-                                <button
-                                    onClick={handleDiscard}
-                                    className="px-4 py-2 rounded-lg border border-white/[0.08] text-gray-400 text-sm hover:text-white transition-all"
-                                >
-                                    Discard
-                                </button>
-                                <button
-                                    onClick={handleSave}
-                                    disabled={saving}
-                                    className="px-5 py-2 rounded-lg bg-gradient-to-r from-[#8b5cf6] to-[#7c3aed] text-white text-sm font-semibold hover:shadow-lg hover:shadow-[#8b5cf6]/20 transition-all disabled:opacity-50"
-                                >
-                                    {saving ? "Saving…" : "Save Changes"}
-                                </button>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-4">
+                        <div className="space-y-4">
+                            <div className="grid grid-cols-[120px_1fr] items-center gap-4 border-b border-white/[0.02] pb-3">
+                                <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Output Channel</span>
+                                <div><ChannelMention channelId={settings.modules.logging.channelId} channels={channels} /></div>
                             </div>
                         </div>
-                    </motion.div>
-                )}
+                        <div className="space-y-4">
+                            <div className="grid grid-cols-[120px_1fr] items-start gap-4 border-b border-white/[0.02] pb-3 md:border-b-0 md:pb-0">
+                                <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider pt-1">Active Events</span>
+                                <div className="text-sm text-gray-300">
+                                    {settings.modules.logging.events ? (
+                                        Object.values(settings.modules.logging.events).filter(v => v).length > 0 ? (
+                                            `${Object.values(settings.modules.logging.events).filter(v => v).length} event streams enabled`
+                                        ) : "No events enabled"
+                                    ) : "Logging events tracking loading..."}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <Link href={`/dashboard/${guildId}/modules/logging`} className="mt-6 text-sm text-[#8b5cf6] hover:text-[#a78bfa] font-medium flex items-center gap-2 group w-fit">
+                        Configure Action Logging <FontAwesomeIcon icon={faArrowRight} className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+                    </Link>
+                </motion.div>
+
             </div>
         </div>
     )

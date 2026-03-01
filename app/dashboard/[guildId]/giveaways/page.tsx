@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react"
 import { useSession } from "next-auth/react"
+import { useQuery } from "@tanstack/react-query"
 import { useParams } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
@@ -67,16 +68,10 @@ export default function GiveawaysPage() {
     const params = useParams()
     const guildId = params?.guildId as string
 
-    const [giveaways, setGiveaways] = useState<GiveawayData[]>([])
-    const [loading, setLoading] = useState(true)
     const [filter, setFilter] = useState<FilterType>("all")
 
     // Creation form state
     const [showCreate, setShowCreate] = useState(false)
-    const [channels, setChannels] = useState<ChannelData[]>([])
-    const [roles, setRoles] = useState<RoleData[]>([])
-    const [channelsLoading, setChannelsLoading] = useState(false)
-    const [rolesLoading, setRolesLoading] = useState(false)
     const [creating, setCreating] = useState(false)
     const [createResult, setCreateResult] = useState<{
         type: "success" | "error"
@@ -111,65 +106,45 @@ export default function GiveawaysPage() {
         return () => document.removeEventListener("mousedown", handleClickOutside)
     }, [])
 
-    const fetchGiveaways = useCallback(async () => {
-        try {
+    const { data: giveaways = [], isLoading: loading, refetch: refetchGiveaways } = useQuery<GiveawayData[]>({
+        queryKey: ["giveaways", guildId],
+        queryFn: async () => {
             const res = await fetch(`/api/guilds/${guildId}/giveaways`)
-            if (res.ok) {
-                const data = await res.json()
-                setGiveaways(data)
-            }
-        } catch (error) {
-            console.error("Error fetching giveaways:", error)
-        } finally {
-            setLoading(false)
-        }
-    }, [guildId])
+            if (!res.ok) throw new Error("Failed to fetch giveaways")
+            return res.json()
+        },
+        enabled: !!session && !!guildId
+    })
 
-    const fetchChannels = useCallback(async () => {
-        setChannelsLoading(true)
-        try {
+    const { data: channels = [], isLoading: channelsLoading } = useQuery<ChannelData[]>({
+        queryKey: ["channels", guildId],
+        queryFn: async () => {
             const res = await fetch(`/api/guilds/${guildId}/channels`)
-            if (res.ok) {
-                const data = await res.json()
-                setChannels(data)
-                if (data.length > 0 && !formChannel) {
-                    setFormChannel(data[0].id)
-                }
-            }
-        } catch (error) {
-            console.error("Error fetching channels:", error)
-        } finally {
-            setChannelsLoading(false)
-        }
-    }, [guildId, formChannel])
+            if (!res.ok) throw new Error("Failed to fetch channels")
+            return res.json()
+        },
+        enabled: showCreate && !!guildId,
+        staleTime: 3 * 60 * 1000, // 3 minutes
+    })
 
-    const fetchRoles = useCallback(async () => {
-        setRolesLoading(true)
-        try {
+    const { data: roles = [], isLoading: rolesLoading } = useQuery<RoleData[]>({
+        queryKey: ["roles", guildId],
+        queryFn: async () => {
             const res = await fetch(`/api/guilds/${guildId}/roles`)
-            if (res.ok) {
-                const data = await res.json()
-                setRoles(data)
-            }
-        } catch (error) {
-            console.error("Error fetching roles:", error)
-        } finally {
-            setRolesLoading(false)
+            if (!res.ok) throw new Error("Failed to fetch roles")
+            return res.json()
+        },
+        enabled: showCreate && !!guildId
+    })
+
+    useEffect(() => {
+        if (channels.length > 0 && !formChannel) {
+            setFormChannel(channels[0].id)
         }
-    }, [guildId])
-
-    useEffect(() => {
-        if (session && guildId) fetchGiveaways()
-    }, [session, guildId, fetchGiveaways])
-
-    useEffect(() => {
-        if (showCreate && channels.length === 0) fetchChannels()
-        if (showCreate && roles.length === 0) fetchRoles()
-    }, [showCreate, channels.length, roles.length, fetchChannels, fetchRoles])
+    }, [channels, formChannel])
 
     const handleRefresh = async () => {
-        setLoading(true)
-        await fetchGiveaways()
+        await refetchGiveaways()
     }
 
     const handleCreate = async () => {
@@ -206,7 +181,7 @@ export default function GiveawaysPage() {
                 setFormWinnerCount("1")
                 setFormRequiredRole("")
                 // Refresh list
-                await fetchGiveaways()
+                await refetchGiveaways()
                 // Close form after 2 seconds
                 setTimeout(() => {
                     setShowCreate(false)
@@ -329,8 +304,8 @@ export default function GiveawaysPage() {
                                                                 setChannelDropdownOpen(false)
                                                             }}
                                                             className={`w-full text-left px-3 py-2 text-sm flex items-center gap-2 transition-colors ${formChannel === ch.id
-                                                                    ? "bg-[#8b5cf6]/15 text-[#a78bfa]"
-                                                                    : "text-gray-300 hover:bg-white/[0.06] hover:text-white"
+                                                                ? "bg-[#8b5cf6]/15 text-[#a78bfa]"
+                                                                : "text-gray-300 hover:bg-white/[0.06] hover:text-white"
                                                                 }`}
                                                         >
                                                             <span className="text-gray-500 text-xs">#</span>
@@ -450,8 +425,8 @@ export default function GiveawaysPage() {
                                                         setRoleDropdownOpen(false)
                                                     }}
                                                     className={`w-full text-left px-3 py-2 text-sm transition-colors ${!formRequiredRole
-                                                            ? "bg-[#8b5cf6]/15 text-[#a78bfa]"
-                                                            : "text-gray-300 hover:bg-white/[0.06] hover:text-white"
+                                                        ? "bg-[#8b5cf6]/15 text-[#a78bfa]"
+                                                        : "text-gray-300 hover:bg-white/[0.06] hover:text-white"
                                                         }`}
                                                 >
                                                     No requirement (everyone)
@@ -465,8 +440,8 @@ export default function GiveawaysPage() {
                                                             setRoleDropdownOpen(false)
                                                         }}
                                                         className={`w-full text-left px-3 py-2 text-sm flex items-center gap-2 transition-colors ${formRequiredRole === role.id
-                                                                ? "bg-[#8b5cf6]/15 text-[#a78bfa]"
-                                                                : "text-gray-300 hover:bg-white/[0.06] hover:text-white"
+                                                            ? "bg-[#8b5cf6]/15 text-[#a78bfa]"
+                                                            : "text-gray-300 hover:bg-white/[0.06] hover:text-white"
                                                             }`}
                                                     >
                                                         <span

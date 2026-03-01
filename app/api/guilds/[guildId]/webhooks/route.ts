@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import { getAccessTokenFromRequest, requireManageGuild } from "@/lib/permissions"
 import { connectToDatabase } from "@/lib/mongodb"
-import { Guild } from "@/lib/models/Guild"
+import Guild from "@/lib/models/Guild"
 
 const DISCORD_WEBHOOK_REGEX = /^https:\/\/discord\.com\/api\/webhooks\/\d+\/.+$/
 

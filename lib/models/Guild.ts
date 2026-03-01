@@ -72,5 +72,5 @@ const guildSchema = new Schema<IGuild>(
 )
 
 // Prevent model recompilation in dev (hot reload)
-export const Guild: Model<IGuild> =
-    mongoose.models.Guild || mongoose.model<IGuild>("Guild", guildSchema)
+const Guild: Model<IGuild> = mongoose.models.Guild || mongoose.model<IGuild>("Guild", guildSchema)
+export default Guild

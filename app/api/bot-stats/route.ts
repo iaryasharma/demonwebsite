@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import { connectToDatabase } from "@/lib/mongodb"
-import { Guild } from "@/lib/models/Guild"
+import Guild from "@/lib/models/Guild"
 import { User } from "@/lib/models/User"
 import fs from "fs"
 import path from "path"

@@ -2,8 +2,10 @@
 
 import { useSession } from "next-auth/react"
 import { useParams } from "next/navigation"
-import { useState, useEffect } from "react"
+import { useState } from "react"
+import { useQuery } from "@tanstack/react-query"
 import { DashboardSidebar } from "@/components/dashboard/dashboard-sidebar"
+import { DashboardNavbar } from "@/components/dashboard/dashboard-navbar"
 
 interface GuildInfo {
   id: string
@@ -15,24 +17,19 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const { data: session, status } = useSession()
   const params = useParams()
   const guildId = params?.guildId as string | undefined
-  const [guildInfo, setGuildInfo] = useState<GuildInfo | null>(null)
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
 
-  // Fetch guild info for sidebar when viewing a specific guild
-  useEffect(() => {
-    if (!guildId || !session) return
+  const { data: guilds } = useQuery({
+    queryKey: ["guilds"],
+    queryFn: async () => {
+      const res = await fetch("/api/guilds")
+      if (!res.ok) throw new Error("Failed to fetch guilds")
+      return res.json()
+    },
+    enabled: !!session && !!guildId,
+  })
 
-    async function fetchGuild() {
-      try {
-        const res = await fetch("/api/guilds")
-        if (res.ok) {
-          const guilds = await res.json()
-          const guild = guilds.find((g: GuildInfo) => g.id === guildId)
-          if (guild) setGuildInfo(guild)
-        }
-      } catch { }
-    }
-    fetchGuild()
-  }, [guildId, session])
+  const guildInfo = guilds?.find((g: GuildInfo) => g.id === guildId) || null
 
   // Don't render sidebar for unauthenticated users (login screen)
   if (status === "unauthenticated" || status === "loading") {
@@ -45,9 +42,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         guildId={guildId}
         guildName={guildInfo?.name}
         guildIcon={guildInfo?.icon}
+        collapsed={sidebarCollapsed}
+        onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
       />
-      <div className={`transition-all duration-300 lg:ml-64 pt-16 lg:pt-0 min-h-screen`}>
-        <div className="p-4 sm:p-6 lg:p-8">
+      <div className={`transition-all duration-300 ${sidebarCollapsed ? "lg:ml-[72px]" : "lg:ml-64"} min-h-screen flex flex-col`}>
+        <DashboardNavbar />
+        <div className="p-4 sm:p-6 lg:p-8 flex-1">
           {children}
         </div>
       </div>
