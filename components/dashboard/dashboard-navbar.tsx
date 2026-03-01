@@ -3,8 +3,9 @@
 import { useSession, signOut } from "next-auth/react"
 import Image from "next/image"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faArrowRightFromBracket, faUser } from "@fortawesome/free-solid-svg-icons"
+import { faArrowRightFromBracket, faUser, faHouse } from "@fortawesome/free-solid-svg-icons"
 import { motion } from "framer-motion"
+import Link from "next/link"
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -21,7 +22,14 @@ export function DashboardNavbar() {
     if (!user) return null
 
     return (
-        <nav className="h-16 border-b border-white/[0.06] bg-gray-950/95 backdrop-blur-xl px-4 sm:px-6 lg:px-8 flex items-center justify-end sticky top-0 z-30">
+        <nav className="h-16 border-b border-white/[0.06] bg-gray-950/95 backdrop-blur-xl px-4 sm:px-6 lg:px-8 flex items-center justify-between sticky top-0 z-30">
+            <Link
+                href="/"
+                className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors text-sm font-medium group"
+            >
+                <FontAwesomeIcon icon={faHouse} className="w-4 h-4 group-hover:text-[#8b5cf6] transition-colors" />
+                <span className="hidden sm:inline">Home</span>
+            </Link>
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                     <button className="flex items-center gap-3 hover:bg-white/[0.04] p-1.5 rounded-full transition-colors focus:outline-none">

@@ -12,7 +12,8 @@ import {
     faSpinner,
     faCircleCheck,
     faCircleInfo,
-    faArrowUpRightFromSquare
+    faArrowUpRightFromSquare,
+    faHashtag
 } from "@fortawesome/free-solid-svg-icons"
 import Link from "next/link"
 import { ChannelPicker } from "@/components/dashboard/settings/channel-picker"
@@ -170,18 +171,33 @@ export default function WelcomeModulePage({
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
                         <div className="space-y-2">
-                            <label className="block text-sm font-medium text-gray-300">Welcome Channel</label>
+                            <label className="block text-sm font-medium text-gray-300">Main Channel</label>
                             <ChannelPicker
                                 guildId={guildId}
                                 value={config.channelId || ""}
                                 onChange={(val: string | null) => setConfig({ ...config, channelId: val || null })}
                             />
-                            <p className="text-xs text-gray-500 mt-1">The main channel where welcome messages are sent.</p>
+                            <p className="text-xs text-gray-500 mt-1">Fallback channel for embeds when no separate embed channel is set.</p>
                         </div>
                     </div>
 
                     <div className="space-y-2 pt-2">
-                        <label className="block text-sm font-medium text-gray-300">Plain Text Message</label>
+                        <div className="flex items-center justify-between">
+                            <label className="block text-sm font-medium text-gray-300">Plain Text Message</label>
+                            <label className="flex items-center cursor-pointer gap-2">
+                                <span className="text-xs text-gray-400">Enable Plain</span>
+                                <div className="relative">
+                                    <input
+                                        type="checkbox"
+                                        className="sr-only"
+                                        checked={config.plainEnabled}
+                                        onChange={(e) => setConfig({ ...config, plainEnabled: e.target.checked })}
+                                    />
+                                    <div className={`block w-10 h-6 rounded-full transition-colors ${config.plainEnabled ? 'bg-[#8b5cf6]' : 'bg-gray-700'}`}></div>
+                                    <div className={`dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform ${config.plainEnabled ? 'transform translate-x-4' : ''}`}></div>
+                                </div>
+                            </label>
+                        </div>
                         <textarea
                             value={config.message}
                             onChange={(e) => setConfig({ ...config, message: e.target.value })}
@@ -189,6 +205,20 @@ export default function WelcomeModulePage({
                             placeholder="Welcome {user} to {server}!"
                         />
                         <p className="text-xs text-gray-500 mt-1">Variables: <code className="bg-white/10 px-1 rounded text-gray-300">{`{user}`}</code>, <code className="bg-white/10 px-1 rounded text-gray-300">{`{server}`}</code>, <code className="bg-white/10 px-1 rounded text-gray-300">{`{memberCount}`}</code></p>
+                        {config.plainEnabled && (
+                            <div className="space-y-1 pt-1">
+                                <label className="flex items-center gap-2 text-xs font-medium text-gray-300">
+                                    <FontAwesomeIcon icon={faHashtag} className="w-3 h-3 text-gray-400" />
+                                    Plain Text Channel
+                                </label>
+                                <ChannelPicker
+                                    guildId={guildId}
+                                    value={config.plainChannelId || ""}
+                                    onChange={(val: string | null) => setConfig({ ...config, plainChannelId: val || null })}
+                                />
+                                <p className="text-xs text-gray-500">Required — plain text only fires when this channel is set.</p>
+                            </div>
+                        )}
                     </div>
                 </div>
 
@@ -283,6 +313,18 @@ export default function WelcomeModulePage({
                                         <div className={`dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform ${config.embedThumbnail ? 'transform translate-x-4' : ''}`}></div>
                                     </div>
                                 </label>
+                            </div>
+                            <div className="space-y-1 md:col-span-2">
+                                <label className="flex items-center gap-2 text-xs font-medium text-gray-300">
+                                    <FontAwesomeIcon icon={faHashtag} className="w-3 h-3 text-gray-400" />
+                                    Embed Channel <span className="text-gray-500 font-normal">(optional override)</span>
+                                </label>
+                                <ChannelPicker
+                                    guildId={guildId}
+                                    value={config.embedChannelId || ""}
+                                    onChange={(val: string | null) => setConfig({ ...config, embedChannelId: val || null })}
+                                />
+                                <p className="text-xs text-gray-500">Send the embed to a different channel than the main channel.</p>
                             </div>
                         </div>
                     )}
