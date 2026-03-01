@@ -23,7 +23,9 @@ import {
     faHashtag,
     faTriangleExclamation,
     faCircleXmark,
-    faPaperPlane
+    faPaperPlane,
+    faCircleInfo,
+    faArrowUpRightFromSquare
 } from "@fortawesome/free-solid-svg-icons"
 import Link from "next/link"
 import { ChannelPicker } from "@/components/dashboard/settings/channel-picker"
@@ -297,14 +299,25 @@ export default function VerificationPage({
                         />
                     </div>
 
-                    <div className="space-y-2">
-                        <label className="block font-medium text-white mb-1">Log Channel (Optional)</label>
-                        <p className="text-xs text-gray-400 mb-2">Track verification successes and failures.</p>
-                        <ChannelPicker
-                            guildId={guildId}
-                            value={config.logChannelId || ""}
-                            onChange={(val) => setConfig({ ...config, logChannelId: val || null })}
-                        />
+                    <div className="space-y-2 md:col-span-2">
+                        <div className="flex items-start gap-3 bg-blue-500/10 border border-blue-500/20 rounded-xl p-4">
+                            <FontAwesomeIcon icon={faCircleInfo} className="w-4 h-4 mt-0.5 shrink-0 text-blue-400" />
+                            <div className="flex-1 min-w-0">
+                                <p className="text-sm font-medium text-blue-200 mb-0.5">Verification Event Logging</p>
+                                <p className="text-xs text-blue-300/70">
+                                    Member join, verification success/failure, and account-age rejection events are dispatched through the
+                                    central Logging module. Configure the channel under the <span className="font-semibold">Members</span> or
+                                    <span className="font-semibold"> Verification</span> category there.
+                                </p>
+                            </div>
+                            <Link
+                                href={`/dashboard/${guildId}/modules/logging`}
+                                className="shrink-0 flex items-center gap-1.5 text-xs text-blue-300 hover:text-blue-100 transition-colors font-medium whitespace-nowrap"
+                            >
+                                Go to Logging
+                                <FontAwesomeIcon icon={faArrowUpRightFromSquare} className="w-3 h-3" />
+                            </Link>
+                        </div>
                     </div>
                 </div>
             </motion.div>

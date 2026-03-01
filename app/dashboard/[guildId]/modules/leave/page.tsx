@@ -10,7 +10,9 @@ import {
     faSave,
     faArrowLeft,
     faSpinner,
-    faCircleCheck
+    faCircleCheck,
+    faCircleInfo,
+    faArrowUpRightFromSquare
 } from "@fortawesome/free-solid-svg-icons"
 import Link from "next/link"
 import { ChannelPicker } from "@/components/dashboard/settings/channel-picker"
@@ -290,30 +292,23 @@ export default function LeaveModulePage({
                     </div>
 
                     <div className="grid grid-cols-1 gap-4 bg-black/20 p-4 rounded-xl border border-white/[0.03]">
-                        <label className="flex items-center cursor-pointer">
-                            <span className="mr-3 text-sm font-medium text-gray-300">Enable Leave Logging</span>
-                            <div className="relative ml-auto">
-                                <input
-                                    type="checkbox"
-                                    className="sr-only"
-                                    checked={config.logEnabled}
-                                    onChange={(e) => setConfig({ ...config, logEnabled: e.target.checked })}
-                                />
-                                <div className={`block w-10 h-6 rounded-full transition-colors ${config.logEnabled ? 'bg-[#8b5cf6]' : 'bg-gray-700'}`}></div>
-                                <div className={`dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform ${config.logEnabled ? 'transform translate-x-4' : ''}`}></div>
+                        <div className="flex items-start gap-3 bg-blue-500/10 border border-blue-500/20 rounded-xl p-4">
+                            <FontAwesomeIcon icon={faCircleInfo} className="w-4 h-4 mt-0.5 shrink-0 text-blue-400" />
+                            <div className="flex-1 min-w-0">
+                                <p className="text-sm font-medium text-blue-200 mb-0.5">Leave & Kick Event Logging</p>
+                                <p className="text-xs text-blue-300/70">
+                                    Member leave and kick events are automatically dispatched through the central Logging module.
+                                    Configure the log channel under the <span className="font-semibold">Members</span> category there.
+                                </p>
                             </div>
-                        </label>
-
-                        {config.logEnabled && (
-                            <div className="space-y-2 mt-2">
-                                <label className="block text-sm font-medium text-gray-300">Logging Channel</label>
-                                <ChannelPicker
-                                    guildId={guildId}
-                                    value={config.logChannelId || ""}
-                                    onChange={(val: string | null) => setConfig({ ...config, logChannelId: val || null })}
-                                />
-                            </div>
-                        )}
+                            <Link
+                                href={`/dashboard/${guildId}/modules/logging`}
+                                className="shrink-0 flex items-center gap-1.5 text-xs text-blue-300 hover:text-blue-100 transition-colors font-medium whitespace-nowrap"
+                            >
+                                Go to Logging
+                                <FontAwesomeIcon icon={faArrowUpRightFromSquare} className="w-3 h-3" />
+                            </Link>
+                        </div>
 
                         <hr className="border-white/[0.06] my-2" />
 

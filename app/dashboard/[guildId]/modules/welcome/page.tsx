@@ -10,7 +10,9 @@ import {
     faSave,
     faArrowLeft,
     faSpinner,
-    faCircleCheck
+    faCircleCheck,
+    faCircleInfo,
+    faArrowUpRightFromSquare
 } from "@fortawesome/free-solid-svg-icons"
 import Link from "next/link"
 import { ChannelPicker } from "@/components/dashboard/settings/channel-picker"
@@ -317,6 +319,30 @@ export default function WelcomeModulePage({
                         </div>
                     )}
                 </div>
+            </motion.div>
+
+            {/* Logging info */}
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+                className="flex items-start gap-3 bg-blue-500/10 border border-blue-500/20 rounded-xl p-4"
+            >
+                <FontAwesomeIcon icon={faCircleInfo} className="w-4 h-4 mt-0.5 shrink-0 text-blue-400" />
+                <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-blue-200 mb-0.5">Member Join Event Logging</p>
+                    <p className="text-xs text-blue-300/70">
+                        Member join events (including suspicious account flags) are automatically dispatched through the central
+                        Logging module. Configure the log channel under the <span className="font-semibold">Members</span> category there.
+                    </p>
+                </div>
+                <Link
+                    href={`/dashboard/${guildId}/modules/logging`}
+                    className="shrink-0 flex items-center gap-1.5 text-xs text-blue-300 hover:text-blue-100 transition-colors font-medium whitespace-nowrap"
+                >
+                    Go to Logging
+                    <FontAwesomeIcon icon={faArrowUpRightFromSquare} className="w-3 h-3" />
+                </Link>
             </motion.div>
 
             <SaveBar
