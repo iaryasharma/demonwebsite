@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import { getToken } from "next-auth/jwt"
-import { getAccessTokenFromRequest, requireManageGuild, fetchUserGuilds, fetchBotGuilds } from "@/lib/permissions"
+import { getAccessTokenFromRequest, requireManageGuild, fetchUserGuilds, fetchBotGuilds, isBotInGuild } from "@/lib/permissions"
 import { connectToDatabase } from "@/lib/mongodb"
 import Guild from "@/lib/models/Guild"
 
@@ -23,14 +23,24 @@ export async function GET(request: Request) {
         const botGuildIds = await fetchBotGuilds()
 
         // Map to a clean shape — do NOT expose raw permissions
-        const result = manageableGuilds.map((g: any) => ({
-            id: g.id,
-            name: g.name,
-            icon: g.icon
-                ? `https://cdn.discordapp.com/icons/${g.id}/${g.icon}.${g.icon.startsWith("a_") ? "gif" : "webp"}?size=128`
-                : null,
-            memberCount: g.approximate_member_count || null,
-            botPresent: botGuildIds.has(g.id)
+        // We use Promise.all to handle potential direct presence checks for guilds not in cache
+        const result = await Promise.all(manageableGuilds.map(async (g: any) => {
+            // If in cache, immediately true. If not, we do a direct check.
+            let botPresent = botGuildIds.has(g.id)
+            if (!botPresent) {
+                // Double check for recently joined guilds
+                botPresent = await isBotInGuild(g.id)
+            }
+
+            return {
+                id: g.id,
+                name: g.name,
+                icon: g.icon
+                    ? `https://cdn.discordapp.com/icons/${g.id}/${g.icon}.${g.icon.startsWith("a_") ? "gif" : "webp"}?size=128`
+                    : null,
+                memberCount: g.approximate_member_count || null,
+                botPresent
+            }
         }))
 
         return NextResponse.json(result)

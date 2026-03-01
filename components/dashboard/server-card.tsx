@@ -15,7 +15,7 @@ interface ServerCardProps {
 }
 
 const BOT_INVITE_URL =
-    "https://discord.com/oauth2/authorize?client_id=836880109478608897&scope=bot%20identify%20guilds%20applications.commands&response_type=code&permissions=1513962695871&state=QGn-6VzBYf2Ta8nMk_tFe"
+    "https://discord.com/oauth2/authorize?client_id=836880109478608897&scope=bot%20applications.commands&permissions=1513962695871"
 
 export function ServerCard({ id, name, icon, memberCount, botPresent = true }: ServerCardProps) {
     return (

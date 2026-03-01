@@ -32,8 +32,8 @@ export function Navigation() {
       animate={{ y: 0 }}
       transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
       className={`fixed top-0 w-full z-50 transition-all duration-500 ${scrolled
-          ? "backdrop-blur-xl bg-black/60 border-b border-white/10 shadow-lg shadow-black/20"
-          : "backdrop-blur-none bg-transparent border-b border-transparent"
+        ? "backdrop-blur-xl bg-black/60 border-b border-white/10 shadow-lg shadow-black/20"
+        : "backdrop-blur-none bg-transparent border-b border-transparent"
         }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -89,7 +89,7 @@ export function Navigation() {
               className="bg-gradient-to-r from-[#8b5cf6] to-[#7c3aed] text-white font-medium px-6 py-2 transition-all duration-300 hover:shadow-lg hover:shadow-[#8b5cf6]/30 hover:-translate-y-0.5 border-0"
               onClick={() =>
                 window.open(
-                  "https://discord.com/oauth2/authorize?client_id=836880109478608897&scope=bot%20identify%20guilds%20applications.commands&response_type=code&permissions=1513962695871&state=QGn-6VzBYf2Ta8nMk_tFe",
+                  "https://discord.com/oauth2/authorize?client_id=836880109478608897&scope=bot%20applications.commands&permissions=1513962695871",
                   "_blank"
                 )
               }
@@ -151,7 +151,7 @@ export function Navigation() {
                   className="w-full mt-3 bg-gradient-to-r from-[#8b5cf6] to-[#7c3aed] text-white font-medium border-0"
                   onClick={() =>
                     window.open(
-                      "https://discord.com/oauth2/authorize?client_id=836880109478608897&scope=bot%20identify%20guilds%20applications.commands&response_type=code&permissions=1513962695871&state=QGn-6VzBYf2Ta8nMk_tFe",
+                      "https://discord.com/oauth2/authorize?client_id=836880109478608897&scope=bot%20applications.commands&permissions=1513962695871",
                       "_blank"
                     )
                   }

@@ -31,7 +31,7 @@ export function Footer() {
               entertainment, and management tools.
             </p>
             <Link
-              href="https://discord.com/oauth2/authorize?client_id=836880109478608897&scope=bot%20identify%20guilds%20applications.commands&response_type=code&permissions=1513962695871&state=QGn-6VzBYf2Ta8nMk_tFe"
+              href="https://discord.com/oauth2/authorize?client_id=836880109478608897&scope=bot%20applications.commands&permissions=1513962695871"
               className="inline-flex items-center px-5 py-2.5 bg-gradient-to-r from-[#8b5cf6] to-[#7c3aed] text-white font-medium rounded-xl hover:shadow-lg hover:shadow-[#8b5cf6]/20 transition-all duration-300 hover:-translate-y-0.5 text-sm"
               title="Invite Demon Bot"
             >
@@ -76,7 +76,7 @@ export function Footer() {
             <h4 className="text-white font-semibold mb-4 text-sm uppercase tracking-wider">Connect</h4>
             <div className="space-y-3">
               <Link
-                href="https://discord.com/oauth2/authorize?client_id=836880109478608897&scope=bot%20identify%20guilds%20applications.commands&response_type=code&permissions=1513962695871&state=QGn-6VzBYf2Ta8nMk_tFe"
+                href="https://discord.com/oauth2/authorize?client_id=836880109478608897&scope=bot%20applications.commands&permissions=1513962695871"
                 className="flex items-center text-gray-500 hover:text-[#5865F2] transition-colors text-sm group"
                 title="Join our Discord Server"
               >

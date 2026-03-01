@@ -61,7 +61,7 @@ export async function fetchUserGuilds(accessToken: string): Promise<UserGuild[]>
         return cached.promise
     }
 
-    const fetchPromise = fetch(`${DISCORD_API}/users/@me/guilds`, {
+    const fetchPromise = fetch(`${DISCORD_API}/users/@me/guilds?with_counts=true`, {
         headers: { Authorization: `Bearer ${accessToken}` },
     }).then(async (res) => {
         if (!res.ok) return []
@@ -77,7 +77,7 @@ export async function fetchUserGuilds(accessToken: string): Promise<UserGuild[]>
  * Uses a TTL-based cache.
  */
 const botGuildsCache = { promise: null as Promise<Set<string>> | null, expiry: 0 }
-const BOT_GUILDS_TTL_MS = 5 * 60 * 1000 // 5 minutes
+const BOT_GUILDS_TTL_MS = 2 * 60 * 1000 // 2 minutes (Reduced from 5)
 
 export async function fetchBotGuilds(): Promise<Set<string>> {
     const now = Date.now()
@@ -109,6 +109,29 @@ export async function fetchBotGuilds(): Promise<Set<string>> {
     botGuildsCache.promise = fetchPromise
     botGuildsCache.expiry = now + BOT_GUILDS_TTL_MS
     return fetchPromise
+}
+
+/**
+ * Robust check if the bot is in a specific guild.
+ * Checks the cached list first, and if not found, performs a direct API call 
+ * as a fallback to handle recently joined guilds.
+ */
+export async function isBotInGuild(guildId: string): Promise<boolean> {
+    const cachedGuilds = await fetchBotGuilds()
+    if (cachedGuilds.has(guildId)) return true
+
+    // Fallback: Direct fetch for this specific guild
+    const token = process.env.DISCORD_BOT_TOKEN
+    if (!token) return false
+
+    try {
+        const res = await fetch(`${DISCORD_API}/guilds/${guildId}`, {
+            headers: { Authorization: `Bot ${token}` }
+        })
+        return res.ok
+    } catch {
+        return false
+    }
 }
 
 /**

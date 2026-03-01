@@ -5,7 +5,7 @@ import { Check, Crown, Zap } from "lucide-react";
 import Image from "next/image";
 
 const INVITE_URL =
-  "https://discord.com/oauth2/authorize?client_id=836880109478608897&scope=bot%20identify%20guilds%20applications.commands&response_type=code&permissions=1513962695871&state=QGn-6VzBYf2Ta8nMk_tFe";
+  "https://discord.com/oauth2/authorize?client_id=836880109478608897&scope=bot%20applications.commands&permissions=1513962695871";
 
 interface PlanFeature {
   text: string;
@@ -136,8 +136,8 @@ export function PricingCards() {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 className={`block w-full text-center py-3 rounded-xl font-semibold text-sm transition-all duration-300 ${plan.badge
-                    ? "bg-gradient-to-r from-[#8b5cf6] to-purple-500 text-white hover:shadow-lg hover:shadow-[#8b5cf6]/20"
-                    : "bg-white/[0.06] text-white hover:bg-white/[0.1] border border-white/[0.06]"
+                  ? "bg-gradient-to-r from-[#8b5cf6] to-purple-500 text-white hover:shadow-lg hover:shadow-[#8b5cf6]/20"
+                  : "bg-white/[0.06] text-white hover:bg-white/[0.1] border border-white/[0.06]"
                   }`}
               >
                 Get Started

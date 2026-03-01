@@ -14,7 +14,7 @@ export default function NotFound() {
         e.preventDefault();
       }
     };
-    
+
     const handleDragStart = (e: DragEvent) => {
       if (e.target instanceof HTMLImageElement) {
         e.preventDefault();
@@ -26,11 +26,11 @@ export default function NotFound() {
         e.preventDefault();
       }
     };
-    
+
     document.addEventListener('contextmenu', handleContextMenu);
     document.addEventListener('dragstart', handleDragStart);
     document.addEventListener('selectstart', handleSelectStart);
-    
+
     return () => {
       document.removeEventListener('contextmenu', handleContextMenu);
       document.removeEventListener('dragstart', handleDragStart);
@@ -70,11 +70,11 @@ export default function NotFound() {
         <div className="mb-8">
           <div className="relative mb-8">
             <div className="select-none" style={{ pointerEvents: 'none' }}>
-              <Image 
-                src="/demon-logo.png" 
-                alt="Demon Bot" 
-                width={120} 
-                height={120} 
+              <Image
+                src="/demon-logo.png"
+                alt="Demon Bot"
+                width={120}
+                height={120}
                 className="mx-auto opacity-50 grayscale"
                 draggable={false}
                 onContextMenu={(e) => e.preventDefault()}
@@ -82,15 +82,15 @@ export default function NotFound() {
               />
             </div>
           </div>
-          
+
           <h1 className="text-8xl md:text-9xl font-bold bg-gradient-to-r from-white via-[#8b5cf6] to-white bg-clip-text text-transparent mb-4 animate-pulse">
             404
           </h1>
-          
+
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
             Page Not Found
           </h2>
-          
+
           <p className="text-xl text-slate-300 mb-8 max-w-2xl mx-auto">
             Oops! It looks like this page wandered off into the digital void. Even our demon bot couldn't find it!
           </p>
@@ -118,17 +118,17 @@ export default function NotFound() {
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Link href="/">
-            <Button 
-              size="lg" 
+            <Button
+              size="lg"
               className="bg-gradient-to-r from-[#8b5cf6] to-purple-400 text-black hover:from-[#8b5cf6]/90 hover:to-purple-400/90 text-lg px-8 py-6 rounded-xl transform transition-all hover:scale-105 font-medium shadow-lg shadow-[#8b5cf6]/25"
             >
               <Home className="mr-2 h-5 w-5" />
               Go Home
             </Button>
           </Link>
-          
-          <Button 
-            size="lg" 
+
+          <Button
+            size="lg"
             variant="outline"
             onClick={() => window.history.back()}
             className="border-slate-600 hover:border-[#8b5cf6] hover:text-[#8b5cf6] hover:shadow-lg hover:shadow-[#8b5cf6]/10 bg-slate-800/50 backdrop-blur-sm text-lg px-8 py-6 rounded-xl transform transition-all hover:scale-105 font-medium"
@@ -140,9 +140,9 @@ export default function NotFound() {
         <div className="mt-12 text-slate-400">
           <p className="text-sm">
             Need help? Join our{" "}
-            <a 
-              href="https://discord.com/oauth2/authorize?client_id=836880109478608897&scope=bot%20identify%20guilds%20applications.commands&response_type=code&permissions=1513962695871&state=QGn-6VzBYf2Ta8nMk_tFe" 
-              target="_blank" 
+            <a
+              href="https://discord.com/oauth2/authorize?client_id=836880109478608897&scope=bot%20applications.commands&permissions=1513962695871"
+              target="_blank"
               rel="noopener noreferrer"
               className="text-[#8b5cf6] hover:text-[#8b5cf6]/80 underline transition-colors"
             >

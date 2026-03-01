@@ -246,7 +246,7 @@ export function HeroSection() {
                   className="bg-gradient-to-r from-[#8b5cf6] to-[#7c3aed] text-white font-semibold px-8 py-4 text-lg transition-all duration-300 hover:shadow-xl hover:shadow-[#8b5cf6]/30 border-0"
                   onClick={() =>
                     window.open(
-                      "https://discord.com/oauth2/authorize?client_id=836880109478608897&scope=bot%20identify%20guilds%20applications.commands&response_type=code&permissions=1513962695871&state=QGn-6VzBYf2Ta8nMk_tFe",
+                      "https://discord.com/oauth2/authorize?client_id=836880109478608897&scope=bot%20applications.commands&permissions=1513962695871",
                       "_blank"
                     )
                   }
