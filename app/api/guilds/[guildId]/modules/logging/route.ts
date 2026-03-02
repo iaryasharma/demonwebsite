@@ -33,7 +33,11 @@ export async function GET(
             logging = newLogging.toObject()
         }
 
-        return NextResponse.json(logging)
+        // Merge schema defaults for any fields missing from older documents
+        // (e.g. fields added after the document was first created)
+        const withDefaults = new Logging(logging).toObject()
+
+        return NextResponse.json(withDefaults)
     } catch (error) {
         console.error("Error fetching logging config:", error)
         return NextResponse.json({ error: "Internal server error" }, { status: 500 })
