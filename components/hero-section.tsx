@@ -1,310 +1,280 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useState } from "react"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
-import { motion, useInView } from "framer-motion"
-import gsap from "gsap"
+import { motion } from "framer-motion"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faShieldHalved, faWandMagicSparkles, faBolt, faRocket, faPlay, faArrowUpRightFromSquare } from "@fortawesome/free-solid-svg-icons"
+import { faShieldHalved, faBolt, faArrowUpRightFromSquare, faGift, faTerminal } from "@fortawesome/free-solid-svg-icons"
+import { Cover } from "@/components/ui/cover"
+import { CanvasText } from "@/components/ui/canvas-text"
 
-function AnimatedCounter({ target, suffix = "" }: { target: number; suffix?: string }) {
-  const ref = useRef<HTMLSpanElement>(null)
-  const inView = useInView(ref, { once: true })
-
-  useEffect(() => {
-    if (!inView || !ref.current) return
-    const obj = { val: 0 }
-    gsap.to(obj, {
-      val: target,
-      duration: 2,
-      ease: "power2.out",
-      onUpdate: () => {
-        if (ref.current) {
-          ref.current.textContent = Math.floor(obj.val).toLocaleString() + suffix
-        }
-      },
-    })
-  }, [inView, target, suffix])
-
-  return <span ref={ref}>0{suffix}</span>
-}
-
-const featurePills = [
-  { icon: faShieldHalved, label: "Advanced Moderation", color: "border-[#8b5cf6]/30" },
-  { icon: faWandMagicSparkles, label: "Anime & Entertainment", color: "border-[#7c3aed]/30" },
-  { icon: faBolt, label: "99.9% Uptime", color: "border-[#a78bfa]/30" },
-]
-
-const stats = [
-  { value: 500, suffix: "+", label: "Servers" },
-  { value: 50000, suffix: "+", label: "Users Served" },
-  { value: 200, suffix: "+", label: "Commands" },
-]
+// Lazy-load BackgroundBeams only after hydration so it never blocks paint
+import dynamic from "next/dynamic"
+const BackgroundBeams = dynamic(
+  () => import("@/components/ui/background-beams").then((m) => ({ default: m.BackgroundBeams })),
+  { ssr: false }
+)
 
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: {
-      staggerChildren: 0.12,
-      delayChildren: 0.3,
-    },
+    transition: { staggerChildren: 0.1, delayChildren: 0.2 },
   },
 }
 
 const itemVariants = {
-  hidden: { opacity: 0, y: 30 },
+  hidden: { opacity: 0, y: 20 },
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] as const },
+    transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] as const },
   },
 }
 
+/** Floating badge — y-only animation = GPU composited, no layout/paint */
+function FloatingBadge({
+  children,
+  className,
+  animStyle,
+}: {
+  children: React.ReactNode
+  className?: string
+  animStyle: React.CSSProperties
+}) {
+  return (
+    <div
+      className={`absolute z-20 flex items-center gap-3 px-3 py-2 md:px-4 md:py-3 rounded-2xl bg-white/[0.03] border border-white/[0.08] shadow-[0_8px_32px_-8px_rgba(0,0,0,0.7)] ${className}`}
+      style={{
+        willChange: "transform",
+        backfaceVisibility: "hidden",
+        ...animStyle,
+      }}
+    >
+      {children}
+    </div>
+  )
+}
+
 export function HeroSection() {
-  const headlineRef = useRef<HTMLHeadingElement>(null)
-  const sectionRef = useRef<HTMLElement>(null)
-  const particlesRef = useRef<HTMLDivElement>(null)
   const [isMounted, setIsMounted] = useState(false)
 
   useEffect(() => {
     setIsMounted(true)
   }, [])
 
-  // GSAP headline word-by-word reveal
-  useEffect(() => {
-    if (!isMounted || !headlineRef.current) return
-
-    const words = headlineRef.current.querySelectorAll(".hero-word")
-    gsap.fromTo(
-      words,
-      { opacity: 0, y: 40, rotateX: -90 },
-      {
-        opacity: 1,
-        y: 0,
-        rotateX: 0,
-        duration: 0.8,
-        stagger: 0.08,
-        ease: "back.out(1.7)",
-        delay: 0.2,
-      }
-    )
-  }, [isMounted])
-
-  // GSAP floating particles
-  useEffect(() => {
-    if (!isMounted || !particlesRef.current) return
-
-    const particles = particlesRef.current.querySelectorAll(".particle")
-    particles.forEach((p) => {
-      gsap.to(p, {
-        x: `random(-100, 100)`,
-        y: `random(-100, 100)`,
-        opacity: `random(0.1, 0.6)`,
-        scale: `random(0.5, 1.5)`,
-        duration: `random(4, 8)`,
-        repeat: -1,
-        yoyo: true,
-        ease: "sine.inOut",
-      })
-    })
-  }, [isMounted])
-
-  const [botStats, setBotStats] = useState({
-    servers: 1200,
-    users: 250000,
-    commands: 102
-  })
-
-  useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        const res = await fetch("/api/bot-stats")
-        if (res.ok) {
-          const data = await res.json()
-          setBotStats({
-            servers: data.servers || 1200,
-            users: data.users || 250000,
-            commands: data.commands || 102
-          })
-        }
-      } catch (error) {
-        console.error("Failed to fetch bot stats:", error)
-      }
-    }
-    fetchStats()
-  }, [])
-
-  const wrapWords = (text: string) =>
-    text.split(" ").map((word, i) => (
-      <span
-        key={i}
-        className="hero-word inline-block"
-        style={{ opacity: 0 }}
-      >
-        {word}&nbsp;
-      </span>
-    ))
-
   return (
-    <section ref={sectionRef} className="relative min-h-screen flex items-center justify-center overflow-hidden pt-16">
-      {/* Video Background */}
-      <div className="absolute inset-0 z-0">
-        <video autoPlay loop muted playsInline className="w-full h-full object-cover opacity-15">
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-16">
+      {/* ── Backgrounds ── */}
+      <div className="absolute inset-0 z-0 bg-black overflow-hidden">
+        {/* Video — very low opacity, plays independently */}
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="w-full h-full object-cover opacity-[0.05]"
+          style={{ mixBlendMode: "screen" }}
+        >
           <source src="/sky.mp4" type="video/mp4" />
         </video>
-        <div className="absolute inset-0 bg-gradient-to-br from-black/90 via-black/70 to-[#8b5cf6]/10" />
 
-        {/* Floating particles */}
-        <div ref={particlesRef} className="absolute inset-0">
-          {Array.from({ length: 20 }).map((_, i) => (
-            <div
-              key={i}
-              className="particle absolute rounded-full"
-              style={{
-                width: `${Math.random() * 4 + 1}px`,
-                height: `${Math.random() * 4 + 1}px`,
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-                background: i % 3 === 0
-                  ? "rgba(139, 92, 246, 0.4)"
-                  : i % 3 === 1
-                    ? "rgba(124, 58, 237, 0.3)"
-                    : "rgba(167, 139, 250, 0.3)",
-                opacity: 0.2,
-              }}
-            />
-          ))}
-        </div>
+        {/* Aurora orbs — pure CSS so they never hit the JS thread.
+            No mix-blend-screen (forces repaint); opacity blending via alpha only.
+            will-change: transform so the browser promotes to its own layer */}
+        <style>{`
+          @keyframes orb1 {
+            0%, 100% { transform: scale(1);   opacity: 0.12; }
+            50%       { transform: scale(1.18); opacity: 0.22; }
+          }
+          @keyframes orb2 {
+            0%, 100% { transform: scale(1);   opacity: 0.08; }
+            50%       { transform: scale(1.22); opacity: 0.16; }
+          }
+          @keyframes floatA {
+            0%, 100% { transform: translateY(-12px); }
+            50%       { transform: translateY(12px);  }
+          }
+          @keyframes floatB {
+            0%, 100% { transform: translateY(10px);  }
+            50%       { transform: translateY(-10px); }
+          }
+          @keyframes floatC {
+            0%, 100% { transform: translateY(-8px);  }
+            50%       { transform: translateY(10px);  }
+          }
+          @keyframes floatD {
+            0%, 100% { transform: translateY(12px);  }
+            50%       { transform: translateY(-12px); }
+          }
+          .orb-1 { animation: orb1 20s ease-in-out infinite; will-change: transform; }
+          .orb-2 { animation: orb2 25s ease-in-out infinite; will-change: transform; }
+          .float-a { animation: floatA 6s ease-in-out infinite; will-change: transform; }
+          .float-b { animation: floatB 5.5s ease-in-out infinite 0.8s; will-change: transform; }
+          .float-c { animation: floatC 6.5s ease-in-out infinite 0.4s; will-change: transform; }
+          .float-d { animation: floatD 7s ease-in-out infinite 1s; will-change: transform; }
+        `}</style>
+
+        <div
+          className="orb-1 absolute -top-[20%] -left-[10%] w-[70vw] h-[70vw] rounded-full pointer-events-none"
+          style={{ background: "rgba(139,92,246,0.18)", filter: "blur(100px)" }}
+        />
+        <div
+          className="orb-2 absolute -bottom-[20%] -right-[10%] w-[60vw] h-[60vw] rounded-full pointer-events-none"
+          style={{ background: "rgba(124,58,237,0.14)", filter: "blur(110px)" }}
+        />
+
+        {/* Gradient overlays — static, zero cost */}
+        <div className="absolute inset-0 bg-black/50" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-transparent" />
       </div>
 
-      {/* Content */}
+      {/* BackgroundBeams deferred — only mounts after JS hydration */}
+      {isMounted && (
+        <div className="absolute inset-0 z-[1] pointer-events-none opacity-25">
+          <BackgroundBeams />
+        </div>
+      )}
+
+      {/* ── Content ── */}
       <div className="container relative z-10 px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <div className="flex flex-col-reverse lg:grid lg:grid-cols-2 gap-12 lg:gap-8 items-center">
+
+          {/* Left — Headline + CTA */}
           <motion.div
             variants={containerVariants}
             initial="hidden"
             animate={isMounted ? "visible" : "hidden"}
-            className="text-left"
+            className="text-center lg:text-left flex flex-col items-center lg:items-start"
           >
-            {/* Badge */}
-            <motion.div variants={itemVariants} className="mb-6">
-              <span className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#8b5cf6]/10 to-[#7c3aed]/10 border border-[#8b5cf6]/25 rounded-full text-sm font-medium text-[#a78bfa] backdrop-blur-sm">
-                <FontAwesomeIcon icon={faRocket} className="h-3.5 w-3.5" />
-                The Ultimate Discord Bot
-              </span>
-            </motion.div>
+            <motion.div variants={itemVariants} className="w-full">
+              <h1 className="flex flex-col gap-0 mb-10 w-full">
+                <span className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold font-space tracking-tight text-white leading-tight text-center lg:text-left">
+                  Your Discord Server
+                </span>
 
-            {/* Headline */}
-            <motion.div variants={itemVariants}>
-              <h1
-                ref={headlineRef}
-                className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight"
-                style={{ perspective: "1000px" }}
-              >
-                <span className="block text-white mb-2">
-                  {wrapWords("Your Discord Server")}
+                <span className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-playfair italic font-bold leading-tight text-center lg:text-left py-1">
+                  <CanvasText
+                    text="Needs In A"
+                    backgroundClassName="bg-black"
+                    colors={[
+                      "rgba(139, 92, 246, 1)",
+                      "rgba(167, 139, 250, 0.9)",
+                      "rgba(139, 92, 246, 0.85)",
+                      "rgba(196, 181, 253, 0.7)",
+                      "rgba(109, 40, 217, 0.85)",
+                      "rgba(139, 92, 246, 0.6)",
+                      "rgba(167, 139, 250, 0.5)",
+                      "rgba(139, 92, 246, 0.4)",
+                      "rgba(109, 40, 217, 0.3)",
+                      "rgba(139, 92, 246, 0.2)",
+                    ]}
+                    lineGap={4}
+                    animationDuration={20}
+                    curveIntensity={50}
+                    lineWidth={1.2}
+                  />
                 </span>
-                <span className="block bg-gradient-to-r from-[#8b5cf6] via-[#a78bfa] to-[#7c3aed] bg-clip-text text-transparent mb-2">
-                  {wrapWords("Needs in a")}
-                </span>
-                <span className="block text-white">
-                  {wrapWords("Single Bot")}
-                </span>
+
+                <div className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-space font-bold tracking-tight text-white leading-tight text-center lg:text-left">
+                  <Cover>Single Bot</Cover>
+                </div>
               </h1>
             </motion.div>
 
-            {/* Tagline */}
-            <motion.p
-              variants={itemVariants}
-              className="text-lg md:text-xl text-gray-400 mb-6 max-w-2xl leading-relaxed"
-            >
-              Transform your Discord server with the ultimate all-in-one bot. Advanced moderation,
-              anime content, utilities, and endless entertainment — all powered by cutting-edge technology.
-            </motion.p>
-
-            {/* Feature Pills */}
-            <motion.div variants={itemVariants} className="flex flex-wrap gap-3 mb-8">
-              {featurePills.map((pill, i) => (
-                <motion.div
-                  key={i}
-                  whileHover={{ scale: 1.05, y: -2 }}
-                  className={`flex items-center gap-2 bg-white/[0.03] backdrop-blur-sm px-4 py-2 rounded-full border ${pill.color} transition-colors hover:bg-white/[0.06]`}
-                >
-                  <FontAwesomeIcon icon={pill.icon} className="h-3.5 w-3.5 text-[#a78bfa]" />
-                  <span className="text-sm text-gray-300">{pill.label}</span>
-                </motion.div>
-              ))}
-            </motion.div>
-
-            {/* CTA Buttons */}
-            <motion.div variants={itemVariants} className="flex flex-col sm:flex-row gap-4 mb-10">
-              <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
-                <Button
-                  size="lg"
-                  className="bg-gradient-to-r from-[#8b5cf6] to-[#7c3aed] text-white font-semibold px-8 py-4 text-lg transition-all duration-300 hover:shadow-xl hover:shadow-[#8b5cf6]/30 border-0"
-                  onClick={() =>
-                    window.open(
-                      "https://discord.com/oauth2/authorize?client_id=836880109478608897&scope=bot%20applications.commands&permissions=1513962695871",
-                      "_blank"
-                    )
-                  }
-                >
-                  <FontAwesomeIcon icon={faArrowUpRightFromSquare} className="mr-2 h-4 w-4" />
-                  Invite Bot
-                </Button>
-              </motion.div>
-            </motion.div>
-
-            {/* Stats */}
-            <motion.div
-              variants={itemVariants}
-              className="grid grid-cols-3 gap-6"
-            >
-              {[
-                { value: botStats.servers, suffix: "+", label: "Servers" },
-                { value: botStats.users, suffix: "+", label: "Users Served" },
-                { value: botStats.commands, suffix: "+", label: "Commands" },
-              ].map((stat, i) => (
-                <div key={i} className="text-center sm:text-left">
-                  <div className="text-2xl md:text-3xl font-bold text-white">
-                    <AnimatedCounter target={stat.value} suffix={stat.suffix} />
-                  </div>
-                  <div className="text-xs md:text-sm text-gray-500 mt-1">{stat.label}</div>
-                </div>
-              ))}
+            <motion.div variants={itemVariants} className="flex items-center justify-center lg:justify-start gap-4 mb-10">
+              <Button
+                size="lg"
+                className="h-12 bg-black border border-white/10 text-white font-semibold px-7 text-base transition-colors hover:bg-white/[0.05] hover:border-white/20 rounded-xl gap-2 cursor-pointer"
+                onClick={() =>
+                  window.open(
+                    "https://discord.com/oauth2/authorize?client_id=836880109478608897&scope=bot%20applications.commands&permissions=1513962695871",
+                    "_blank"
+                  )
+                }
+              >
+                Invite Demon Bot
+                <FontAwesomeIcon icon={faArrowUpRightFromSquare} className="h-3.5 w-3.5 opacity-70" />
+              </Button>
             </motion.div>
           </motion.div>
 
-          {/* Logo */}
+          {/* Right — Logo + floating badges */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.8, rotate: -10 }}
-            animate={isMounted ? { opacity: 1, scale: 1, rotate: 0 } : {}}
-            transition={{ duration: 0.8, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
-            className="flex justify-center lg:justify-end"
+            initial={{ opacity: 0, y: 16 }}
+            animate={isMounted ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.7, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
+            className="flex justify-center relative w-full mb-8 lg:mb-0"
+            style={{ willChange: "transform" }}
           >
-            <motion.div
-              className="relative cursor-pointer"
-              whileHover={{ scale: 1.08, rotate: 5 }}
-              transition={{ type: "spring", stiffness: 300, damping: 20 }}
-            >
-              <div className="absolute inset-0 bg-gradient-to-r from-[#8b5cf6]/30 to-[#7c3aed]/30 rounded-full blur-3xl animate-glow-pulse" />
+            {/* Badge 1 — Top Left: Auto-Mod */}
+            <FloatingBadge className="float-a left-0 md:-left-8 top-4 md:top-10" animStyle={{}}>
+              <div className="w-9 h-9 rounded-full bg-[#8b5cf6]/15 flex items-center justify-center border border-[#8b5cf6]/30 flex-shrink-0">
+                <FontAwesomeIcon icon={faShieldHalved} className="h-4 w-4 text-[#c4b5fd]" />
+              </div>
+              <div>
+                <div className="text-[11px] text-[#a78bfa] font-bold tracking-wider uppercase">Auto-Mod</div>
+                <div className="text-sm font-semibold text-white">99.9% Uptime</div>
+              </div>
+            </FloatingBadge>
+
+            {/* Badge 2 — Top Right: Giveaways */}
+            <FloatingBadge className="float-b right-0 md:-right-4 top-4 md:top-6" animStyle={{}}>
+              <div className="w-9 h-9 rounded-full bg-pink-500/15 flex items-center justify-center border border-pink-500/30 flex-shrink-0">
+                <FontAwesomeIcon icon={faGift} className="h-4 w-4 text-pink-300" />
+              </div>
+              <div>
+                <div className="text-[11px] text-pink-400 font-bold tracking-wider uppercase">Giveaways</div>
+                <div className="text-sm font-semibold text-white">1-click setup</div>
+              </div>
+            </FloatingBadge>
+
+            {/* Badge 3 — Bottom Left: Commands */}
+            <FloatingBadge className="float-c left-0 md:-left-4 bottom-8 md:bottom-16" animStyle={{}}>
+              <div className="w-9 h-9 rounded-full bg-amber-500/15 flex items-center justify-center border border-amber-500/30 flex-shrink-0">
+                <FontAwesomeIcon icon={faTerminal} className="h-4 w-4 text-amber-300" />
+              </div>
+              <div>
+                <div className="text-[11px] text-amber-400 font-bold tracking-wider uppercase">Commands</div>
+                <div className="text-sm font-semibold text-white">100+ available</div>
+              </div>
+            </FloatingBadge>
+
+            {/* Badge 4 — Bottom Right: Latency */}
+            <FloatingBadge className="float-d right-0 md:-right-8 bottom-10 md:bottom-24" animStyle={{}}>
+              <div className="w-9 h-9 rounded-full bg-[#7c3aed]/15 flex items-center justify-center border border-[#7c3aed]/30 flex-shrink-0">
+                <FontAwesomeIcon icon={faBolt} className="h-4 w-4 text-[#c4b5fd]" />
+              </div>
+              <div>
+                <div className="text-[11px] text-[#a78bfa] font-bold tracking-wider uppercase">Latency</div>
+                <div className="text-sm font-semibold text-white">Super Fast</div>
+              </div>
+            </FloatingBadge>
+
+            {/* Logo */}
+            <div className="relative cursor-pointer z-10">
+              {/* Static glow — no animation needed, just CSS radial */}
+              <div
+                className="absolute inset-0 rounded-full pointer-events-none"
+                style={{ background: "radial-gradient(circle, rgba(139,92,246,0.22) 0%, transparent 70%)", filter: "blur(30px)" }}
+              />
               <Image
                 src="/demon-logo.png"
-                alt="Demon Bot"
-                width={350}
-                height={350}
-                className="relative drop-shadow-2xl"
+                alt="Demon Bot - Multipurpose Discord Bot Logo"
+                width={400}
+                height={400}
+                className="relative z-10 w-full max-w-[280px] md:max-w-[380px] h-auto aspect-square"
+                style={{ filter: "drop-shadow(0 0 30px rgba(139,92,246,0.25))" }}
                 priority
               />
-            </motion.div>
+            </div>
           </motion.div>
         </div>
       </div>
 
       {/* Bottom gradient fade */}
-      <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-black to-transparent" />
+      <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-black to-transparent pointer-events-none" />
     </section>
   )
 }

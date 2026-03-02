@@ -1,6 +1,6 @@
 import type React from "react"
 import type { Metadata } from "next"
-import { Inter } from "next/font/google"
+import { Inter, Bebas_Neue, Space_Grotesk, Playfair_Display } from "next/font/google"
 import "./globals.css"
 import { SmoothScrollProvider } from "@/components/smooth-scroll-provider"
 import { SessionProvider } from "@/components/session-provider"
@@ -9,7 +9,10 @@ import QueryProvider from "@/components/providers/query-provider"
 import { DevToolsShield } from "@/components/security/devtools-shield"
 import { Toaster } from "sonner"
 
-const inter = Inter({ subsets: ["latin"] })
+const inter = Inter({ subsets: ["latin"], variable: '--font-inter' })
+const bebas = Bebas_Neue({ subsets: ["latin"], weight: ["400"], variable: '--font-bebas' })
+const spaceGrotesk = Space_Grotesk({ subsets: ["latin"], variable: '--font-space' })
+const playfair = Playfair_Display({ subsets: ["latin"], style: ["normal", "italic"], variable: '--font-playfair' })
 
 const BASE_URL =
   process.env.VERCEL_URL
@@ -24,7 +27,7 @@ export const metadata: Metadata = {
     template: "Demon Bot - %s",
   },
   description:
-    "Demon Bot is the all-in-one multipurpose Discord bot built by Arya Sharma (FragNite). Powerful moderation, anime, giveaways, server utilities & entertainment. Invite Demon Bot dc to your Discord server now.",
+    "Demon Bot is the all-in-one multipurpose Discord bot by Arya Sharma (FragNite). Enjoy powerful moderation, anime, giveaways, utilities & entertainment.",
   keywords: [
     // Primary brand keywords
     "Demon Bot",
@@ -319,7 +322,7 @@ export default function RootLayout({
         <link rel="preload" href="/demon-logo.png" as="image" />
         <link rel="preload" href="/sky.mp4" as="video" type="video/mp4" />
       </head>
-      <body suppressHydrationWarning className={`${inter.className} bg-black text-white overflow-x-hidden`}>
+      <body suppressHydrationWarning className={`${inter.variable} ${bebas.variable} ${spaceGrotesk.variable} ${playfair.variable} ${inter.className} bg-black text-white overflow-x-hidden`}>
         <SessionProvider>
           <QueryProvider>
             <SmoothScrollProvider>

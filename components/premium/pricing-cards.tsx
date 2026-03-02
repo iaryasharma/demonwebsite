@@ -21,9 +21,9 @@ const plans = [
     priceSuffix: "",
     period: "/month",
     description: "Great for small & medium servers looking for premium features.",
-    accent: "from-[#8b5cf6] to-indigo-500",
+    accent: "from-[#8b5cf6] to-[#7c3aed]",
     accentBorder: "border-[#8b5cf6]/15 hover:border-[#8b5cf6]/30",
-    iconBg: "from-[#8b5cf6]/10 to-indigo-500/10",
+    iconBg: "from-[#8b5cf6]/10 to-[#7c3aed]/10",
     badge: null,
     features: [
       { text: "Everything from the free plan" },
@@ -41,9 +41,9 @@ const plans = [
     priceSuffix: ".99",
     period: "/month",
     description: "Ultimate power for large communities & professional management.",
-    accent: "from-purple-500 to-pink-500",
-    accentBorder: "border-purple-500/15 hover:border-purple-500/30",
-    iconBg: "from-purple-500/10 to-pink-500/10",
+    accent: "from-[#8b5cf6] to-[#6d28d9]",
+    accentBorder: "border-[#8b5cf6]/30 hover:border-[#8b5cf6]/50",
+    iconBg: "from-[#8b5cf6]/20 to-[#6d28d9]/20",
     badge: "Most Popular",
     features: [
       { text: "Everything from Demon Prime" },
@@ -84,7 +84,7 @@ export function PricingCards() {
             {/* Badge */}
             {plan.badge && (
               <div className="absolute top-4 right-4">
-                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/20 text-[11px] font-semibold text-purple-300 uppercase tracking-wider">
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#8b5cf6]/10 border border-[#8b5cf6]/30 text-[11px] font-bold text-[#a78bfa] uppercase tracking-wider backdrop-blur-md">
                   <Crown className="w-3 h-3" />
                   {plan.badge}
                 </span>
@@ -116,10 +116,10 @@ export function PricingCards() {
               <ul className="space-y-3">
                 {plan.features.map((f) => (
                   <li key={f.text} className="flex items-center gap-2.5">
-                    <div className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 ${f.highlight ? "bg-purple-500/15" : "bg-white/[0.04]"}`}>
-                      <Check className={`w-3 h-3 ${f.highlight ? "text-purple-400" : "text-gray-400"}`} />
+                    <div className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 ${f.highlight ? "bg-[#8b5cf6]/20" : "bg-white/[0.04]"}`}>
+                      <Check className={`w-3 h-3 ${f.highlight ? "text-[#a78bfa]" : "text-gray-400"}`} />
                     </div>
-                    <span className={`text-sm ${f.highlight ? "text-purple-300 font-medium" : "text-gray-300"}`}>
+                    <span className={`text-sm ${f.highlight ? "text-[#c4b5fd] font-medium" : "text-gray-300"}`}>
                       {f.text}
                     </span>                    {f.comingSoon && (
                       <span className="ml-auto text-[10px] font-semibold text-amber-400 bg-amber-500/10 border border-amber-500/20 px-1.5 py-0.5 rounded-full whitespace-nowrap">
@@ -139,8 +139,8 @@ export function PricingCards() {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 className={`block w-full text-center py-3 rounded-xl font-semibold text-sm transition-all duration-300 ${plan.badge
-                  ? "bg-gradient-to-r from-[#8b5cf6] to-purple-500 text-white hover:shadow-lg hover:shadow-[#8b5cf6]/20"
-                  : "bg-white/[0.06] text-white hover:bg-white/[0.1] border border-white/[0.06]"
+                  ? "bg-[#8b5cf6] text-white hover:bg-[#7c3aed] hover:shadow-lg hover:shadow-[#8b5cf6]/20"
+                  : "bg-white/[0.04] text-white hover:bg-white/[0.08] border border-white/[0.08]"
                   }`}
               >
                 Get Started

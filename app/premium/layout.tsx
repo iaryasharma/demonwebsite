@@ -37,5 +37,44 @@ export default function PremiumLayout({
 }: {
   children: React.ReactNode
 }) {
-  return children
+  const premiumSchema = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Demon Bot Premium",
+    "applicationCategory": "BusinessApplication",
+    "description": "Premium features for Demon Bot including priority support, enhanced moderation, and exclusive utilities.",
+    "operatingSystem": "Discord",
+    "offers": {
+      "@type": "AggregateOffer",
+      "priceCurrency": "USD",
+      "lowPrice": "3.50",
+      "highPrice": "5.00",
+      "offerCount": 2,
+      "availability": "https://schema.org/InStock",
+      "offers": [
+        {
+          "@type": "Offer",
+          "name": "Demon Prime",
+          "price": "3.50",
+          "priceCurrency": "USD"
+        },
+        {
+          "@type": "Offer",
+          "name": "Demon Pro",
+          "price": "5.00",
+          "priceCurrency": "USD"
+        }
+      ]
+    }
+  };
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(premiumSchema) }}
+      />
+      {children}
+    </>
+  )
 }

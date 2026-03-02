@@ -11,28 +11,28 @@ const commands = [
     description: "Search for anime information",
     example: "/animesearch query: Attack on Titan",
     category: "Anime",
-    categoryColor: "text-pink-400 bg-pink-500/10 border-pink-500/20",
+    categoryColor: "text-[#8b5cf6] bg-[#8b5cf6]/10 border-[#8b5cf6]/20",
   },
   {
     command: "/userinfo",
     description: "Get detailed user information",
     example: "/userinfo user: @DemonBot",
     category: "Utility",
-    categoryColor: "text-blue-400 bg-blue-500/10 border-blue-500/20",
+    categoryColor: "text-[#a78bfa] bg-[#a78bfa]/10 border-[#a78bfa]/20",
   },
   {
     command: "/help",
     description: "Display all available commands",
     example: "/help category: moderation",
     category: "Info",
-    categoryColor: "text-green-400 bg-green-500/10 border-green-500/20",
+    categoryColor: "text-[#7c3aed] bg-[#7c3aed]/10 border-[#7c3aed]/20",
   },
   {
     command: "/ban",
     description: "Ban a user from the server",
     example: "/ban user: @spammer reason: Spam",
     category: "Moderation",
-    categoryColor: "text-red-400 bg-red-500/10 border-red-500/20",
+    categoryColor: "text-[#c4b5fd] bg-[#c4b5fd]/10 border-[#c4b5fd]/20",
   },
 ]
 
@@ -147,19 +147,19 @@ export function CommandShowcase() {
                       transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
                       className="text-center"
                     >
-                      <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium border mb-4 ${commands[currentIndex].categoryColor}`}>
+                      <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium border mb-4 mt-2 ${commands[currentIndex].categoryColor}`}>
                         {commands[currentIndex].category}
                       </span>
 
-                      <div className="bg-black/40 rounded-xl p-5 font-mono border border-white/[0.04]">
-                        <div className="text-[#a78bfa] text-lg font-bold mb-2">
+                      <div className="bg-[#0a0a0a]/60 rounded-xl p-5 font-mono border border-white/[0.04]">
+                        <div className="text-white text-lg font-bold mb-2">
                           {commands[currentIndex].command}
                         </div>
-                        <div className="text-gray-500 text-sm mb-4">
+                        <div className="text-gray-400 text-sm mb-4">
                           {commands[currentIndex].description}
                         </div>
-                        <div className="text-gray-300 bg-gray-900/60 rounded-lg p-3 text-sm border border-white/[0.04]">
-                          <span className="text-gray-600 mr-2">$</span>
+                        <div className="text-gray-300 bg-black/60 rounded-lg p-3 text-sm border border-white/[0.04]">
+                          <span className="text-[#8b5cf6] mr-2">❯</span>
                           <TypingEffect text={commands[currentIndex].example} />
                         </div>
                       </div>
@@ -188,8 +188,8 @@ export function CommandShowcase() {
                   >
                     <div
                       className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${index === currentIndex
-                          ? "bg-[#8b5cf6] shadow-lg shadow-[#8b5cf6]/30"
-                          : "bg-gray-700 hover:bg-gray-600"
+                        ? "bg-[#8b5cf6] shadow-lg shadow-[#8b5cf6]/30"
+                        : "bg-gray-700 hover:bg-gray-600"
                         }`}
                     />
                   </motion.button>

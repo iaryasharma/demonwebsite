@@ -102,12 +102,6 @@ export default function ServerSettingsPage({
     const [originalBotUpdatesChannelId, setOriginalBotUpdatesChannelId] = useState<string | null>(null)
     const [saving, setSaving] = useState(false)
 
-    useEffect(() => {
-        if (settings && originalBotUpdatesChannelId === null) {
-            setBotUpdatesChannelId(settings.botUpdatesChannelId ?? null)
-            setOriginalBotUpdatesChannelId(settings.botUpdatesChannelId ?? null)
-        }
-    }, [settings, originalBotUpdatesChannelId])
 
     const hasBotUpdatesChange = botUpdatesChannelId !== originalBotUpdatesChannelId
 
@@ -146,6 +140,13 @@ export default function ServerSettingsPage({
         },
         enabled: status === "authenticated" && !!guildId
     })
+
+    useEffect(() => {
+        if (settings && originalBotUpdatesChannelId === null) {
+            setBotUpdatesChannelId(settings.botUpdatesChannelId ?? null)
+            setOriginalBotUpdatesChannelId(settings.botUpdatesChannelId ?? null)
+        }
+    }, [settings, originalBotUpdatesChannelId])
 
     const { data: channels = [], isLoading: channelsLoading, isFetching: channelsFetching, refetch: refetchChannels } = useQuery<Channel[]>({
         queryKey: ["channels", guildId],

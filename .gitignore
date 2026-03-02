@@ -28,3 +28,4 @@ next-env.d.ts
 
 # Demon-v5
 /Demon-v5
+/.agent

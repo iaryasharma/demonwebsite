@@ -1,7 +1,7 @@
 import { Metadata } from "next"
 
 export const metadata: Metadata = {
-  title: "Commands - Demon Bot | Complete Command List & Documentation",
+  title: "Demon Bot Commands | Complete Command List & Docs",
   description: "Explore Demon Bot's comprehensive command library. Find moderation, anime, utility, and fun commands with detailed usage examples. Over 100+ commands available.",
   keywords: [
     "Demon Bot commands",
