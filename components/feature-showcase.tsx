@@ -92,7 +92,7 @@ export function FeatureShowcase() {
               {/* Messages */}
               <div className="bg-[#313338] p-4 space-y-3">
                 {/* User command */}
-                <DiscordMessage avatarSrc="/arya.png" username="ARYA" usernameColor="text-yellow-300" timestamp="Today at 11:47 AM">
+                <DiscordMessage avatarSrc="/Arya.png" username="ARYA" usernameColor="text-yellow-300" timestamp="Today at 11:47 AM">
                   <span className="text-zinc-300">!!badge @Mr. Frag Nite</span>
                 </DiscordMessage>
 
@@ -100,7 +100,7 @@ export function FeatureShowcase() {
                 <DiscordMessage avatarSrc="/demon.png" username="DEMON" botBadge usernameColor="text-white" timestamp="Today at 11:47 AM">
                   <DiscordEmbed accentColor="bg-[#8b5cf6]">
                     <div className="flex items-center gap-2 mb-2">
-                      <Image src="/arya.png" alt="User" width={20} height={20} className="rounded-full" />
+                      <Image src="/Arya.png" alt="User" width={20} height={20} className="rounded-full" />
                       <span className="text-white text-xs font-semibold">Mr. Frag Nite&apos;s Badges</span>
                     </div>
                     <div className="space-y-1 mb-2">
@@ -164,7 +164,7 @@ export function FeatureShowcase() {
                 <span className="text-white text-sm font-semibold">anime</span>
               </div>
               <div className="bg-[#313338] p-4 space-y-3">
-                <DiscordMessage avatarSrc="/arya.png" username="ARYA" usernameColor="text-yellow-300" timestamp="05/26/2022">
+                <DiscordMessage avatarSrc="/Arya.png" username="ARYA" usernameColor="text-yellow-300" timestamp="05/26/2022">
                   <span className="text-zinc-300">!!anime Attack on Titan</span>
                 </DiscordMessage>
                 <DiscordMessage avatarSrc="/demon.png" username="DEMON" botBadge usernameColor="text-white" timestamp="05/26/2022">
@@ -206,7 +206,7 @@ export function FeatureShowcase() {
                 <span className="text-white text-sm font-semibold">bot-commands</span>
               </div>
               <div className="bg-[#313338] p-4 space-y-3">
-                <DiscordMessage avatarSrc="/arya.png" username="ARYA" usernameColor="text-yellow-300" timestamp="Today at 12:20 PM">
+                <DiscordMessage avatarSrc="/Arya.png" username="ARYA" usernameColor="text-yellow-300" timestamp="Today at 12:20 PM">
                   <span className="text-zinc-300">!!help</span>
                 </DiscordMessage>
                 <DiscordMessage avatarSrc="/demon.png" username="DEMON" botBadge usernameColor="text-white" timestamp="Today at 12:20 PM">

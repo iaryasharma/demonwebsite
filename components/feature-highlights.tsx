@@ -28,18 +28,18 @@ export function FeatureHighlights() {
           Everything your{" "}
           <CanvasText
             text="server needs"
-            backgroundClassName="bg-black"
+            backgroundClassName="bg-[#8a8a8a]"
             colors={[
-              "rgba(139, 92, 246, 1)",
-              "rgba(167, 139, 250, 0.9)",
-              "rgba(139, 92, 246, 0.8)",
-              "rgba(196, 181, 253, 0.7)",
-              "rgba(109, 40, 217, 0.8)",
-              "rgba(139, 92, 246, 0.6)",
-              "rgba(167, 139, 250, 0.5)",
-              "rgba(139, 92, 246, 0.4)",
-              "rgba(109, 40, 217, 0.3)",
-              "rgba(139, 92, 246, 0.2)",
+              "rgba(255, 255, 255, 1)",
+              "rgba(255, 255, 255, 0.9)",
+              "rgba(255, 255, 255, 0.85)",
+              "rgba(255, 255, 255, 0.8)",
+              "rgba(255, 255, 255, 0.75)",
+              "rgba(255, 255, 255, 0.7)",
+              "rgba(255, 255, 255, 0.65)",
+              "rgba(255, 255, 255, 0.6)",
+              "rgba(255, 255, 255, 0.55)",
+              "rgba(255, 255, 255, 0.5)",
             ]}
             lineGap={5}
             animationDuration={18}
