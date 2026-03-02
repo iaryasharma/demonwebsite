@@ -8,6 +8,7 @@ import { RootLayoutShell } from "@/components/root-layout-shell"
 import QueryProvider from "@/components/providers/query-provider"
 import { DevToolsShield } from "@/components/security/devtools-shield"
 import { Toaster } from "sonner"
+import { Analytics } from "@vercel/analytics/next"
 
 const inter = Inter({ subsets: ["latin"], variable: '--font-inter' })
 const bebas = Bebas_Neue({ subsets: ["latin"], weight: ["400"], variable: '--font-bebas' })
@@ -332,6 +333,7 @@ export default function RootLayout({
         </SessionProvider>
         <Toaster position="top-right" richColors closeButton />
         <DevToolsShield />
+        <Analytics />
       </body>
     </html>
   )
