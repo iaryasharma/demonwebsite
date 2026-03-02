@@ -17,13 +17,19 @@ import {
     faCheck,
     faTimes,
     faArrowRight,
-    faRotateRight
+    faRotateRight,
+    faBullhorn,
+    faFloppyDisk,
+    faXmark
 } from "@fortawesome/free-solid-svg-icons"
 import Link from "next/link"
+import { ChannelPicker } from "@/components/dashboard/settings/channel-picker"
+import { toast } from "sonner"
 
 interface ServerSettings {
     guildId: string
     prefix: string
+    botUpdatesChannelId: string | null
     disabledChannels: string[]
     modules: {
         welcome: { enabled: boolean; channelId?: string | null; messageId?: string | null }
@@ -91,6 +97,45 @@ export default function ServerSettingsPage({
     const { guildId } = React.use(params)
     const { data: session, status } = useSession()
     const queryClient = useQueryClient()
+
+    const [botUpdatesChannelId, setBotUpdatesChannelId] = useState<string | null>(null)
+    const [originalBotUpdatesChannelId, setOriginalBotUpdatesChannelId] = useState<string | null>(null)
+    const [saving, setSaving] = useState(false)
+
+    useEffect(() => {
+        if (settings && originalBotUpdatesChannelId === null) {
+            setBotUpdatesChannelId(settings.botUpdatesChannelId ?? null)
+            setOriginalBotUpdatesChannelId(settings.botUpdatesChannelId ?? null)
+        }
+    }, [settings, originalBotUpdatesChannelId])
+
+    const hasBotUpdatesChange = botUpdatesChannelId !== originalBotUpdatesChannelId
+
+    const handleSaveBotUpdates = async () => {
+        setSaving(true)
+        try {
+            const res = await fetch(`/api/guilds/${guildId}/server-settings`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ botUpdatesChannelId }),
+            })
+            if (res.ok) {
+                setOriginalBotUpdatesChannelId(botUpdatesChannelId)
+                queryClient.invalidateQueries({ queryKey: ["server-settings", guildId] })
+                toast.success("Bot updates channel saved!")
+            } else {
+                toast.error("Failed to save bot updates channel")
+            }
+        } catch {
+            toast.error("An error occurred while saving")
+        } finally {
+            setSaving(false)
+        }
+    }
+
+    const handleDiscardBotUpdates = () => {
+        setBotUpdatesChannelId(originalBotUpdatesChannelId)
+    }
 
     const { data: settings, isLoading: settingsLoading } = useQuery<ServerSettings>({
         queryKey: ["server-settings", guildId],
@@ -211,6 +256,44 @@ export default function ServerSettingsPage({
                                     <span className="text-gray-400 bg-black/20 px-3 py-1 rounded border border-white/[0.03]">None specified. Bot responds in all channels.</span>
                                 )}
                             </div>
+                        </div>
+                    </div>
+
+                    {/* Bot Updates Channel */}
+                    <div className="mt-6 pt-6 border-t border-white/[0.06] relative">
+                        <div className="flex items-center gap-2 mb-3">
+                            <FontAwesomeIcon icon={faBullhorn} className="w-4 h-4 text-[#a78bfa]" />
+                            <p className="text-sm font-semibold text-white">Bot Updates Channel</p>
+                        </div>
+                        <p className="text-xs text-gray-500 mb-3">The channel where the bot posts announcements via <span className="font-mono bg-black/30 px-1.5 py-0.5 rounded border border-white/[0.05]">/broadcast</span>. Leave empty to disable.</p>
+                        <div className="flex items-center gap-3 flex-wrap">
+                            <div className="flex-1 min-w-[200px] max-w-sm">
+                                <ChannelPicker
+                                    guildId={guildId}
+                                    value={botUpdatesChannelId || ""}
+                                    onChange={(val: string | null) => setBotUpdatesChannelId(val || null)}
+                                />
+                            </div>
+                            {hasBotUpdatesChange && (
+                                <div className="flex items-center gap-2">
+                                    <button
+                                        onClick={handleSaveBotUpdates}
+                                        disabled={saving}
+                                        className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[#8b5cf6] hover:bg-[#7c3aed] text-white text-sm font-medium transition-colors disabled:opacity-50"
+                                    >
+                                        <FontAwesomeIcon icon={faFloppyDisk} className={`w-3.5 h-3.5 ${saving ? 'animate-pulse' : ''}`} />
+                                        {saving ? "Saving…" : "Save"}
+                                    </button>
+                                    <button
+                                        onClick={handleDiscardBotUpdates}
+                                        disabled={saving}
+                                        className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/[0.06] hover:bg-white/[0.1] text-gray-400 hover:text-white text-sm font-medium transition-colors disabled:opacity-50"
+                                    >
+                                        <FontAwesomeIcon icon={faXmark} className="w-3.5 h-3.5" />
+                                        Discard
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </motion.div>

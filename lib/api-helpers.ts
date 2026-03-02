@@ -92,6 +92,9 @@ export const ALLOWED_FIELDS = {
     logging: [
         "enabled", "mode", "channelId", "channels", "eventChannels", "events",
     ],
+    guild: [
+        "botUpdatesChannelId",
+    ],
     autorole: [
         "enabled", "roleIds", "delay", "conditions", "logChannelId",
     ],

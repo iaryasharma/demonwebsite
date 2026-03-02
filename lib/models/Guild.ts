@@ -35,6 +35,7 @@ export interface IGuildSettings {
 export interface IGuild extends Document {
     guildId: string
     prefix: string
+    botUpdatesChannelId: string | null
     settings: IGuildSettings
     webhooks: IWebhook[]
     createdAt: Date
@@ -52,6 +53,10 @@ const guildSchema = new Schema<IGuild>(
         prefix: {
             type: String,
             default: "!!",
+        },
+        botUpdatesChannelId: {
+            type: String,
+            default: null,
         },
         settings: {
             type: Object,
