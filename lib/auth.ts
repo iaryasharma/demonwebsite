@@ -79,7 +79,7 @@ export const authOptions: NextAuthOptions = {
                 t.refreshToken = account.refresh_token as string
                 t.accessTokenExpires = account.expires_at
                     ? account.expires_at * 1000
-                    : Date.now() + (account.expires_in ?? 604800) * 1000 // Default 7 days
+                    : Date.now() + (Number(account.expires_in) || 604800) * 1000 // Default 7 days
                 t.discordId = (profile as any)?.id
                 t.error = undefined
                 return t
