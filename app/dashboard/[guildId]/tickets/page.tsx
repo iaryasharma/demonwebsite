@@ -239,7 +239,7 @@ export default function TicketsPage() {
     ]
 
     const inputClass =
-        "w-full bg-white/[0.04] border border-white/[0.08] rounded-lg px-3 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-[#3b82f6]/50 focus:ring-1 focus:ring-[#3b82f6]/30 transition-all"
+        "w-full bg-white/[0.04] border border-white/[0.08] rounded-lg px-3 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-[#8b5cf6]/50 focus:ring-1 focus:ring-[#8b5cf6]/30 transition-all"
 
     return (
         <div className="space-y-6">
@@ -247,7 +247,7 @@ export default function TicketsPage() {
             <div className="flex items-center justify-between">
                 <div>
                     <h1 className="text-2xl font-bold text-white flex items-center gap-3">
-                        <FontAwesomeIcon icon={faTicket} className="w-6 h-6 text-[#3b82f6]" />
+                        <FontAwesomeIcon icon={faTicket} className="w-6 h-6 text-[#8b5cf6]" />
                         Tickets
                     </h1>
                     <p className="text-sm text-gray-400 mt-1">
@@ -278,9 +278,9 @@ export default function TicketsPage() {
                         exit={{ height: 0, opacity: 0 }}
                         className="overflow-hidden"
                     >
-                        <div className="rounded-xl border border-[#3b82f6]/20 bg-[#3b82f6]/[0.03] p-5 space-y-4">
+                        <div className="rounded-xl border border-[#8b5cf6]/20 bg-[#8b5cf6]/[0.03] p-5 space-y-4">
                             <h3 className="text-lg font-semibold text-white flex items-center gap-2">
-                                <FontAwesomeIcon icon={faLayerGroup} className="w-4 h-4 text-[#3b82f6]" />
+                                <FontAwesomeIcon icon={faLayerGroup} className="w-4 h-4 text-[#8b5cf6]" />
                                 Create New Ticket Panel
                             </h3>
 
@@ -426,7 +426,7 @@ export default function TicketsPage() {
                                 <button
                                     onClick={handleCreate}
                                     disabled={creating || !formChannel || !formTitle.trim()}
-                                    className="flex items-center gap-2 px-6 py-2.5 rounded-lg bg-[#3b82f6] text-white text-sm font-semibold hover:bg-[#2563eb] transition-all disabled:opacity-40 disabled:cursor-not-allowed shadow-lg shadow-[#3b82f6]/20"
+                                    className="flex items-center gap-2 px-6 py-2.5 rounded-lg bg-[#8b5cf6] text-white text-sm font-semibold hover:bg-[#7c3aed] transition-all disabled:opacity-40 disabled:cursor-not-allowed shadow-lg shadow-[#8b5cf6]/20"
                                 >
                                     {creating ? (
                                         <FontAwesomeIcon icon={faSpinner} className="w-4 h-4 animate-spin" />
@@ -494,7 +494,7 @@ export default function TicketsPage() {
                         key={f.id}
                         onClick={() => setFilter(f.id)}
                         className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all flex-1 justify-center ${filter === f.id
-                                ? "bg-[#3b82f6] text-white shadow-lg shadow-[#3b82f6]/20"
+                                ? "bg-[#8b5cf6] text-white shadow-lg shadow-[#8b5cf6]/20"
                                 : "text-gray-400 hover:text-white hover:bg-white/[0.04]"
                             }`}
                     >

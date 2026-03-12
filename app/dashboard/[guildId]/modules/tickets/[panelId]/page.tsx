@@ -232,7 +232,7 @@ export default function EditPanelPage({
     if (panelLoading) {
         return (
             <div className="flex items-center justify-center min-h-[400px]">
-                <FontAwesomeIcon icon={faSpinner} className="w-8 h-8 text-blue-500 animate-spin" />
+                <FontAwesomeIcon icon={faSpinner} className="w-8 h-8 text-[#8b5cf6] animate-spin" />
             </div>
         )
     }
@@ -243,7 +243,7 @@ export default function EditPanelPage({
                 <p className="text-gray-400">Panel not found</p>
                 <Link
                     href={`/dashboard/${guildId}/modules/tickets`}
-                    className="text-blue-400 hover:underline mt-4 inline-block"
+                    className="text-[#8b5cf6] hover:underline mt-4 inline-block"
                 >
                     Back to Tickets
                 </Link>
@@ -252,7 +252,7 @@ export default function EditPanelPage({
     }
 
     const inputClass =
-        "w-full bg-white/[0.04] border border-white/[0.08] rounded-lg px-3 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/30 transition-all"
+        "w-full bg-white/[0.04] border border-white/[0.08] rounded-lg px-3 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-[#8b5cf6]/50 focus:ring-1 focus:ring-[#8b5cf6]/30 transition-all"
 
     return (
         <div className="space-y-6">
@@ -280,7 +280,7 @@ export default function EditPanelPage({
                             exit={{ opacity: 0, scale: 0.9 }}
                             onClick={handleSavePanel}
                             disabled={saving}
-                            className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-blue-500 hover:bg-blue-600 text-white text-sm font-semibold transition-all disabled:opacity-50 shadow-lg shadow-blue-500/20"
+                            className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[#8b5cf6] hover:bg-[#7c3aed] text-white text-sm font-semibold transition-all disabled:opacity-50 shadow-lg shadow-[#8b5cf6]/20"
                         >
                             {saving ? (
                                 <FontAwesomeIcon icon={faSpinner} className="w-4 h-4 animate-spin" />

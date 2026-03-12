@@ -321,14 +321,14 @@ export default function AnnouncePage() {
         "w-full bg-white/[0.04] border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-[#8b5cf6]/50 focus:ring-1 focus:ring-[#8b5cf6]/30 transition-all"
 
     const previewPanel = (
-        <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] overflow-hidden">
-            <div className="px-4 py-3 border-b border-white/[0.06] flex items-center gap-2">
-                <FontAwesomeIcon icon={faEye} className="w-3.5 h-3.5 text-gray-400" />
-                <span className="text-xs font-semibold text-gray-300 uppercase tracking-wider">
-                    Preview
+        <div className="rounded-xl border border-white/[0.08] bg-white/[0.03] overflow-hidden shadow-xl">
+            <div className="px-4 py-3.5 border-b border-white/[0.08] flex items-center gap-2.5 bg-white/[0.02]">
+                <FontAwesomeIcon icon={faEye} className="w-4 h-4 text-[#8b5cf6]" />
+                <span className="text-sm font-semibold text-white uppercase tracking-wider">
+                    Live Preview
                 </span>
             </div>
-            <div className="p-2">
+            <div className="p-4 min-h-[300px]">
                 <MessagePreview
                     content={getPreviewContent()}
                     embed={getPreviewEmbed()}
@@ -412,7 +412,7 @@ export default function AnnouncePage() {
             </AnimatePresence>
 
             {/* Main split layout */}
-            <div className="grid grid-cols-1 xl:grid-cols-[1fr_420px] gap-6">
+            <div className="grid grid-cols-1 xl:grid-cols-[1fr_600px] gap-6">
                 {/* Left: Editor */}
                 <div className="space-y-5">
                     {/* Webhook selector */}

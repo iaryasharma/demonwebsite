@@ -160,7 +160,7 @@ export default function TicketsModulePage({
     if (panelsLoading) {
         return (
             <div className="min-h-[60vh] flex items-center justify-center">
-                <FontAwesomeIcon icon={faSpinner} className="w-8 h-8 text-[#3b82f6] animate-spin" />
+                <FontAwesomeIcon icon={faSpinner} className="w-8 h-8 text-[#8b5cf6] animate-spin" />
             </div>
         )
     }
@@ -180,7 +180,7 @@ export default function TicketsModulePage({
                     >
                         <FontAwesomeIcon icon={faArrowLeft} className="w-4 h-4 text-gray-400" />
                     </Link>
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#3b82f6] to-[#2563eb] flex items-center justify-center shadow-lg shadow-[#3b82f6]/20">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#8b5cf6] to-[#7c3aed] flex items-center justify-center shadow-lg shadow-[#8b5cf6]/20">
                         <FontAwesomeIcon icon={faTicket} className="w-6 h-6 text-white" />
                     </div>
                     <div>
@@ -190,7 +190,7 @@ export default function TicketsModulePage({
                 </div>
                 <button
                     onClick={() => setShowCreatePanel(!showCreatePanel)}
-                    className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[#3b82f6] text-white text-sm font-semibold hover:bg-[#2563eb] transition-all shadow-lg shadow-[#3b82f6]/20"
+                    className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[#8b5cf6] text-white text-sm font-semibold hover:bg-[#7c3aed] transition-all shadow-lg shadow-[#8b5cf6]/20"
                 >
                     <FontAwesomeIcon icon={showCreatePanel ? faXmark : faPlus} className="w-4 h-4" />
                     {showCreatePanel ? "Cancel" : "Create Panel"}
@@ -302,7 +302,7 @@ export default function TicketsModulePage({
                                     <button
                                         onClick={handleCreatePanel}
                                         disabled={creating || !formChannel || !formTitle.trim()}
-                                        className="flex items-center gap-2 px-6 py-2.5 rounded-lg bg-[#3b82f6] text-white text-sm font-semibold hover:bg-[#2563eb] transition-all disabled:opacity-40 disabled:cursor-not-allowed shadow-lg shadow-[#3b82f6]/20"
+                                        className="flex items-center gap-2 px-6 py-2.5 rounded-lg bg-[#8b5cf6] text-white text-sm font-semibold hover:bg-[#7c3aed] transition-all disabled:opacity-40 disabled:cursor-not-allowed shadow-lg shadow-[#8b5cf6]/20"
                                     >
                                         {creating ? (
                                             <FontAwesomeIcon icon={faSpinner} className="w-4 h-4 animate-spin" />
@@ -379,7 +379,7 @@ export default function TicketsModulePage({
                                     </div>
                                     <div className="text-xs text-gray-500">
                                         <span className="font-medium">Ticket Types:</span>{" "}
-                                        <span className="font-semibold text-[#3b82f6]">
+                                        <span className="font-semibold text-[#8b5cf6]">
                                             {panel.ticketTypes.length}
                                         </span>
                                     </div>
