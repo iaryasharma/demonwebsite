@@ -17,7 +17,8 @@ import {
     faCubes,
     faTerminal,
     faToggleOn,
-    faWrench
+    faWrench,
+    faTicket,
 } from "@fortawesome/free-solid-svg-icons"
 
 const MODULES = [
@@ -76,6 +77,14 @@ const MODULES = [
         icon: faToggleOn,
         color: "from-cyan-500 to-blue-600",
         href: "commands",
+    },
+    {
+        id: "tickets",
+        name: "Tickets",
+        description: "Create and manage ticket panels for support systems.",
+        icon: faTicket,
+        color: "from-blue-500 to-indigo-600",
+        href: "tickets",
     },
     {
         id: "mmode",

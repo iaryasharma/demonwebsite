@@ -20,7 +20,8 @@ import {
     faRightFromBracket,
     faToggleOn,
     faClipboardList,
-    faWrench
+    faWrench,
+    faTicket
 } from "@fortawesome/free-solid-svg-icons"
 
 interface GuildSettings {
@@ -103,6 +104,15 @@ export default function GuildOverviewPage() {
             color: "from-pink-500/15 to-rose-600/15",
             borderColor: "border-pink-500/20 hover:border-pink-500/50",
             iconColor: "text-pink-400"
+        },
+        {
+            href: `/dashboard/${guildId}/tickets`,
+            icon: faTicket,
+            label: "Tickets",
+            desc: "Manage ticket panels and active support tickets.",
+            color: "from-blue-500/15 to-indigo-600/15",
+            borderColor: "border-blue-500/20 hover:border-blue-500/50",
+            iconColor: "text-blue-400"
         },
         {
             href: `/dashboard/${guildId}/modules/commands`,

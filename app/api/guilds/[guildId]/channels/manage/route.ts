@@ -25,9 +25,10 @@ export async function POST(
     const token = process.env.DISCORD_BOT_TOKEN
 
     if (!token) {
+        console.error("[SECURITY] DISCORD_BOT_TOKEN not configured")
         return NextResponse.json(
-            { error: "Bot token not configured" },
-            { status: 500 }
+            { error: "Service temporarily unavailable" },
+            { status: 503 }
         )
     }
 

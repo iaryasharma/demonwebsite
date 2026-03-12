@@ -27,7 +27,8 @@ const loggingSchema = new mongoose.Schema({
         server:       { type: String, default: null },  // roles, channels
         verification: { type: String, default: null },  // verification events
         autorole:     { type: String, default: null },  // auto-role assignments
-        voice:        { type: String, default: null }   // voice kicks, mutes, deafens
+        voice:        { type: String, default: null },  // voice kicks, mutes, deafens
+        tickets:      { type: String, default: null }   // ticket system events
     },
     eventChannels: {
         memberJoin:       { type: String, default: null },
@@ -54,7 +55,16 @@ const loggingSchema = new mongoose.Schema({
         memberUntimeout:  { type: String, default: null },
         voiceKick:        { type: String, default: null },
         voiceDeafen:      { type: String, default: null },
-        voiceMute:        { type: String, default: null }
+        voiceMute:        { type: String, default: null },
+        ticketCreate:     { type: String, default: null },
+        ticketClose:      { type: String, default: null },
+        ticketReopen:     { type: String, default: null },
+        ticketClaim:      { type: String, default: null },
+        ticketUnclaim:    { type: String, default: null },
+        ticketPriority:   { type: String, default: null },
+        ticketUserAdd:    { type: String, default: null },
+        ticketUserRemove: { type: String, default: null },
+        ticketTransfer:   { type: String, default: null }
     },
     events: {
         memberJoin:       { type: Boolean, default: true  },
@@ -73,6 +83,15 @@ const loggingSchema = new mongoose.Schema({
         channelCreate:    { type: Boolean, default: true  },
         channelDelete:    { type: Boolean, default: true  },
         channelUpdate:    { type: Boolean, default: true  },
+        ticketCreate:     { type: Boolean, default: true  },
+        ticketClose:      { type: Boolean, default: true  },
+        ticketReopen:     { type: Boolean, default: true  },
+        ticketClaim:      { type: Boolean, default: true  },
+        ticketUnclaim:    { type: Boolean, default: true  },
+        ticketPriority:   { type: Boolean, default: true  },
+        ticketUserAdd:    { type: Boolean, default: true  },
+        ticketUserRemove: { type: Boolean, default: true  },
+        ticketTransfer:   { type: Boolean, default: true  },
         serverUpdate:     { type: Boolean, default: true  },
         nicknameUpdate:   { type: Boolean, default: true  },
         memberRoleAdd:    { type: Boolean, default: true  },

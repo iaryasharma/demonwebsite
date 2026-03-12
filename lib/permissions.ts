@@ -38,8 +38,21 @@ export async function getAccessTokenFromRequest(request: Request): Promise<strin
             req: request as any,
             secret: process.env.NEXTAUTH_SECRET,
         })
-        return (token as any)?.accessToken || null
-    } catch {
+
+        if (!token) {
+            console.log("[Auth] No JWT token found in request")
+            return null
+        }
+
+        const accessToken = (token as any)?.accessToken
+        if (!accessToken) {
+            console.log("[Auth] JWT token exists but no accessToken field")
+            return null
+        }
+
+        return accessToken
+    } catch (error) {
+        console.error("[Auth] Error retrieving access token:", error)
         return null
     }
 }
@@ -62,7 +75,22 @@ export async function fetchUserGuilds(accessToken: string, force = false): Promi
     })
         .then(async (res) => {
             if (!res.ok) {
-                console.error(`[User Guilds] Discord returned ${res.status}`)
+                const statusText = res.statusText || "Unknown Error"
+                console.error(`[User Guilds] Discord returned ${res.status} ${statusText}`)
+                
+                if (res.status === 401) {
+                    console.error("[User Guilds] Token is invalid or expired - user needs to re-authenticate")
+                }
+                
+                try {
+                    const errorBody = await res.text()
+                    if (errorBody) {
+                        console.error(`[User Guilds] Discord error response: ${errorBody.substring(0, 200)}`)
+                    }
+                } catch {
+                    // Ignore error body parsing failures
+                }
+                
                 return []
             }
             return res.json()

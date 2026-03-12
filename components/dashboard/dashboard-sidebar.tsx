@@ -21,6 +21,7 @@ import {
     faXmark,
     faBullhorn,
     faGift,
+    faTicket,
 } from "@fortawesome/free-solid-svg-icons"
 
 interface SidebarProps {
@@ -38,6 +39,7 @@ const sidebarLinks = (guildId: string) => [
     { href: `/dashboard/${guildId}/modules`, label: "Modules", icon: faCubes },
     { href: `/dashboard/${guildId}/announce`, label: "Announce", icon: faBullhorn },
     { href: `/dashboard/${guildId}/giveaways`, label: "Giveaways", icon: faGift },
+    { href: `/dashboard/${guildId}/tickets`, label: "Tickets", icon: faTicket },
     { href: `/dashboard/${guildId}/settings`, label: "Settings", icon: faGear },
 ]
 

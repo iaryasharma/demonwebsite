@@ -33,12 +33,15 @@ async function fetchGuilds(forceRefresh: boolean): Promise<Guild[]> {
 }
 
 function DashboardContent() {
-  const { status } = useSession()
+  const { status, data: session } = useSession()
   const searchParams = useSearchParams()
   const callbackUrl = searchParams.get("callbackUrl") ?? "/dashboard"
   const [search, setSearch] = useState("")
   const [isRefreshing, setIsRefreshing] = useState(false)
   const forceRefreshRef = useRef(false)
+
+  // Check for session errors (token refresh failed)
+  const sessionError = (session as any)?.error
 
   const {
     data: guilds = [],
@@ -49,7 +52,7 @@ function DashboardContent() {
   } = useQuery<Guild[]>({
     queryKey: ["guilds"],
     queryFn: () => fetchGuilds(forceRefreshRef.current),
-    enabled: status === "authenticated",
+    enabled: status === "authenticated" && !sessionError,
     // Always re-fetch on mount and when the window regains focus
     staleTime: 0,
     refetchOnMount: true,
@@ -74,6 +77,42 @@ function DashboardContent() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-black">
         <FontAwesomeIcon icon={faSpinner} className="w-8 h-8 text-[#8b5cf6] animate-spin" />
+      </div>
+    )
+  }
+
+  if (status === "authenticated" && sessionError) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-black relative overflow-hidden px-4">
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-1/3 left-1/4 w-[500px] h-[500px] bg-red-500/5 rounded-full blur-3xl" />
+          <div className="absolute bottom-1/4 right-1/3 w-[400px] h-[400px] bg-orange-500/5 rounded-full blur-3xl" />
+        </div>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="relative z-10 text-center max-w-md w-full"
+        >
+          <div className="glass rounded-2xl border border-red-500/20 p-10">
+            <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-red-500 to-orange-600 flex items-center justify-center shadow-lg shadow-red-500/20">
+              <FontAwesomeIcon icon={faCircleExclamation} className="w-10 h-10 text-white" />
+            </div>
+            <h1 className="text-3xl font-bold text-white mb-3">Session Expired</h1>
+            <p className="text-gray-400 mb-8 leading-relaxed">
+              Your Discord session has expired. Please sign in again to continue managing your servers.
+            </p>
+            <motion.button
+              whileHover={{ scale: 1.02, y: -2 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => signIn("discord", { callbackUrl })}
+              className="w-full py-4 px-6 rounded-xl bg-gradient-to-r from-[#5865F2] to-[#4752C4] text-white font-semibold text-lg flex items-center justify-center gap-3 hover:shadow-lg hover:shadow-[#5865F2]/25 transition-shadow"
+            >
+              <FontAwesomeIcon icon={faDiscord} className="w-5 h-5" />
+              Sign In Again
+            </motion.button>
+          </div>
+        </motion.div>
       </div>
     )
   }

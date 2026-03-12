@@ -21,7 +21,10 @@ export async function GET(
         if (!hasPermission) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
 
         const token = process.env.DISCORD_BOT_TOKEN
-        if (!token) return NextResponse.json({ error: "Missing Bot Token" }, { status: 500 })
+        if (!token) {
+            console.error("[SECURITY] DISCORD_BOT_TOKEN not configured")
+            return NextResponse.json({ error: "Service temporarily unavailable" }, { status: 503 })
+        }
 
         // Fetch channels
         const res = await fetch(`${DISCORD_API}/guilds/${guildId}/channels`, {
@@ -56,7 +59,10 @@ export async function POST(
 
         const { enabled } = await req.json()
         const token = process.env.DISCORD_BOT_TOKEN
-        if (!token) return NextResponse.json({ error: "Missing Bot Token" }, { status: 500 })
+        if (!token) {
+            console.error("[SECURITY] DISCORD_BOT_TOKEN not configured")
+            return NextResponse.json({ error: "Service temporarily unavailable" }, { status: 503 })
+        }
 
         // Fetch channels
         const res = await fetch(`${DISCORD_API}/guilds/${guildId}/channels`, {
