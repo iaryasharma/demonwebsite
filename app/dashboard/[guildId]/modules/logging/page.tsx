@@ -10,7 +10,8 @@ import {
     faSpinner,
     faLayerGroup,
     faFilter,
-    faBullseye
+    faBullseye,
+    faShieldHalved
 } from "@fortawesome/free-solid-svg-icons"
 import Link from "next/link"
 import { ChannelPicker } from "@/components/dashboard/settings/channel-picker"
@@ -31,6 +32,7 @@ interface LoggingConfig {
         verification: string | null
         autorole:     string | null
         voice:        string | null
+        security:     string | null
     }
     eventChannels: {
         memberJoin:       string | null
@@ -58,6 +60,7 @@ interface LoggingConfig {
         voiceKick:        string | null
         voiceDeafen:      string | null
         voiceMute:        string | null
+        securityViolation:string | null
     }
     events: {
         memberJoin:       boolean
@@ -85,6 +88,7 @@ interface LoggingConfig {
         voiceKick:        boolean
         voiceDeafen:      boolean
         voiceMute:        boolean
+        securityViolation:boolean
     }
 }
 
@@ -114,6 +118,7 @@ const EVENT_LABELS: Record<keyof LoggingConfig['events'], string> = {
     voiceKick:        'Voice Kick',
     voiceDeafen:      'Voice Deafen',
     voiceMute:        'Voice Mute',
+    securityViolation: 'Security Violation',
 }
 
 export default function LoggingModulePage({
@@ -299,14 +304,25 @@ export default function LoggingModulePage({
                 {/* Single Mode Setup */}
                 {config.mode === 'single' && (
                     <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="space-y-4 pt-4 border-t border-white/[0.06]">
-                        <h3 className="text-xl font-bold text-white">Log Channel</h3>
-                        <p className="text-sm text-gray-400">Select the channel that will receive all bot audit logs.</p>
-                        <div className="grid grid-cols-1 md:grid-cols-2">
-                            <ChannelPicker
-                                guildId={guildId}
-                                value={config.channelId || ""}
-                                onChange={(val: string | null) => setConfig({ ...config, channelId: val || null })}
-                            />
+                        <h3 className="text-xl font-bold text-white">Log Channels</h3>
+                        <p className="text-sm text-gray-400">Select the channels for your audit logs.</p>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="space-y-1">
+                                <label className="block text-sm font-medium text-gray-300">Default Log Channel</label>
+                                <ChannelPicker
+                                    guildId={guildId}
+                                    value={config.channelId || ""}
+                                    onChange={(val: string | null) => setConfig({ ...config, channelId: val || null })}
+                                />
+                            </div>
+                            <div className="space-y-1">
+                                <label className="block text-sm font-medium text-gray-300 text-red-400">Security Log Channel</label>
+                                <ChannelPicker
+                                    guildId={guildId}
+                                    value={config.channels.security || ""}
+                                    onChange={(val: string | null) => setConfig({ ...config, channels: { ...config.channels, security: val || null } })}
+                                />
+                            </div>
                         </div>
                     </motion.div>
                 )}
@@ -373,6 +389,14 @@ export default function LoggingModulePage({
                                     onChange={(val: string | null) => setConfig({ ...config, channels: { ...config.channels, voice: val || null } })}
                                 />
                             </div>
+                            <div className="space-y-1">
+                                <label className="block text-sm font-medium text-gray-300 font-bold text-red-400 italic underline">Security (Nuke Alerts, Violations)</label>
+                                <ChannelPicker
+                                    guildId={guildId}
+                                    value={config.channels.security || ""}
+                                    onChange={(val: string | null) => setConfig({ ...config, channels: { ...config.channels, security: val || null } })}
+                                />
+                            </div>
                         </div>
                     </motion.div>
                 )}
@@ -383,7 +407,7 @@ export default function LoggingModulePage({
                         <h3 className="text-xl font-bold text-white">Event Custom Channels</h3>
                         <p className="text-sm text-gray-400">Override the logging channel for specific granular events.</p>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {EVENT_KEYS.map((key) => (
+                            {EVENT_KEYS.filter(k => k !== 'securityViolation').map((key) => (
                                 <div key={key} className="space-y-1 bg-black/20 p-3 rounded-lg border border-white/[0.03]">
                                     <label className="block text-sm font-medium text-gray-300">{EVENT_LABELS[key]}</label>
                                     <ChannelPicker
@@ -393,6 +417,22 @@ export default function LoggingModulePage({
                                     />
                                 </div>
                             ))}
+                        </div>
+                        <div className="mt-4 p-4 rounded-xl bg-red-500/5 border border-red-500/10">
+                            <h4 className="text-sm font-bold text-red-400 mb-1 flex items-center gap-2">
+                                <FontAwesomeIcon icon={faShieldHalved} className="w-3.5 h-3.5" />
+                                Security Violations
+                            </h4>
+                            <p className="text-xs text-gray-500 mb-3">Linked to the centralized Security Log Channel for consistency.</p>
+                            <ChannelPicker
+                                guildId={guildId}
+                                value={config.channels.security || ""}
+                                onChange={(val: string | null) => setConfig({
+                                    ...config,
+                                    channels: { ...config.channels, security: val || null },
+                                    eventChannels: { ...config.eventChannels, securityViolation: val || null }
+                                })}
+                            />
                         </div>
                     </motion.div>
                 )}

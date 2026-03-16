@@ -80,6 +80,24 @@ export async function POST(
             { upsert: true, new: true, setDefaultsOnInsert: true }
         ).lean()
 
+        // Sync back to SecurityConfig if security channel was changed
+        if (safe.channels && (safe.channels as any).security) {
+            const channelId = (safe.channels as any).security;
+            
+            // Sync granular event channel
+            await Logging.findOneAndUpdate(
+                { guildId },
+                { $set: { "eventChannels.securityViolation": channelId } }
+            );
+
+            const SecurityConfig = (await import("@/lib/models/SecurityConfig")).default;
+            await SecurityConfig.findOneAndUpdate(
+                { guildId },
+                { $set: { securityLogChannelId: channelId } },
+                { upsert: true }
+            );
+        }
+
         return NextResponse.json(logging)
     } catch (error) {
         console.error("Error updating logging config:", error)

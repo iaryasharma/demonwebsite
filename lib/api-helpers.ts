@@ -104,6 +104,15 @@ export const ALLOWED_FIELDS = {
         "verifiedMessage", "kickUnverified", "kickTimeout", "type",
         "minAccountAge", "logChannelId",
     ],
+    security_config: [
+        "enabled", "captchaRequired", "protections", "limits", "punishment", "securityLogChannelId",
+    ],
+    security_whitelist: [
+        "userId", "roleId", "entryType", "categories", "addedBy", "reason",
+    ],
+    security_violation: [
+        "moderatorId", "moderatorNote", "resolvedAt",
+    ],
 } as const satisfies AllowlistMap
 
 /**

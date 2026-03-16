@@ -28,7 +28,8 @@ const loggingSchema = new mongoose.Schema({
         verification: { type: String, default: null },  // verification events
         autorole:     { type: String, default: null },  // auto-role assignments
         voice:        { type: String, default: null },  // voice kicks, mutes, deafens
-        tickets:      { type: String, default: null }   // ticket system events
+        tickets:      { type: String, default: null },  // ticket system events
+        security:     { type: String, default: null }   // security violation events
     },
     eventChannels: {
         memberJoin:       { type: String, default: null },
@@ -64,7 +65,8 @@ const loggingSchema = new mongoose.Schema({
         ticketPriority:   { type: String, default: null },
         ticketUserAdd:    { type: String, default: null },
         ticketUserRemove: { type: String, default: null },
-        ticketTransfer:   { type: String, default: null }
+        ticketTransfer:   { type: String, default: null },
+        securityViolation:{ type: String, default: null }
     },
     events: {
         memberJoin:       { type: Boolean, default: true  },
@@ -100,7 +102,8 @@ const loggingSchema = new mongoose.Schema({
         memberUntimeout:  { type: Boolean, default: true  },
         voiceKick:        { type: Boolean, default: true  },
         voiceDeafen:      { type: Boolean, default: true  },
-        voiceMute:        { type: Boolean, default: true  }
+        voiceMute:        { type: Boolean, default: true  },
+        securityViolation:{ type: Boolean, default: true  }
     }
 }, { timestamps: true })
 

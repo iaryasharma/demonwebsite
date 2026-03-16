@@ -47,6 +47,14 @@ const MODULES = [
         href: "logging",
     },
     {
+        id: "security",
+        name: "Security",
+        description: "Advanced server protection and anti-nuke system.",
+        icon: faShieldHalved,
+        color: "from-red-600 to-orange-700",
+        href: "security",
+    },
+    {
         id: "autorole",
         name: "Autorole",
         description: "Automatically assign roles to new members.",
