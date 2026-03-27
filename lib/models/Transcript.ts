@@ -52,7 +52,9 @@ const transcriptSchema = new mongoose.Schema({
     },
     generatedAt: {
         type: Date,
-        default: Date.now
+        default: Date.now,
+        // Auto-delete transcripts after 7 days (604800 seconds)
+        index: { expireAfterSeconds: 604800 }
     }
 }, { timestamps: true })
 

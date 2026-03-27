@@ -521,22 +521,50 @@ export default function SecurityModulePage({
                                     </div>
                                     <div>
                                         <h3 className="text-white font-black uppercase tracking-tighter text-lg">User Whitelisting</h3>
-                                        <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest leading-none">Add User IDs per module</p>
+                                        <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest leading-none">Manage whitelisted members per module</p>
                                     </div>
                                 </div>
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                    {WHITELIST_CATEGORIES.map(cat => (
-                                        <div key={cat.id} className="space-y-2 p-4 rounded-2xl bg-black/40 border border-white/5 hover:border-[#8b5cf6]/30 transition-colors group">
-                                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest group-hover:text-[#8b5cf6] transition-colors">{cat.name}</label>
-                                            <textarea 
-                                                placeholder="Comma separated IDs..."
-                                                value={userInputs[cat.id] || ""}
-                                                onChange={(e) => updateUserInput(cat.id, e.target.value)}
-                                                className="w-full h-20 bg-[#0a0a0a] border border-white/[0.06] rounded-xl px-3 py-2 text-white text-xs focus:outline-none focus:border-[#8b5cf6]/50 transition-colors custom-scrollbar"
-                                            />
-                                        </div>
-                                    ))}
+                                    {WHITELIST_CATEGORIES.map(cat => {
+                                        const entries = whitelist?.filter(e => e.entryType === 'user' && e.categories.includes(cat.id)) || [];
+                                        return (
+                                            <div key={cat.id} className="space-y-3 p-4 rounded-2xl bg-black/40 border border-white/5 hover:border-[#8b5cf6]/30 transition-colors group">
+                                                <div className="flex items-center justify-between">
+                                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest group-hover:text-[#8b5cf6] transition-colors">{cat.name}</label>
+                                                    {entries.length > 0 && (
+                                                        <span className="text-[10px] text-[#8b5cf6] font-bold">{entries.length} Active</span>
+                                                    )}
+                                                </div>
+                                                
+                                                {/* Pills display */}
+                                                {entries.length > 0 && (
+                                                    <div className="flex flex-wrap gap-1.5 pb-2">
+                                                        {entries.map(entry => (
+                                                            <UserPill
+                                                                key={entry._id}
+                                                                guildId={guildId}
+                                                                userId={entry.userId!}
+                                                                categories={[]} // Hide category tags inside the card
+                                                                entryId={entry._id}
+                                                                isProtected={entry.isProtected}
+                                                                reason={entry.reason}
+                                                                onRemove={(id) => deleteWhitelist.mutate(id)}
+                                                                isRemoving={deleteWhitelist.isPending}
+                                                            />
+                                                        ))}
+                                                    </div>
+                                                )}
+
+                                                <textarea 
+                                                    placeholder="Add more User IDs (comma separated)..."
+                                                    value={userInputs[cat.id] || ""}
+                                                    onChange={(e) => updateUserInput(cat.id, e.target.value)}
+                                                    className="w-full h-16 bg-[#0a0a0a] border border-white/[0.06] rounded-xl px-3 py-2 text-white text-xs focus:outline-none focus:border-[#8b5cf6]/50 transition-colors custom-scrollbar"
+                                                />
+                                            </div>
+                                        );
+                                    })}
                                 </div>
                             </div>
 
@@ -548,28 +576,64 @@ export default function SecurityModulePage({
                                     </div>
                                     <div>
                                         <h3 className="text-white font-black uppercase tracking-tighter text-lg">Role Whitelisting</h3>
-                                        <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest leading-none">Select Roles per module</p>
+                                        <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest leading-none">Manage whitelisted roles per module</p>
                                     </div>
                                 </div>
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                    {WHITELIST_CATEGORIES.map(cat => (
-                                        <div key={cat.id} className="space-y-2 p-4 rounded-2xl bg-black/40 border border-white/5 hover:border-[#8b5cf6]/30 transition-colors group">
-                                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest group-hover:text-[#8b5cf6] transition-colors">{cat.name}</label>
-                                            <MultiRolePicker 
-                                                guildId={guildId}
-                                                value={roleInputs[cat.id] || []}
-                                                onChange={(val) => updateRoleInput(cat.id, val)}
-                                                placeholder="Choose roles..."
-                                            />
-                                        </div>
-                                    ))}
+                                    {WHITELIST_CATEGORIES.map(cat => {
+                                        const entries = whitelist?.filter(e => e.entryType === 'role' && e.categories.includes(cat.id)) || [];
+                                        return (
+                                            <div key={cat.id} className="space-y-3 p-4 rounded-2xl bg-black/40 border border-white/5 hover:border-[#8b5cf6]/30 transition-colors group">
+                                                <div className="flex items-center justify-between">
+                                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest group-hover:text-[#8b5cf6] transition-colors">{cat.name}</label>
+                                                    {entries.length > 0 && (
+                                                        <span className="text-[10px] text-[#8b5cf6] font-bold">{entries.length} Active</span>
+                                                    )}
+                                                </div>
+
+                                                {/* Role badges display */}
+                                                {entries.length > 0 && (
+                                                    <div className="flex flex-wrap gap-1.5 pb-2">
+                                                        {entries.map(entry => (
+                                                            <div key={entry._id} className="flex items-center gap-2 pl-2 pr-1 py-1 rounded-full border border-[#8b5cf6]/20 bg-[#8b5cf6]/5 group/pill">
+                                                                <div className="w-4 h-4 rounded-full bg-[#8b5cf6]/30 flex items-center justify-center">
+                                                                    <FontAwesomeIcon icon={faShieldHalved} className="w-2 h-2 text-[#8b5cf6]" />
+                                                                </div>
+                                                                <span className="text-[10px] font-bold text-white max-w-[80px] truncate">{entry.roleId}</span>
+                                                                {!entry.isProtected && (
+                                                                    <button
+                                                                        onClick={() => deleteWhitelist.mutate(entry._id)}
+                                                                        disabled={deleteWhitelist.isPending}
+                                                                        className="w-5 h-5 rounded-full flex items-center justify-center opacity-0 group-hover/pill:opacity-100 hover:bg-red-500/20 text-gray-500 hover:text-red-400 transition-all disabled:opacity-50"
+                                                                    >
+                                                                        {deleteWhitelist.isPending ? (
+                                                                            <FontAwesomeIcon icon={faSpinner} className="w-2 h-2 animate-spin" />
+                                                                        ) : (
+                                                                            <FontAwesomeIcon icon={faXmark} className="w-2 h-2" />
+                                                                        )}
+                                                                    </button>
+                                                                )}
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                )}
+
+                                                <MultiRolePicker 
+                                                    guildId={guildId}
+                                                    value={roleInputs[cat.id] || []}
+                                                    onChange={(val) => updateRoleInput(cat.id, val)}
+                                                    placeholder="Manage roles..."
+                                                />
+                                            </div>
+                                        );
+                                    })}
                                 </div>
                             </div>
 
                             <div className="pt-6 flex flex-col md:flex-row items-center justify-between gap-6 border-t border-white/5">
                                 <div className="w-full md:max-w-md">
-                                    <label className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 block">General Reason (Global for this batch)</label>
+                                    <label className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 block">General Reason (Optional)</label>
                                     <input 
                                         type="text"
                                         placeholder="e.g. Trustworthy admin team"
@@ -588,7 +652,7 @@ export default function SecurityModulePage({
                                     ) : (
                                         <FontAwesomeIcon icon={faUserPlus} />
                                     )}
-                                    ADD ALL ENTRIES
+                                    SAVE WHITELIST BATCH
                                 </button>
                             </div>
                         </div>
@@ -597,85 +661,17 @@ export default function SecurityModulePage({
                             <div className="flex items-center justify-center py-20">
                                 <FontAwesomeIcon icon={faSpinner} className="w-8 h-8 text-[#8b5cf6] animate-spin" />
                             </div>
-                        ) : (whitelist && whitelist.length > 0) ? (
-                            <div className="space-y-10">
-                                {/* Users */}
-                                {whitelist.filter(e => e.entryType === 'user').length > 0 && (
-                                    <div className="space-y-4">
-                                        <div className="flex items-center gap-3">
-                                            <div className="w-7 h-7 rounded-lg bg-blue-500/10 flex items-center justify-center border border-blue-500/20">
-                                                <FontAwesomeIcon icon={faUser} className="text-blue-400 w-3.5 h-3.5" />
-                                            </div>
-                                            <h3 className="text-sm font-black text-gray-400 uppercase tracking-widest">Whitelisted Users</h3>
-                                        </div>
-                                        <div className="flex flex-wrap gap-2">
-                                            {whitelist.filter(e => e.entryType === 'user').map(entry => (
-                                                <UserPill
-                                                    key={entry._id}
-                                                    guildId={guildId}
-                                                    userId={entry.userId!}
-                                                    categories={entry.categories}
-                                                    entryId={entry._id}
-                                                    isProtected={entry.isProtected}
-                                                    reason={entry.reason}
-                                                    onRemove={(id) => deleteWhitelist.mutate(id)}
-                                                    isRemoving={deleteWhitelist.isPending}
-                                                />
-                                            ))}
-                                        </div>
-                                    </div>
-                                )}
-
-                                {/* Roles */}
-                                {whitelist.filter(e => e.entryType === 'role').length > 0 && (
-                                    <div className="space-y-4">
-                                        <div className="flex items-center gap-3">
-                                            <div className="w-7 h-7 rounded-lg bg-purple-500/10 flex items-center justify-center border border-purple-500/20">
-                                                <FontAwesomeIcon icon={faShieldHalved} className="text-purple-400 w-3.5 h-3.5" />
-                                            </div>
-                                            <h3 className="text-sm font-black text-gray-400 uppercase tracking-widest">Whitelisted Roles</h3>
-                                        </div>
-                                        <div className="flex flex-wrap gap-2">
-                                            {whitelist.filter(e => e.entryType === 'role').map(entry => (
-                                                <div key={entry._id} className="flex items-center gap-2 pl-2 pr-1 py-1 rounded-full border border-[#8b5cf6]/20 bg-[#8b5cf6]/5 group">
-                                                    <div className="w-4 h-4 rounded-full bg-[#8b5cf6]/30 flex items-center justify-center">
-                                                        <FontAwesomeIcon icon={faShieldHalved} className="w-2 h-2 text-[#8b5cf6]" />
-                                                    </div>
-                                                    <span className="text-xs font-semibold text-white max-w-[100px] truncate">{entry.roleId}</span>
-                                                    <div className="flex items-center gap-1">
-                                                        {entry.categories.slice(0, 2).map(cat => (
-                                                            <span key={cat} className={`text-[9px] px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wide ${cat === 'all' ? 'bg-[#8b5cf6]/20 text-[#8b5cf6]' : 'bg-white/5 text-gray-500'}`}>
-                                                                {WHITELIST_CATEGORIES.find(c => c.id === cat)?.name || cat}
-                                                            </span>
-                                                        ))}
-                                                        {entry.categories.length > 2 && (
-                                                            <span className="text-[9px] text-gray-500 font-bold">+{entry.categories.length - 2}</span>
-                                                        )}
-                                                    </div>
-                                                    {!entry.isProtected && (
-                                                        <button
-                                                            onClick={() => deleteWhitelist.mutate(entry._id)}
-                                                            className="w-6 h-6 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 hover:bg-red-500/20 text-gray-500 hover:text-red-400 transition-all"
-                                                        >
-                                                            <FontAwesomeIcon icon={faXmark} className="w-2.5 h-2.5" />
-                                                        </button>
-                                                    )}
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                )}
-                                <p className="text-[10px] text-gray-600 italic flex items-center gap-2">
-                                    <FontAwesomeIcon icon={faShieldHalved} className="w-3 h-3 text-amber-500/60" />
-                                    Entries with a shield icon are system-protected (Bot &amp; Owner) and cannot be removed.
-                                </p>
-                            </div>
-                        ) : (
+                        ) : !whitelist || whitelist.length === 0 ? (
                             <div className="py-12 text-center bg-black/20 rounded-2xl border border-dashed border-white/10">
                                 <FontAwesomeIcon icon={faUserShield} className="w-12 h-12 text-gray-700 mb-4" />
                                 <h3 className="text-white font-bold italic">No whitelist entries found</h3>
                                 <p className="text-gray-500 text-sm mt-1">Trust worthy users and roles should be added to bypass security.</p>
                             </div>
+                        ) : (
+                            <p className="text-[10px] text-gray-600 italic flex items-center gap-2 px-4">
+                                <FontAwesomeIcon icon={faShieldHalved} className="w-3 h-3 text-[#8b5cf6]/60" />
+                                System-protected entries (Bot &amp; Owner) cannot be manually removed.
+                            </p>
                         )}
                     </motion.div>
                 )}
