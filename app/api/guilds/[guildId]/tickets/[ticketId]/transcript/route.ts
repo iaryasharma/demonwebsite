@@ -277,7 +277,7 @@ export async function DELETE(
         // Update ticket to remove transcript URL
         const ticket = await Ticket.findByTicketId(ticketId)
         if (ticket) {
-            ticket.transcriptURL = undefined
+            ticket.transcriptURL = null
             await ticket.save()
         }
 

@@ -98,6 +98,12 @@ const nextConfig = {
       },
     ]
   },
+
+  webpack: (config) => {
+    // Avoid WasmHash runtime issues on newer Node versions.
+    config.output.hashFunction = "sha256"
+    return config
+  },
 }
 
 export default nextConfig
