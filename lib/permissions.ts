@@ -25,7 +25,9 @@ const ADMINISTRATOR = 0x8
 
 export interface UserGuild {
     id: string
+    name: string
     permissions: string
+    owner?: boolean
 }
 
 /**
@@ -185,12 +187,26 @@ export async function checkGuildPermission(
     const guilds = await fetchUserGuilds(accessToken)
     const guild = guilds.find((g) => g.id === guildId)
 
-    if (!guild) return false
+    if (!guild) {
+        console.warn(`[Permissions] Guild ${guildId} not found in user's guild list`)
+        return false
+    }
 
-    const perms = parseInt(guild.permissions)
+    // Owner always has permission
+    if (guild.owner === true) return true
+
+    const perms = BigInt(guild.permissions || "0")
+    const bit = BigInt(permissionBit)
+
     // ADMINISTRATOR implies all permissions
-    if ((perms & ADMINISTRATOR) === ADMINISTRATOR) return true
-    return (perms & permissionBit) === permissionBit
+    if ((perms & BigInt(ADMINISTRATOR)) === BigInt(ADMINISTRATOR)) return true
+    
+    const hasPermission = (perms & bit) === bit
+    if (!hasPermission) {
+        console.warn(`[Permissions] User lacks bit ${permissionBit} on guild ${guildId} (Perms: ${guild.permissions})`)
+    }
+    
+    return hasPermission
 }
 
 /**
@@ -212,3 +228,4 @@ export async function requireAdministrator(
 ): Promise<boolean> {
     return checkGuildPermission(accessToken, guildId, ADMINISTRATOR)
 }
+

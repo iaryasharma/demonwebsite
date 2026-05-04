@@ -28,7 +28,7 @@ const ALLOWED_ORIGINS =
             process.env.NEXTAUTH_URL ?? "",
             "https://demonbot.vercel.app",
         ].filter(Boolean)
-        : ["http://localhost:3000"]
+        : ["http://localhost:3000", "http://127.0.0.1:3000"] // Allow local and IP in development
 
 function getClientIp(req: NextRequest): string {
     return (
