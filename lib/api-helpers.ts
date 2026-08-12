@@ -90,7 +90,15 @@ export const ALLOWED_FIELDS = {
         "showAccountAge", "showRoles",
     ],
     logging: [
-        "enabled", "mode", "channelId", "channels", "eventChannels", "events",
+        "enabled",
+        "mode",
+        "categoryModes",
+        "categoryRoutingMigrated",
+        "fallbackOnly",
+        "channelId",
+        "channels",
+        "eventChannels",
+        "events",
     ],
     guild: [
         "botUpdatesChannelId",

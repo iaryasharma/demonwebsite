@@ -4,6 +4,15 @@ import { connectToDatabase } from "@/lib/mongodb"
 import Logging from "@/lib/models/Logging"
 import { parseBody, pickAllowed, hasMongoOperators } from "@/lib/api-helpers"
 
+function stripSecrets(doc: Record<string, unknown>) {
+    delete doc.loggingWebhookId
+    delete doc.loggingWebhookToken
+    delete doc.loggingWebhookIv
+    delete doc.loggingWebhookChannelId
+    delete doc.__v
+    return doc
+}
+
 export async function GET(
     request: Request,
     context: { params: Promise<{ guildId: string }> }
@@ -26,17 +35,18 @@ export async function GET(
     try {
         await connectToDatabase()
 
-        let logging = await Logging.findOne({ guildId }).lean()
-        if (!logging) {
-            const newLogging = new Logging({ guildId, enabled: false })
-            await newLogging.save()
-            logging = newLogging.toObject()
+        let doc = await Logging.findOne({ guildId })
+        if (!doc) {
+            doc = new Logging({ guildId, enabled: false })
+            await doc.save()
         }
 
-        // Merge schema defaults for any fields missing from older documents
-        // (e.g. fields added after the document was first created)
-        const withDefaults = new Logging(logging).toObject()
+        // Match bot: map legacy global mode → per-category routing once
+        if (!doc.categoryRoutingMigrated && typeof doc.ensureCategoryRouting === "function") {
+            await doc.ensureCategoryRouting()
+        }
 
+        const withDefaults = stripSecrets(new Logging(doc.toObject()).toObject() as Record<string, unknown>)
         return NextResponse.json(withDefaults)
     } catch (error) {
         console.error("Error fetching logging config:", error)
@@ -71,7 +81,14 @@ export async function POST(
             return NextResponse.json({ error: "Invalid field values" }, { status: 400 })
         }
 
-        const safe = pickAllowed(parsed.data as Record<string, unknown>, "logging")
+        const safe = pickAllowed(parsed.data as Record<string, unknown>, "logging") as Record<string, unknown>
+
+        // Dashboard always writes the migrated routing model
+        safe.categoryRoutingMigrated = true
+        if (typeof safe.fallbackOnly !== "boolean") {
+            safe.fallbackOnly = false
+        }
+
         await connectToDatabase()
 
         const logging = await Logging.findOneAndUpdate(
@@ -80,25 +97,23 @@ export async function POST(
             { upsert: true, new: true, setDefaultsOnInsert: true }
         ).lean()
 
-        // Sync back to SecurityConfig if security channel was changed
-        if (safe.channels && (safe.channels as any).security) {
-            const channelId = (safe.channels as any).security;
-            
-            // Sync granular event channel
+        if (safe.channels && (safe.channels as { security?: string | null }).security) {
+            const channelId = (safe.channels as { security: string }).security
+
             await Logging.findOneAndUpdate(
                 { guildId },
                 { $set: { "eventChannels.securityViolation": channelId } }
-            );
+            )
 
-            const SecurityConfig = (await import("@/lib/models/SecurityConfig")).default;
+            const SecurityConfig = (await import("@/lib/models/SecurityConfig")).default
             await SecurityConfig.findOneAndUpdate(
                 { guildId },
                 { $set: { securityLogChannelId: channelId } },
                 { upsert: true }
-            );
+            )
         }
 
-        return NextResponse.json(logging)
+        return NextResponse.json(stripSecrets({ ...(logging as object) } as Record<string, unknown>))
     } catch (error) {
         console.error("Error updating logging config:", error)
         return NextResponse.json({ error: "Internal server error" }, { status: 500 })

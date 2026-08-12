@@ -1,17 +1,14 @@
 "use client"
 
-import React, { useState, useEffect } from "react"
+import React, { useEffect, useMemo, useState } from "react"
 import { useQuery } from "@tanstack/react-query"
-import { motion, AnimatePresence } from "framer-motion"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import {
     faClipboardList,
     faArrowLeft,
     faSpinner,
-    faLayerGroup,
-    faFilter,
-    faBullseye,
-    faShieldHalved
+    faShieldHalved,
+    faChevronDown,
 } from "@fortawesome/free-solid-svg-icons"
 import Link from "next/link"
 import { ChannelPicker } from "@/components/dashboard/settings/channel-picker"
@@ -19,106 +16,489 @@ import isEqual from "lodash/isEqual"
 import cloneDeep from "lodash/cloneDeep"
 import { SaveBar } from "@/components/dashboard/save-bar"
 import { toast } from "sonner"
+import {
+    ROUTABLE_CATEGORIES,
+    buildMigratedCategoryModes,
+    type CategoryRoutingMode,
+    type RoutableCategory,
+} from "@/lib/logging-constants"
+
+type ChannelKey = RoutableCategory | "emoji" | "soundboard"
+
+type EventKey =
+    | "memberJoin"
+    | "memberLeave"
+    | "ban"
+    | "unban"
+    | "kick"
+    | "messageDelete"
+    | "messageEdit"
+    | "modCommand"
+    | "verification"
+    | "autorole"
+    | "roleCreate"
+    | "roleDelete"
+    | "roleUpdate"
+    | "channelCreate"
+    | "channelDelete"
+    | "channelUpdate"
+    | "emojiCreate"
+    | "emojiUpdate"
+    | "emojiDelete"
+    | "soundboardCreate"
+    | "soundboardUpdate"
+    | "soundboardDelete"
+    | "serverUpdate"
+    | "nicknameUpdate"
+    | "memberRoleAdd"
+    | "memberRoleRemove"
+    | "memberTimeout"
+    | "memberUntimeout"
+    | "voiceJoin"
+    | "voiceLeave"
+    | "voiceMove"
+    | "voiceKick"
+    | "voiceMute"
+    | "voiceDeafen"
+    | "ticketCreate"
+    | "ticketClose"
+    | "ticketReopen"
+    | "ticketClaim"
+    | "ticketUnclaim"
+    | "ticketPriority"
+    | "ticketUserAdd"
+    | "ticketUserRemove"
+    | "ticketTransfer"
+    | "securityViolation"
 
 interface LoggingConfig {
     enabled: boolean
-    mode: 'single' | 'multi' | 'granular'
+    /** @deprecated kept for migration display only */
+    mode?: "single" | "multi" | "granular"
+    categoryModes: Record<RoutableCategory, CategoryRoutingMode>
+    categoryRoutingMigrated: boolean
+    fallbackOnly: boolean
     channelId: string | null
-    channels: {
-        moderation:   string | null
-        messages:     string | null
-        members:      string | null
-        server:       string | null
-        verification: string | null
-        autorole:     string | null
-        voice:        string | null
-        security:     string | null
-    }
-    eventChannels: {
-        memberJoin:       string | null
-        memberLeave:      string | null
-        ban:              string | null
-        unban:            string | null
-        kick:             string | null
-        messageDelete:    string | null
-        messageEdit:      string | null
-        modCommand:       string | null
-        verification:     string | null
-        autorole:         string | null
-        roleCreate:       string | null
-        roleDelete:       string | null
-        roleUpdate:       string | null
-        channelCreate:    string | null
-        channelDelete:    string | null
-        channelUpdate:    string | null
-        serverUpdate:     string | null
-        nicknameUpdate:   string | null
-        memberRoleAdd:    string | null
-        memberRoleRemove: string | null
-        memberTimeout:    string | null
-        memberUntimeout:  string | null
-        voiceKick:        string | null
-        voiceDeafen:      string | null
-        voiceMute:        string | null
-        securityViolation:string | null
-    }
-    events: {
-        memberJoin:       boolean
-        memberLeave:      boolean
-        ban:              boolean
-        unban:            boolean
-        kick:             boolean
-        messageDelete:    boolean
-        messageEdit:      boolean
-        modCommand:       boolean
-        verification:     boolean
-        autorole:         boolean
-        roleCreate:       boolean
-        roleDelete:       boolean
-        roleUpdate:       boolean
-        channelCreate:    boolean
-        channelDelete:    boolean
-        channelUpdate:    boolean
-        serverUpdate:     boolean
-        nicknameUpdate:   boolean
-        memberRoleAdd:    boolean
-        memberRoleRemove: boolean
-        memberTimeout:    boolean
-        memberUntimeout:  boolean
-        voiceKick:        boolean
-        voiceDeafen:      boolean
-        voiceMute:        boolean
-        securityViolation:boolean
+    channels: Record<ChannelKey, string | null>
+    eventChannels: Record<EventKey, string | null>
+    events: Record<EventKey, boolean>
+}
+
+const EVENT_LABELS: Record<EventKey, string> = {
+    memberJoin: "Member Join",
+    memberLeave: "Member Leave",
+    ban: "Ban",
+    unban: "Unban",
+    kick: "Kick",
+    messageDelete: "Message Delete",
+    messageEdit: "Message Edit",
+    modCommand: "Mod Command",
+    verification: "Verification",
+    autorole: "Auto-Role",
+    roleCreate: "Role Create",
+    roleDelete: "Role Delete",
+    roleUpdate: "Role Update",
+    channelCreate: "Channel Create",
+    channelDelete: "Channel Delete",
+    channelUpdate: "Channel Update",
+    emojiCreate: "Emoji Create",
+    emojiUpdate: "Emoji Update",
+    emojiDelete: "Emoji Delete",
+    soundboardCreate: "Soundboard Create",
+    soundboardUpdate: "Soundboard Update",
+    soundboardDelete: "Soundboard Delete",
+    serverUpdate: "Server Update",
+    nicknameUpdate: "Nickname Update",
+    memberRoleAdd: "Member Role Add",
+    memberRoleRemove: "Member Role Remove",
+    memberTimeout: "Member Timeout",
+    memberUntimeout: "Member Untimeout",
+    voiceJoin: "Voice Join",
+    voiceLeave: "Voice Leave",
+    voiceMove: "Voice Move",
+    voiceKick: "Voice Kick",
+    voiceMute: "Voice Mute",
+    voiceDeafen: "Voice Deafen",
+    ticketCreate: "Ticket Create",
+    ticketClose: "Ticket Close",
+    ticketReopen: "Ticket Reopen",
+    ticketClaim: "Ticket Claim",
+    ticketUnclaim: "Ticket Unclaim",
+    ticketPriority: "Ticket Priority",
+    ticketUserAdd: "Ticket User Add",
+    ticketUserRemove: "Ticket User Remove",
+    ticketTransfer: "Ticket Transfer",
+    securityViolation: "Security Violation",
+}
+
+const CATEGORY_META: {
+    key: RoutableCategory
+    label: string
+    blurb: string
+    events: EventKey[]
+}[] = [
+    {
+        key: "moderation",
+        label: "Moderation",
+        blurb: "Discord audit actions: bans, kicks, timeouts",
+        events: ["ban", "unban", "kick", "memberTimeout", "memberUntimeout"],
+    },
+    {
+        key: "modCommands",
+        label: "Mod Commands",
+        blurb: "Bot moderation command executions (ban, mute, purge, …)",
+        events: ["modCommand"],
+    },
+    {
+        key: "messages",
+        label: "Messages",
+        blurb: "Message deletes and edits",
+        events: ["messageDelete", "messageEdit"],
+    },
+    {
+        key: "members",
+        label: "Members",
+        blurb: "Joins, leaves, nicknames, role adds/removes",
+        events: ["memberJoin", "memberLeave", "nicknameUpdate", "memberRoleAdd", "memberRoleRemove"],
+    },
+    {
+        key: "server",
+        label: "Server",
+        blurb: "Roles, channels, and server settings",
+        events: ["roleCreate", "roleDelete", "roleUpdate", "channelCreate", "channelDelete", "channelUpdate", "serverUpdate"],
+    },
+    {
+        key: "expressions",
+        label: "Expressions",
+        blurb: "Emoji and soundboard (shared channel; optional splits below)",
+        events: ["emojiCreate", "emojiUpdate", "emojiDelete", "soundboardCreate", "soundboardUpdate", "soundboardDelete"],
+    },
+    {
+        key: "voice",
+        label: "Voice",
+        blurb: "Voice join, leave, move, mute, deafen, kick",
+        events: ["voiceJoin", "voiceLeave", "voiceMove", "voiceKick", "voiceMute", "voiceDeafen"],
+    },
+    {
+        key: "verification",
+        label: "Verification",
+        blurb: "Member verification events",
+        events: ["verification"],
+    },
+    {
+        key: "autorole",
+        label: "Autorole",
+        blurb: "Auto-role assignments",
+        events: ["autorole"],
+    },
+    {
+        key: "tickets",
+        label: "Tickets",
+        blurb: "Ticket system events",
+        events: [
+            "ticketCreate",
+            "ticketClose",
+            "ticketReopen",
+            "ticketClaim",
+            "ticketUnclaim",
+            "ticketPriority",
+            "ticketUserAdd",
+            "ticketUserRemove",
+            "ticketTransfer",
+        ],
+    },
+    {
+        key: "security",
+        label: "Security",
+        blurb: "Security violations and nuke attempts",
+        events: ["securityViolation"],
+    },
+]
+
+const CHANNEL_KEYS: ChannelKey[] = [...ROUTABLE_CATEGORIES, "emoji", "soundboard"]
+const EVENT_KEYS = Object.keys(EVENT_LABELS) as EventKey[]
+
+function emptyChannels(): Record<ChannelKey, string | null> {
+    return Object.fromEntries(CHANNEL_KEYS.map(k => [k, null])) as Record<ChannelKey, string | null>
+}
+
+function emptyEventChannels(): Record<EventKey, string | null> {
+    return Object.fromEntries(EVENT_KEYS.map(k => [k, null])) as Record<EventKey, string | null>
+}
+
+function defaultEvents(): Record<EventKey, boolean> {
+    const out = Object.fromEntries(EVENT_KEYS.map(k => [k, true])) as Record<EventKey, boolean>
+    out.verification = false
+    out.autorole = false
+    return out
+}
+
+function normalizeConfig(raw: Partial<LoggingConfig> & Record<string, unknown> | null | undefined): LoggingConfig {
+    const legacyMode = (raw?.mode as LoggingConfig["mode"]) || "single"
+    const migrated = Boolean(raw?.categoryRoutingMigrated)
+    const categoryModes =
+        (raw?.categoryModes as LoggingConfig["categoryModes"]) ||
+        buildMigratedCategoryModes(migrated ? "multi" : legacyMode)
+
+    // Fill any missing category mode keys
+    const modes = { ...buildMigratedCategoryModes("multi"), ...categoryModes }
+
+    let fallbackOnly = Boolean(raw?.fallbackOnly)
+    if (!migrated && legacyMode === "single") fallbackOnly = true
+
+    return {
+        enabled: Boolean(raw?.enabled),
+        mode: legacyMode,
+        categoryModes: modes,
+        categoryRoutingMigrated: true,
+        fallbackOnly,
+        channelId: (raw?.channelId as string | null) ?? null,
+        channels: { ...emptyChannels(), ...(raw?.channels || {}) },
+        eventChannels: { ...emptyEventChannels(), ...(raw?.eventChannels || {}) },
+        events: { ...defaultEvents(), ...(raw?.events || {}) },
     }
 }
 
-const EVENT_LABELS: Record<keyof LoggingConfig['events'], string> = {
-    memberJoin:       'Member Join',
-    memberLeave:      'Member Leave',
-    ban:              'Ban',
-    unban:            'Unban',
-    kick:             'Kick',
-    messageDelete:    'Message Delete',
-    messageEdit:      'Message Edit',
-    modCommand:       'Mod Command',
-    verification:     'Verification',
-    autorole:         'Auto-Role',
-    roleCreate:       'Role Create',
-    roleDelete:       'Role Delete',
-    roleUpdate:       'Role Update',
-    channelCreate:    'Channel Create',
-    channelDelete:    'Channel Delete',
-    channelUpdate:    'Channel Update',
-    serverUpdate:     'Server Update',
-    nicknameUpdate:   'Nickname Update',
-    memberRoleAdd:    'Role Add',
-    memberRoleRemove: 'Role Remove',
-    memberTimeout:    'Timeout',
-    memberUntimeout:  'Untimeout',
-    voiceKick:        'Voice Kick',
-    voiceDeafen:      'Voice Deafen',
-    voiceMute:        'Voice Mute',
-    securityViolation: 'Security Violation',
+function Toggle({
+    checked,
+    onChange,
+    accent = "brand",
+}: {
+    checked: boolean
+    onChange: (next: boolean) => void
+    accent?: "brand" | "green"
+}) {
+    const onCls = accent === "green" ? "bg-green-500" : "bg-[#8b5cf6]"
+    return (
+        <button type="button" role="switch" aria-checked={checked} onClick={() => onChange(!checked)} className="relative inline-flex shrink-0">
+            <span className={`block h-6 w-10 rounded-full transition-colors ${checked ? onCls : "bg-zinc-700"}`} />
+            <span className={`absolute left-1 top-1 h-4 w-4 rounded-full bg-white transition-transform ${checked ? "translate-x-4" : ""}`} />
+        </button>
+    )
+}
+
+function CategorySection({
+    guildId,
+    cat,
+    config,
+    open,
+    onToggleOpen,
+    onChange,
+}: {
+    guildId: string
+    cat: (typeof CATEGORY_META)[number]
+    config: LoggingConfig
+    open: boolean
+    onToggleOpen: () => void
+    onChange: (next: LoggingConfig) => void
+}) {
+    const mode = config.categoryModes[cat.key] || "category"
+    const enabledInCat = cat.events.filter(e => config.events[e]).length
+
+    const setMode = (next: CategoryRoutingMode) => {
+        onChange({
+            ...config,
+            fallbackOnly: false,
+            categoryModes: { ...config.categoryModes, [cat.key]: next },
+        })
+    }
+
+    const setChannel = (key: ChannelKey, val: string | null) => {
+        const next: LoggingConfig = {
+            ...config,
+            fallbackOnly: false,
+            channels: { ...config.channels, [key]: val },
+        }
+        if (key === "security") {
+            next.eventChannels = { ...next.eventChannels, securityViolation: val }
+        }
+        onChange(next)
+    }
+
+    return (
+        <div className={`rounded-xl border ${cat.key === "security" ? "border-red-500/20 bg-red-500/[0.03]" : "border-white/[0.06] bg-black/20"}`}>
+            <button
+                type="button"
+                onClick={onToggleOpen}
+                className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left"
+            >
+                <div className="min-w-0">
+                    <div className="flex flex-wrap items-center gap-2">
+                        <h4 className={`font-semibold ${cat.key === "security" ? "text-red-300" : "text-white"}`}>
+                            {cat.label}
+                        </h4>
+                        <span className="rounded-md border border-white/[0.06] bg-white/[0.03] px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide text-zinc-400">
+                            {mode}
+                        </span>
+                        <span className="text-[11px] text-zinc-500">
+                            {enabledInCat}/{cat.events.length} events
+                        </span>
+                    </div>
+                    <p className="mt-0.5 text-xs text-zinc-500">{cat.blurb}</p>
+                </div>
+                <FontAwesomeIcon
+                    icon={faChevronDown}
+                    className={`h-3.5 w-3.5 shrink-0 text-zinc-500 transition-transform ${open ? "rotate-180" : ""}`}
+                />
+            </button>
+
+            {open && (
+                <div className="space-y-4 border-t border-white/[0.05] px-4 pb-4 pt-3">
+                    <div className="flex flex-wrap gap-2">
+                        {(
+                            [
+                                { id: "category" as const, label: "Category", desc: "One channel for the whole category" },
+                                { id: "granular" as const, label: "Granular", desc: "Optional channel per event" },
+                            ]
+                        ).map(opt => {
+                            const active = mode === opt.id
+                            return (
+                                <button
+                                    key={opt.id}
+                                    type="button"
+                                    onClick={() => setMode(opt.id)}
+                                    className={`rounded-lg border px-3 py-2 text-left transition-colors ${
+                                        active
+                                            ? "border-[#8b5cf6] bg-[#8b5cf6]/15 text-white"
+                                            : "border-white/[0.06] bg-black/30 text-zinc-400 hover:border-white/15"
+                                    }`}
+                                >
+                                    <div className="text-sm font-semibold">{opt.label}</div>
+                                    <div className="text-[11px] opacity-70">{opt.desc}</div>
+                                </button>
+                            )
+                        })}
+                    </div>
+
+                    <div className="space-y-1">
+                        <label className="block text-xs font-medium uppercase tracking-wide text-zinc-500">
+                            Category channel
+                        </label>
+                        <ChannelPicker
+                            guildId={guildId}
+                            value={config.channels[cat.key] || ""}
+                            onChange={val => setChannel(cat.key, val || null)}
+                        />
+                    </div>
+
+                    {cat.key === "expressions" && (
+                        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+                            <div className="space-y-1">
+                                <label className="block text-xs font-medium text-zinc-400">Emoji override (optional)</label>
+                                <ChannelPicker
+                                    guildId={guildId}
+                                    value={config.channels.emoji || ""}
+                                    onChange={val => setChannel("emoji", val || null)}
+                                />
+                            </div>
+                            <div className="space-y-1">
+                                <label className="block text-xs font-medium text-zinc-400">Soundboard override (optional)</label>
+                                <ChannelPicker
+                                    guildId={guildId}
+                                    value={config.channels.soundboard || ""}
+                                    onChange={val => setChannel("soundboard", val || null)}
+                                />
+                            </div>
+                        </div>
+                    )}
+
+                    {mode === "granular" && (
+                        <div className="space-y-2">
+                            <p className="text-xs text-zinc-500">
+                                Per-event channels (leave blank to inherit category → fallback).
+                            </p>
+                            <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+                                {cat.events.map(eventKey => (
+                                    <div key={eventKey} className="space-y-1 rounded-lg border border-white/[0.04] bg-black/25 p-3">
+                                        <label className="block text-sm font-medium text-zinc-300">
+                                            {EVENT_LABELS[eventKey]}
+                                        </label>
+                                        {eventKey === "securityViolation" ? (
+                                            <div className="rounded-lg border border-red-500/15 bg-red-500/5 p-2">
+                                                <p className="mb-2 flex items-center gap-1.5 text-[11px] text-red-400">
+                                                    <FontAwesomeIcon icon={faShieldHalved} className="h-3 w-3" />
+                                                    Uses Security category channel
+                                                </p>
+                                                <ChannelPicker
+                                                    guildId={guildId}
+                                                    value={config.channels.security || ""}
+                                                    onChange={val => setChannel("security", val || null)}
+                                                />
+                                            </div>
+                                        ) : (
+                                            <ChannelPicker
+                                                guildId={guildId}
+                                                value={config.eventChannels[eventKey] || ""}
+                                                onChange={val =>
+                                                    onChange({
+                                                        ...config,
+                                                        fallbackOnly: false,
+                                                        eventChannels: {
+                                                            ...config.eventChannels,
+                                                            [eventKey]: val || null,
+                                                        },
+                                                    })
+                                                }
+                                            />
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    <div className="space-y-2">
+                        <div className="flex flex-wrap items-center justify-between gap-2">
+                            <p className="text-xs font-medium uppercase tracking-wide text-zinc-500">Event toggles</p>
+                            <div className="flex gap-2">
+                                <button
+                                    type="button"
+                                    className="rounded-md border border-white/[0.08] px-2 py-1 text-[11px] text-zinc-300 hover:text-emerald-300"
+                                    onClick={() => {
+                                        const events = { ...config.events }
+                                        for (const e of cat.events) events[e] = true
+                                        onChange({ ...config, events })
+                                    }}
+                                >
+                                    Enable all
+                                </button>
+                                <button
+                                    type="button"
+                                    className="rounded-md border border-white/[0.08] px-2 py-1 text-[11px] text-zinc-300 hover:text-red-300"
+                                    onClick={() => {
+                                        const events = { ...config.events }
+                                        for (const e of cat.events) events[e] = false
+                                        onChange({ ...config, events })
+                                    }}
+                                >
+                                    Disable all
+                                </button>
+                            </div>
+                        </div>
+                        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                            {cat.events.map(key => (
+                                <label
+                                    key={key}
+                                    className="flex cursor-pointer items-center justify-between gap-3 rounded-lg border border-white/[0.04] bg-black/25 px-3 py-2.5"
+                                >
+                                    <span className="text-sm font-medium text-zinc-300">{EVENT_LABELS[key]}</span>
+                                    <Toggle
+                                        checked={Boolean(config.events[key])}
+                                        onChange={next =>
+                                            onChange({
+                                                ...config,
+                                                events: { ...config.events, [key]: next },
+                                            })
+                                        }
+                                    />
+                                </label>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            )}
+        </div>
+    )
 }
 
 export default function LoggingModulePage({
@@ -130,6 +510,7 @@ export default function LoggingModulePage({
     const [config, setConfig] = useState<LoggingConfig | null>(null)
     const [originalConfig, setOriginalConfig] = useState<LoggingConfig | null>(null)
     const [saving, setSaving] = useState(false)
+    const [openCats, setOpenCats] = useState<Set<string>>(() => new Set(["moderation", "modCommands", "messages"]))
 
     const hasUnsavedChanges = config && originalConfig && !isEqual(config, originalConfig)
 
@@ -145,19 +526,29 @@ export default function LoggingModulePage({
 
     useEffect(() => {
         if (serverConfig && !originalConfig) {
-            setConfig(cloneDeep(serverConfig))
-            setOriginalConfig(cloneDeep(serverConfig))
+            const normalized = normalizeConfig(serverConfig)
+            setConfig(cloneDeep(normalized))
+            setOriginalConfig(cloneDeep(normalized))
         }
     }, [serverConfig, originalConfig])
+
+    const enabledCount = useMemo(() => {
+        if (!config) return 0
+        return EVENT_KEYS.filter(k => config.events[k]).length
+    }, [config])
 
     const handleSave = async () => {
         if (!config) return
         setSaving(true)
         try {
+            const payload = {
+                ...config,
+                categoryRoutingMigrated: true,
+            }
             const res = await fetch(`/api/guilds/${guildId}/modules/logging`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(config),
+                body: JSON.stringify(payload),
             })
             if (res.ok) {
                 setOriginalConfig(cloneDeep(config))
@@ -173,302 +564,134 @@ export default function LoggingModulePage({
         }
     }
 
-    const handleDiscard = () => {
-        if (originalConfig) {
-            setConfig(cloneDeep(originalConfig))
-        }
-    }
-
     if (configLoading || !config) {
         return (
             <div className="flex items-center justify-center py-20">
-                <FontAwesomeIcon icon={faSpinner} className="w-8 h-8 text-[#8b5cf6] animate-spin" />
+                <FontAwesomeIcon icon={faSpinner} className="h-8 w-8 animate-spin text-[#8b5cf6]" />
             </div>
         )
     }
 
-    const EVENT_KEYS = Object.keys(EVENT_LABELS) as Array<keyof LoggingConfig['events']>
-
     return (
-        <div className="max-w-4xl mx-auto space-y-8">
-            {/* Header */}
-            <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="flex items-center justify-between gap-4 mb-8"
-            >
+        <div className="mx-auto max-w-4xl space-y-8 pb-24">
+            <div className="mb-2 flex flex-wrap items-center justify-between gap-4">
                 <div>
                     <Link
                         href={`/dashboard/${guildId}/modules`}
-                        className="text-gray-400 hover:text-white mb-2 inline-flex items-center gap-2 text-sm transition-colors"
+                        className="mb-2 inline-flex items-center gap-2 text-sm text-zinc-400 transition-colors hover:text-white"
                     >
-                        <FontAwesomeIcon icon={faArrowLeft} className="w-3.5 h-3.5" />
+                        <FontAwesomeIcon icon={faArrowLeft} className="h-3.5 w-3.5" />
                         Back to Modules
                     </Link>
-                    <div className="flex items-center gap-4 mt-2">
-                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg">
-                            <FontAwesomeIcon icon={faClipboardList} className="w-6 h-6 text-white" />
+                    <div className="mt-2 flex items-center gap-4">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 shadow-lg">
+                            <FontAwesomeIcon icon={faClipboardList} className="h-6 w-6 text-white" />
                         </div>
                         <div>
                             <h1 className="text-3xl font-bold text-white">Logging Module</h1>
-                            <p className="text-gray-400 mt-1">
-                                Monitor and track activities within your server.
+                            <p className="mt-1 text-zinc-400">
+                                {EVENT_KEYS.length} events · {enabledCount} enabled · per-category routing
                             </p>
                         </div>
                     </div>
                 </div>
 
-                <div className="flex items-center gap-4">
-                    <label className="flex items-center cursor-pointer">
-                        <div className="relative">
-                            <input
-                                type="checkbox"
-                                className="sr-only"
-                                checked={config.enabled}
-                                onChange={(e) => setConfig({ ...config, enabled: e.target.checked })}
-                            />
-                            <div className={`block w-14 h-8 rounded-full transition-colors ${config.enabled ? 'bg-green-500' : 'bg-gray-700'}`}></div>
-                            <div className={`dot absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition-transform ${config.enabled ? 'transform translate-x-6' : ''}`}></div>
+                <div className="flex items-center gap-3">
+                    <Toggle
+                        checked={config.enabled}
+                        accent="green"
+                        onChange={enabled => setConfig({ ...config, enabled })}
+                    />
+                    <span className="font-medium text-white">
+                        {config.enabled ? "Module Enabled" : "Module Disabled"}
+                    </span>
+                </div>
+            </div>
+
+            <div className="space-y-6 rounded-2xl border border-white/[0.06] bg-zinc-950/80 p-6">
+                {/* Fallback */}
+                <div className="space-y-4">
+                    <h3 className="border-b border-white/[0.06] pb-2 text-xl font-bold text-white">Fallback Channel</h3>
+                    <p className="text-sm text-zinc-400">
+                        Last-resort channel when a category (or event) has no channel set. Matches the bot&apos;s{" "}
+                        <code className="text-zinc-300">/logs channel</code> fallback.
+                    </p>
+                    <ChannelPicker
+                        guildId={guildId}
+                        value={config.channelId || ""}
+                        onChange={val => setConfig({ ...config, channelId: val || null })}
+                    />
+
+                    <label className="flex cursor-pointer items-start justify-between gap-4 rounded-xl border border-white/[0.06] bg-black/25 p-4">
+                        <div>
+                            <div className="font-semibold text-white">Fallback only</div>
+                            <p className="mt-1 text-xs text-zinc-500">
+                                Send every event to the fallback channel and ignore category / event channels
+                                (same as legacy single mode). Turn this off to configure categories below.
+                            </p>
                         </div>
-                        <div className="ml-3 text-white font-medium">
-                            {config.enabled ? "Module Enabled" : "Module Disabled"}
-                        </div>
+                        <Toggle
+                            checked={config.fallbackOnly}
+                            onChange={fallbackOnly => setConfig({ ...config, fallbackOnly })}
+                        />
                     </label>
                 </div>
-            </motion.div>
 
-            {/* Main Configuration Card */}
-            <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
-                className="glass rounded-2xl border border-white/[0.06] p-6 space-y-8"
-            >
-                {/* Mode Selection */}
-                <div className="space-y-4">
-                    <h3 className="text-xl font-bold text-white border-b border-white/[0.06] pb-2">Routing Mode</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 font-medium">
-                        {/* Single Mode Card */}
-                        <label className={`cursor-pointer rounded-xl border p-4 transition-all flex flex-col gap-2 ${config.mode === 'single' ? 'bg-[#8b5cf6]/20 border-[#8b5cf6]' : 'bg-black/20 border-white/[0.06] hover:border-white/20'}`}>
-                            <div className="flex items-center gap-3">
-                                <input
-                                    type="radio"
-                                    name="logging-mode"
-                                    value="single"
-                                    checked={config.mode === 'single'}
-                                    onChange={() => setConfig({ ...config, mode: 'single' })}
-                                    className="hidden"
-                                />
-                                <FontAwesomeIcon icon={faFilter} className={`w-5 h-5 ${config.mode === 'single' ? 'text-[#8b5cf6]' : 'text-gray-400'}`} />
-                                <span className={`text-lg ${config.mode === 'single' ? 'text-white' : 'text-gray-300'}`}>Single</span>
-                            </div>
-                            <p className="text-xs text-gray-400 font-normal">All events are sent to one fallback channel.</p>
-                        </label>
-
-                        {/* Multi Mode Card */}
-                        <label className={`cursor-pointer rounded-xl border p-4 transition-all flex flex-col gap-2 ${config.mode === 'multi' ? 'bg-[#8b5cf6]/20 border-[#8b5cf6]' : 'bg-black/20 border-white/[0.06] hover:border-white/20'}`}>
-                            <div className="flex items-center gap-3">
-                                <input
-                                    type="radio"
-                                    name="logging-mode"
-                                    value="multi"
-                                    checked={config.mode === 'multi'}
-                                    onChange={() => setConfig({ ...config, mode: 'multi' })}
-                                    className="hidden"
-                                />
-                                <FontAwesomeIcon icon={faLayerGroup} className={`w-5 h-5 ${config.mode === 'multi' ? 'text-[#8b5cf6]' : 'text-gray-400'}`} />
-                                <span className={`text-lg ${config.mode === 'multi' ? 'text-white' : 'text-gray-300'}`}>Multi</span>
-                            </div>
-                            <p className="text-xs text-gray-400 font-normal">Events routed into 6 distinct categories.</p>
-                        </label>
-
-                        {/* Granular Mode Card */}
-                        <label className={`cursor-pointer rounded-xl border p-4 transition-all flex flex-col gap-2 ${config.mode === 'granular' ? 'bg-[#8b5cf6]/20 border-[#8b5cf6]' : 'bg-black/20 border-white/[0.06] hover:border-white/20'}`}>
-                            <div className="flex items-center gap-3">
-                                <input
-                                    type="radio"
-                                    name="logging-mode"
-                                    value="granular"
-                                    checked={config.mode === 'granular'}
-                                    onChange={() => setConfig({ ...config, mode: 'granular' })}
-                                    className="hidden"
-                                />
-                                <FontAwesomeIcon icon={faBullseye} className={`w-5 h-5 ${config.mode === 'granular' ? 'text-[#8b5cf6]' : 'text-gray-400'}`} />
-                                <span className={`text-lg ${config.mode === 'granular' ? 'text-white' : 'text-gray-300'}`}>Granular</span>
-                            </div>
-                            <p className="text-xs text-gray-400 font-normal">Every 25 events can have an isolated channel.</p>
-                        </label>
+                {/* Categories */}
+                <div className={`space-y-3 ${config.fallbackOnly ? "pointer-events-none opacity-45" : ""}`}>
+                    <div className="flex flex-wrap items-end justify-between gap-2 border-b border-white/[0.06] pb-2">
+                        <div>
+                            <h3 className="text-xl font-bold text-white">Categories</h3>
+                            <p className="mt-1 text-sm text-zinc-400">
+                                Each category chooses <strong className="font-medium text-zinc-300">category</strong>{" "}
+                                (one channel) or <strong className="font-medium text-zinc-300">granular</strong>{" "}
+                                (optional per-event channels → category → fallback).
+                            </p>
+                        </div>
+                        <div className="flex gap-2">
+                            <button
+                                type="button"
+                                className="rounded-md border border-white/[0.08] px-2.5 py-1 text-[11px] text-zinc-300 hover:text-white"
+                                onClick={() => setOpenCats(new Set(CATEGORY_META.map(c => c.key)))}
+                            >
+                                Expand all
+                            </button>
+                            <button
+                                type="button"
+                                className="rounded-md border border-white/[0.08] px-2.5 py-1 text-[11px] text-zinc-300 hover:text-white"
+                                onClick={() => setOpenCats(new Set())}
+                            >
+                                Collapse all
+                            </button>
+                        </div>
                     </div>
+
+                    {CATEGORY_META.map(cat => (
+                        <CategorySection
+                            key={cat.key}
+                            guildId={guildId}
+                            cat={cat}
+                            config={config}
+                            open={openCats.has(cat.key)}
+                            onToggleOpen={() => {
+                                setOpenCats(prev => {
+                                    const next = new Set(prev)
+                                    if (next.has(cat.key)) next.delete(cat.key)
+                                    else next.add(cat.key)
+                                    return next
+                                })
+                            }}
+                            onChange={setConfig}
+                        />
+                    ))}
                 </div>
-
-                {/* Single Mode Setup */}
-                {config.mode === 'single' && (
-                    <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="space-y-4 pt-4 border-t border-white/[0.06]">
-                        <h3 className="text-xl font-bold text-white">Log Channels</h3>
-                        <p className="text-sm text-gray-400">Select the channels for your audit logs.</p>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="space-y-1">
-                                <label className="block text-sm font-medium text-gray-300">Default Log Channel</label>
-                                <ChannelPicker
-                                    guildId={guildId}
-                                    value={config.channelId || ""}
-                                    onChange={(val: string | null) => setConfig({ ...config, channelId: val || null })}
-                                />
-                            </div>
-                            <div className="space-y-1">
-                                <label className="block text-sm font-medium text-gray-300 text-red-400">Security Log Channel</label>
-                                <ChannelPicker
-                                    guildId={guildId}
-                                    value={config.channels.security || ""}
-                                    onChange={(val: string | null) => setConfig({ ...config, channels: { ...config.channels, security: val || null } })}
-                                />
-                            </div>
-                        </div>
-                    </motion.div>
-                )}
-
-                {/* Multi Mode Setup */}
-                {config.mode === 'multi' && (
-                    <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="space-y-4 pt-4 border-t border-white/[0.06]">
-                        <h3 className="text-xl font-bold text-white">Category Channels</h3>
-                        <p className="text-sm text-gray-400">Select the logging channel for each specific category type.</p>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="space-y-1">
-                                <label className="block text-sm font-medium text-gray-300">Moderation (Bans, Kicks, Commands)</label>
-                                <ChannelPicker
-                                    guildId={guildId}
-                                    value={config.channels.moderation || ""}
-                                    onChange={(val: string | null) => setConfig({ ...config, channels: { ...config.channels, moderation: val || null } })}
-                                />
-                            </div>
-                            <div className="space-y-1">
-                                <label className="block text-sm font-medium text-gray-300">Messages (Deletes, Edits)</label>
-                                <ChannelPicker
-                                    guildId={guildId}
-                                    value={config.channels.messages || ""}
-                                    onChange={(val: string | null) => setConfig({ ...config, channels: { ...config.channels, messages: val || null } })}
-                                />
-                            </div>
-                            <div className="space-y-1">
-                                <label className="block text-sm font-medium text-gray-300">Members (Joins, Leaves)</label>
-                                <ChannelPicker
-                                    guildId={guildId}
-                                    value={config.channels.members || ""}
-                                    onChange={(val: string | null) => setConfig({ ...config, channels: { ...config.channels, members: val || null } })}
-                                />
-                            </div>
-                            <div className="space-y-1">
-                                <label className="block text-sm font-medium text-gray-300">Server (Roles, Channels)</label>
-                                <ChannelPicker
-                                    guildId={guildId}
-                                    value={config.channels.server || ""}
-                                    onChange={(val: string | null) => setConfig({ ...config, channels: { ...config.channels, server: val || null } })}
-                                />
-                            </div>
-                            <div className="space-y-1">
-                                <label className="block text-sm font-medium text-gray-300">Verification Events</label>
-                                <ChannelPicker
-                                    guildId={guildId}
-                                    value={config.channels.verification || ""}
-                                    onChange={(val: string | null) => setConfig({ ...config, channels: { ...config.channels, verification: val || null } })}
-                                />
-                            </div>
-                            <div className="space-y-1">
-                                <label className="block text-sm font-medium text-gray-300">Auto-Role Assignments</label>
-                                <ChannelPicker
-                                    guildId={guildId}
-                                    value={config.channels.autorole || ""}
-                                    onChange={(val: string | null) => setConfig({ ...config, channels: { ...config.channels, autorole: val || null } })}
-                                />
-                            </div>
-                            <div className="space-y-1">
-                                <label className="block text-sm font-medium text-gray-300">Voice (Kicks, Mutes, Deafens)</label>
-                                <ChannelPicker
-                                    guildId={guildId}
-                                    value={config.channels.voice || ""}
-                                    onChange={(val: string | null) => setConfig({ ...config, channels: { ...config.channels, voice: val || null } })}
-                                />
-                            </div>
-                            <div className="space-y-1">
-                                <label className="block text-sm font-medium text-gray-300 font-bold text-red-400 italic underline">Security (Nuke Alerts, Violations)</label>
-                                <ChannelPicker
-                                    guildId={guildId}
-                                    value={config.channels.security || ""}
-                                    onChange={(val: string | null) => setConfig({ ...config, channels: { ...config.channels, security: val || null } })}
-                                />
-                            </div>
-                        </div>
-                    </motion.div>
-                )}
-
-                {/* Granular Mode Setup */}
-                {config.mode === 'granular' && (
-                    <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="space-y-4 pt-4 border-t border-white/[0.06]">
-                        <h3 className="text-xl font-bold text-white">Event Custom Channels</h3>
-                        <p className="text-sm text-gray-400">Override the logging channel for specific granular events.</p>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {EVENT_KEYS.filter(k => k !== 'securityViolation').map((key) => (
-                                <div key={key} className="space-y-1 bg-black/20 p-3 rounded-lg border border-white/[0.03]">
-                                    <label className="block text-sm font-medium text-gray-300">{EVENT_LABELS[key]}</label>
-                                    <ChannelPicker
-                                        guildId={guildId}
-                                        value={config.eventChannels[key] || ""}
-                                        onChange={(val: string | null) => setConfig({ ...config, eventChannels: { ...config.eventChannels, [key]: val || null } })}
-                                    />
-                                </div>
-                            ))}
-                        </div>
-                        <div className="mt-4 p-4 rounded-xl bg-red-500/5 border border-red-500/10">
-                            <h4 className="text-sm font-bold text-red-400 mb-1 flex items-center gap-2">
-                                <FontAwesomeIcon icon={faShieldHalved} className="w-3.5 h-3.5" />
-                                Security Violations
-                            </h4>
-                            <p className="text-xs text-gray-500 mb-3">Linked to the centralized Security Log Channel for consistency.</p>
-                            <ChannelPicker
-                                guildId={guildId}
-                                value={config.channels.security || ""}
-                                onChange={(val: string | null) => setConfig({
-                                    ...config,
-                                    channels: { ...config.channels, security: val || null },
-                                    eventChannels: { ...config.eventChannels, securityViolation: val || null }
-                                })}
-                            />
-                        </div>
-                    </motion.div>
-                )}
-
-                {/* Advanced Event Toggles (On/Off) */}
-                <div className="space-y-4 pt-4 border-t border-white/[0.06]">
-                    <h3 className="text-xl font-bold text-white">Event Toggles</h3>
-                    <p className="text-sm text-gray-400 mb-4">Turn specific events entirely on or off across your server regardless of the mode.</p>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {EVENT_KEYS.map((key) => (
-                            <label key={key} className="flex items-center justify-between cursor-pointer bg-black/20 p-3 rounded-lg border border-white/[0.03] hover:bg-black/30 transition-colors">
-                                <span className="text-sm font-medium text-gray-300">{EVENT_LABELS[key]}</span>
-                                <div className="relative">
-                                    <input
-                                        type="checkbox"
-                                        className="sr-only"
-                                        checked={config.events[key]}
-                                        onChange={(e) => setConfig({
-                                            ...config,
-                                            events: { ...config.events, [key]: e.target.checked }
-                                        })}
-                                    />
-                                    <div className={`block w-10 h-6 rounded-full transition-colors ${config.events[key] ? 'bg-[#8b5cf6]' : 'bg-gray-700'}`}></div>
-                                    <div className={`dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform ${config.events[key] ? 'transform translate-x-4' : ''}`}></div>
-                                </div>
-                            </label>
-                        ))}
-                    </div>
-                </div>
-            </motion.div>
+            </div>
 
             <SaveBar
                 isVisible={!!hasUnsavedChanges || saving}
                 isSaving={saving}
                 onSave={handleSave}
-                onDiscard={handleDiscard}
+                onDiscard={() => originalConfig && setConfig(cloneDeep(originalConfig))}
                 message="You have unsaved changes in Logging"
             />
         </div>
