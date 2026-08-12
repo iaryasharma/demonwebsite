@@ -33,7 +33,7 @@ const securityViolationSchema = new mongoose.Schema({
   punishment: {
     type: {
       type: String,
-      enum: ['kick', 'ban', 'removeRoles'],
+      enum: ['kick', 'ban', 'quarantine', 'removeRoles'],
       required: true
     },
     applied: { type: Boolean, default: true },

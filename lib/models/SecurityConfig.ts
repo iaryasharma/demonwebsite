@@ -1,15 +1,20 @@
-import mongoose from "mongoose";
+import mongoose from "mongoose"
+
+export const PUNISHMENT_TYPES = ["kick", "ban", "quarantine"] as const
+export type PunishmentType = (typeof PUNISHMENT_TYPES)[number]
+
+const eventPunishmentField = {
+  type: String,
+  enum: [...PUNISHMENT_TYPES, null],
+  default: null,
+}
 
 const securityConfigSchema = new mongoose.Schema({
   guildId: { type: String, required: true, unique: true },
-  
-  // Global enable/disable
+
   enabled: { type: Boolean, default: false },
-  
-  // Captcha verification requirement
   captchaRequired: { type: Boolean, default: true },
-  
-  // Protection toggles
+
   protections: {
     antiChannelCreate: { type: Boolean, default: false },
     antiChannelDelete: { type: Boolean, default: false },
@@ -19,10 +24,9 @@ const securityConfigSchema = new mongoose.Schema({
     antiMemberBan: { type: Boolean, default: false },
     antiPrune: { type: Boolean, default: false },
     antiBotAdd: { type: Boolean, default: false },
-    antiDangerousRoleGrant: { type: Boolean, default: false }
+    antiDangerousRoleGrant: { type: Boolean, default: false },
   },
-  
-  // Action limits (number of actions allowed in timeframe)
+
   limits: {
     channelCreateLimit: { type: Number, default: 5 },
     channelDeleteLimit: { type: Number, default: 5 },
@@ -31,24 +35,39 @@ const securityConfigSchema = new mongoose.Schema({
     memberKickLimit: { type: Number, default: 3 },
     memberBanLimit: { type: Number, default: 3 },
     botAddLimit: { type: Number, default: 1 },
-    
-    // Timeframe in seconds (default 5 minutes)
-    timeframe: { type: Number, default: 300 }
+    timeframe: { type: Number, default: 300 },
   },
-  
-  // Punishment configuration
-  punishment: {
-    type: { 
-      type: String, 
-      enum: ['kick', 'ban', 'removeRoles'], 
-      default: 'ban'
-    },
-    // For removeRoles: array of role IDs to remove
-    rolesToRemove: [String]
-  },
-  
-  // Logging
-  securityLogChannelId: { type: String, default: null }
-}, { timestamps: true });
 
-export default mongoose.models.SecurityConfig || mongoose.model('SecurityConfig', securityConfigSchema);
+  /**
+   * Global default punishment.
+   * quarantine = strip removable roles + 28d timeout.
+   * Legacy removeRoles is kept for old docs and normalized at apply-time.
+   */
+  punishment: {
+    type: {
+      type: String,
+      enum: ["kick", "ban", "quarantine", "removeRoles"],
+      default: "ban",
+    },
+    rolesToRemove: [String],
+  },
+
+  /** Per-event overrides; null = inherit global punishment.type */
+  eventPunishments: {
+    channelCreate: eventPunishmentField,
+    channelDelete: eventPunishmentField,
+    roleCreate: eventPunishmentField,
+    roleDelete: eventPunishmentField,
+    memberKick: eventPunishmentField,
+    memberBan: eventPunishmentField,
+    prune: eventPunishmentField,
+    botAdd: eventPunishmentField,
+    dangerousRoleGrant: eventPunishmentField,
+  },
+
+  quarantineRoleId: { type: String, default: null },
+  dryRun: { type: Boolean, default: false },
+  securityLogChannelId: { type: String, default: null },
+}, { timestamps: true })
+
+export default mongoose.models.SecurityConfig || mongoose.model("SecurityConfig", securityConfigSchema)

@@ -113,7 +113,15 @@ export const ALLOWED_FIELDS = {
         "minAccountAge", "logChannelId",
     ],
     security_config: [
-        "enabled", "captchaRequired", "protections", "limits", "punishment", "securityLogChannelId",
+        "enabled",
+        "captchaRequired",
+        "protections",
+        "limits",
+        "punishment",
+        "eventPunishments",
+        "quarantineRoleId",
+        "dryRun",
+        "securityLogChannelId",
     ],
     security_whitelist: [
         "userId", "roleId", "entryType", "categories", "addedBy", "reason",

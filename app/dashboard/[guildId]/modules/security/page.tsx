@@ -25,12 +25,23 @@ import {
 } from "@fortawesome/free-solid-svg-icons"
 import Link from "next/link"
 import { ChannelPicker } from "@/components/dashboard/settings/channel-picker"
+import { RolePicker } from "@/components/dashboard/settings/role-picker"
 import { toast } from "sonner"
 import { SaveBar } from "@/components/dashboard/save-bar"
 import { MultiRolePicker } from "@/components/dashboard/settings/multi-role-picker"
 import { UserPill } from "@/components/dashboard/settings/user-pill"
 import isEqual from "lodash/isEqual"
 import cloneDeep from "lodash/cloneDeep"
+import {
+    EVENT_PUNISHMENT_KEYS,
+    EVENT_PUNISHMENT_LABELS,
+    PUNISHMENT_OPTIONS,
+    PROTECTION_LABELS,
+    emptyEventPunishments,
+    normalizePunishmentType,
+    type EventPunishmentKey,
+    type PunishmentType,
+} from "@/lib/security-constants"
 
 interface SecurityConfig {
     enabled: boolean
@@ -57,10 +68,61 @@ interface SecurityConfig {
         timeframe: number
     }
     punishment: {
-        type: 'kick' | 'ban' | 'removeRoles'
+        type: PunishmentType
+        rolesToRemove: string[]
     }
-    rolesToRemove: string[]
+    eventPunishments: Record<EventPunishmentKey, PunishmentType | null>
+    quarantineRoleId: string | null
+    dryRun: boolean
     securityLogChannelId: string | null
+}
+
+function normalizeConfig(raw: Partial<SecurityConfig> & Record<string, unknown>): SecurityConfig {
+    const punishment = (raw.punishment && typeof raw.punishment === "object"
+        ? raw.punishment
+        : {}) as { type?: unknown; rolesToRemove?: string[] }
+    const eventSrc = (raw.eventPunishments && typeof raw.eventPunishments === "object"
+        ? raw.eventPunishments
+        : {}) as Record<string, unknown>
+    const eventPunishments = emptyEventPunishments()
+    for (const key of EVENT_PUNISHMENT_KEYS) {
+        const v = eventSrc[key]
+        eventPunishments[key] = v == null || v === "" ? null : normalizePunishmentType(v)
+    }
+
+    return {
+        enabled: Boolean(raw.enabled),
+        captchaRequired: raw.captchaRequired !== false,
+        protections: {
+            antiChannelCreate: Boolean(raw.protections?.antiChannelCreate),
+            antiChannelDelete: Boolean(raw.protections?.antiChannelDelete),
+            antiRoleCreate: Boolean(raw.protections?.antiRoleCreate),
+            antiRoleDelete: Boolean(raw.protections?.antiRoleDelete),
+            antiMemberKick: Boolean(raw.protections?.antiMemberKick),
+            antiMemberBan: Boolean(raw.protections?.antiMemberBan),
+            antiPrune: Boolean(raw.protections?.antiPrune),
+            antiBotAdd: Boolean(raw.protections?.antiBotAdd),
+            antiDangerousRoleGrant: Boolean(raw.protections?.antiDangerousRoleGrant),
+        },
+        limits: {
+            channelCreateLimit: Number(raw.limits?.channelCreateLimit ?? 5),
+            channelDeleteLimit: Number(raw.limits?.channelDeleteLimit ?? 5),
+            roleCreateLimit: Number(raw.limits?.roleCreateLimit ?? 5),
+            roleDeleteLimit: Number(raw.limits?.roleDeleteLimit ?? 5),
+            memberKickLimit: Number(raw.limits?.memberKickLimit ?? 3),
+            memberBanLimit: Number(raw.limits?.memberBanLimit ?? 3),
+            botAddLimit: Number(raw.limits?.botAddLimit ?? 1),
+            timeframe: Number(raw.limits?.timeframe ?? 300),
+        },
+        punishment: {
+            type: normalizePunishmentType(punishment.type),
+            rolesToRemove: Array.isArray(punishment.rolesToRemove) ? punishment.rolesToRemove : [],
+        },
+        eventPunishments,
+        quarantineRoleId: (raw.quarantineRoleId as string | null) ?? null,
+        dryRun: Boolean(raw.dryRun),
+        securityLogChannelId: (raw.securityLogChannelId as string | null) ?? null,
+    }
 }
 
 interface WhitelistEntry {
@@ -149,8 +211,9 @@ export default function SecurityModulePage({
 
     useEffect(() => {
         if (serverConfig && !originalConfig) {
-            setConfig(cloneDeep(serverConfig))
-            setOriginalConfig(cloneDeep(serverConfig))
+            const normalized = normalizeConfig(serverConfig)
+            setConfig(cloneDeep(normalized))
+            setOriginalConfig(cloneDeep(normalized))
         }
     }, [serverConfig, originalConfig])
 
@@ -378,6 +441,42 @@ export default function SecurityModulePage({
                             </div>
                         </div>
 
+                        {/* Dry run + quarantine role */}
+                        <div className="glass rounded-2xl border border-white/[0.06] p-6 space-y-6">
+                            <div className="flex items-center gap-3 border-b border-white/[0.06] pb-4">
+                                <FontAwesomeIcon icon={faUserShield} className="text-[#8b5cf6]" />
+                                <h2 className="text-xl font-bold text-white">Enforcement Mode</h2>
+                            </div>
+
+                            <label className="flex items-center justify-between cursor-pointer group bg-black/20 p-4 rounded-xl border border-white/[0.03] hover:bg-black/30 transition-all">
+                                <div>
+                                    <span className="text-sm font-medium text-gray-300 group-hover:text-white transition-colors">Dry run</span>
+                                    <p className="text-xs text-gray-500 mt-1">Log and count only — no undo or punishment applied.</p>
+                                </div>
+                                <div className="relative">
+                                    <input
+                                        type="checkbox"
+                                        className="sr-only"
+                                        checked={config.dryRun}
+                                        onChange={(e) => setConfig({ ...config, dryRun: e.target.checked })}
+                                    />
+                                    <div className={`block w-10 h-6 rounded-full transition-colors ${config.dryRun ? 'bg-amber-500' : 'bg-gray-700'}`}></div>
+                                    <div className={`dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform ${config.dryRun ? 'transform translate-x-4' : ''}`}></div>
+                                </div>
+                            </label>
+
+                            <div className="max-w-md space-y-2">
+                                <label className="text-sm font-medium text-gray-300">Quarantine role (optional)</label>
+                                <p className="text-xs text-gray-500">Granted after stripping roles when punishment is Quarantine.</p>
+                                <RolePicker
+                                    guildId={guildId}
+                                    value={config.quarantineRoleId || ""}
+                                    onChange={(val: string | null) => setConfig({ ...config, quarantineRoleId: val || null })}
+                                    placeholder="None — strip roles + timeout only"
+                                />
+                            </div>
+                        </div>
+
                         {/* Protections Section */}
                         <div className="glass rounded-2xl border border-white/[0.06] p-6">
                             <div className="flex items-center gap-3 mb-6 border-b border-white/[0.06] pb-4">
@@ -387,10 +486,7 @@ export default function SecurityModulePage({
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                 {Object.keys(config.protections).map((key) => {
                                     const protectionKey = key as keyof SecurityConfig['protections'];
-                                    const label = key
-                                        .replace(/anti/i, '')
-                                        .replace(/([A-Z])/g, ' $1')
-                                        .trim();
+                                    const label = PROTECTION_LABELS[key] || key
                                     
                                     return (
                                         <label key={key} className="flex items-center justify-between cursor-pointer group bg-black/20 p-4 rounded-xl border border-white/[0.03] hover:bg-black/30 transition-all">
@@ -476,25 +572,68 @@ export default function SecurityModulePage({
                                             <FontAwesomeIcon icon={faTriangleExclamation} className="w-8 h-8 text-red-500 font-bold" />
                                         </div>
                                         <div>
-                                            <h3 className="text-lg font-bold text-white">Punishment Action</h3>
-                                            <p className="text-sm text-gray-400 mt-1">What happens when someone exceeds a limit?</p>
+                                            <h3 className="text-lg font-bold text-white">Default Punishment</h3>
+                                            <p className="text-sm text-gray-400 mt-1">
+                                                Quarantine strips removable roles and applies a 28-day timeout.
+                                            </p>
                                         </div>
                                         <div className="flex flex-wrap justify-center gap-3">
-                                            {['kick', 'ban', 'removeRoles'].map((type) => (
+                                            {PUNISHMENT_OPTIONS.map((opt) => (
                                                 <button
-                                                    key={type}
+                                                    key={opt.id}
+                                                    type="button"
                                                     onClick={() => setConfig({
                                                         ...config,
-                                                        punishment: { ...config.punishment, type: type as any }
+                                                        punishment: { ...config.punishment, type: opt.id }
                                                     })}
-                                                    className={`px-6 py-2 rounded-xl text-sm font-bold transition-all border ${config.punishment.type === type ? 'bg-red-500 border-red-400 text-white shadow-lg shadow-red-500/20' : 'bg-white/[0.03] border-white/[0.05] text-gray-400 hover:text-white'}`}
+                                                    className={`px-6 py-2 rounded-xl text-sm font-bold transition-all border ${config.punishment.type === opt.id ? 'bg-red-500 border-red-400 text-white shadow-lg shadow-red-500/20' : 'bg-white/[0.03] border-white/[0.05] text-gray-400 hover:text-white'}`}
                                                 >
-                                                    {type === 'removeRoles' ? 'Remove Roles' : type.toUpperCase()}
+                                                    {opt.label}
                                                 </button>
                                             ))}
                                         </div>
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+
+                        {/* Per-event punishment overrides */}
+                        <div className="glass rounded-2xl border border-white/[0.06] p-6">
+                            <div className="flex items-center gap-3 mb-2 border-b border-white/[0.06] pb-4">
+                                <FontAwesomeIcon icon={faGear} className="text-[#8b5cf6]" />
+                                <h2 className="text-xl font-bold text-white">Per-Event Punishments</h2>
+                            </div>
+                            <p className="text-sm text-gray-400 mb-6">
+                                Override the default punishment for specific events. Leave as Inherit to use the default above.
+                            </p>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {EVENT_PUNISHMENT_KEYS.map((key) => (
+                                    <div
+                                        key={key}
+                                        className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-black/20 p-4 rounded-xl border border-white/[0.03]"
+                                    >
+                                        <span className="text-sm font-medium text-gray-300">{EVENT_PUNISHMENT_LABELS[key]}</span>
+                                        <select
+                                            value={config.eventPunishments[key] ?? ""}
+                                            onChange={(e) => {
+                                                const val = e.target.value
+                                                setConfig({
+                                                    ...config,
+                                                    eventPunishments: {
+                                                        ...config.eventPunishments,
+                                                        [key]: val === "" ? null : (val as PunishmentType),
+                                                    },
+                                                })
+                                            }}
+                                            className="bg-[#0a0a0a] border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#8b5cf6]/50"
+                                        >
+                                            <option value="">Inherit default</option>
+                                            {PUNISHMENT_OPTIONS.map((opt) => (
+                                                <option key={opt.id} value={opt.id}>{opt.label}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                ))}
                             </div>
                         </div>
                     </motion.div>
@@ -723,7 +862,7 @@ export default function SecurityModulePage({
                                         </div>
                                         <div className="flex items-center gap-3">
                                             <div className={`px-4 py-2 rounded-xl border font-bold text-sm ${v.punishment.applied ? 'bg-red-500/10 border-red-500/20 text-red-400' : 'bg-gray-500/10 border-gray-500/20 text-gray-400'}`}>
-                                                {v.punishment.type.toUpperCase()} {v.punishment.applied ? 'APPLIED' : 'FAILED'}
+                                                {(v.punishment.type === 'removeRoles' ? 'quarantine' : v.punishment.type).toUpperCase()} {v.punishment.applied ? 'APPLIED' : 'FAILED'}
                                             </div>
                                         </div>
                                     </div>
