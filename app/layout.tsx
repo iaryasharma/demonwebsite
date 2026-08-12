@@ -5,7 +5,6 @@ import "./globals.css"
 import { SmoothScrollProvider } from "@/components/smooth-scroll-provider"
 import { SessionProvider } from "@/components/session-provider"
 import { RootLayoutShell } from "@/components/root-layout-shell"
-import QueryProvider from "@/components/providers/query-provider"
 import { DevToolsShield } from "@/components/security/devtools-shield"
 import { Toaster } from "sonner"
 import { Analytics } from "@vercel/analytics/next"
@@ -319,17 +318,14 @@ export default function RootLayout({
         <meta property="og:image:height" content="630" />
         <meta name="twitter:image:alt" content="Demon Bot — Discord Bot by Arya Sharma (FragNite)" />
 
-        {/* Preload critical resources */}
+        {/* Preload critical above-the-fold image only — video is deferred to hero */}
         <link rel="preload" href="/demon-logo.png" as="image" />
-        <link rel="preload" href="/sky.mp4" as="video" type="video/mp4" />
       </head>
       <body suppressHydrationWarning className={`${inter.variable} ${bebas.variable} ${spaceGrotesk.variable} ${playfair.variable} ${inter.className} bg-black text-white overflow-x-hidden`}>
         <SessionProvider>
-          <QueryProvider>
-            <SmoothScrollProvider>
-              <RootLayoutShell>{children}</RootLayoutShell>
-            </SmoothScrollProvider>
-          </QueryProvider>
+          <SmoothScrollProvider>
+            <RootLayoutShell>{children}</RootLayoutShell>
+          </SmoothScrollProvider>
         </SessionProvider>
         <Toaster position="top-right" richColors closeButton />
         <DevToolsShield />

@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import { useState, useRef, Suspense } from "react"
 import { useSession, signIn } from "next-auth/react"
@@ -54,9 +54,9 @@ function DashboardContent() {
     queryFn: () => fetchGuilds(forceRefreshRef.current),
     enabled: status === "authenticated" && !sessionError,
     // Always re-fetch on mount and when the window regains focus
-    staleTime: 0,
-    refetchOnMount: true,
-    refetchOnWindowFocus: true,
+    staleTime: 60_000, // Consider data fresh for 1 minute
+    refetchOnMount: false, // Don't refetch if we already have data
+    refetchOnWindowFocus: false, // Don't refetch just because the user clicked back to the tab
     retry: 2,
   })
 

@@ -57,12 +57,12 @@
     "gsap": "^3.14.2",
     "input-otp": "^1.4.2",
     "lenis": "^1.3.17",
-    "lodash": "^4.17.23",
+    "lodash": "^4.18.1",
     "lucide-react": "^0.454.0",
-    "mongoose": "^9.2.2",
+    "mongoose": "^9.7.2",
     "motion": "^12.34.3",
-    "next": "^15.5.12",
-    "next-auth": "^4.24.13",
+    "next": "^15.5.23",
+    "next-auth": "^4.24.15",
     "next-themes": "^0.4.6",
     "react": "^19.2.4",
     "react-day-picker": "^9.13.2",
@@ -83,10 +83,23 @@
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "eslint": "^9.39.3",
-    "eslint-config-next": "16.1.6",
+    "eslint-config-next": "15.5.23",
     "postcss": "^8.5.6",
     "tailwindcss": "^3.4.17",
     "typescript": "^5.8.3"
   },
-  "packageManager": "pnpm@10.30.2+sha512.36cdc707e7b7940a988c9c1ecf88d084f8514b5c3f085f53a2e244c2921d3b2545bc20dd4ebe1fc245feec463bb298aecea7a63ed1f7680b877dc6379d8d0cb4"
+  "packageManager": "pnpm@10.30.2+sha512.36cdc707e7b7940a988c9c1ecf88d084f8514b5c3f085f53a2e244c2921d3b2545bc20dd4ebe1fc245feec463bb298aecea7a63ed1f7680b877dc6379d8d0cb4",
+  "pnpm": {
+    "overrides": {
+      "postcss": "^8.5.18",
+      "nanoid": "^3.3.17",
+      "defu": "^6.1.5",
+      "sharp": "^0.35.3"
+    },
+    "onlyBuiltDependencies": [
+      "sharp",
+      "unrs-resolver",
+      "@tsparticles/engine"
+    ]
+  }
 }

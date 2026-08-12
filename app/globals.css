@@ -51,16 +51,12 @@ html.lenis, html.lenis body {
 }
 
   .glass {
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    background: rgba(12, 12, 14, 0.88);
     border: 1px solid rgba(255, 255, 255, 0.08);
   }
 
   .glass-dark {
-    background: rgba(0, 0, 0, 0.4);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    background: rgba(0, 0, 0, 0.72);
     border: 1px solid rgba(139, 92, 246, 0.15);
   }
 
@@ -146,4 +142,15 @@ input, textarea, [contenteditable] {
 * {
   scrollbar-width: thin;
   scrollbar-color: rgba(255, 255, 255, 0.25) transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

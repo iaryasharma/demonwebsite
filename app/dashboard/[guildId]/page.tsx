@@ -42,7 +42,9 @@ export default function GuildOverviewPage() {
             if (!res.ok) throw new Error("Failed to fetch settings")
             return res.json()
         },
-        enabled: status === "authenticated" && !!guildId
+        enabled: status === "authenticated" && !!guildId,
+        staleTime: 300_000, // Keep data fresh for 5 minutes
+        refetchOnWindowFocus: false,
     })
 
     useEffect(() => {

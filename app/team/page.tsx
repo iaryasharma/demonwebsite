@@ -1,65 +1,14 @@
 "use client";
 
 import { ExternalLink } from "lucide-react";
-import { useEffect } from "react";
 
 export default function TeamPage() {
-  // Prevent image downloads on the entire page
-  useEffect(() => {
-    const handleContextMenu = (e: MouseEvent) => {
-      if (e.target instanceof HTMLImageElement) {
-        e.preventDefault();
-      }
-    };
-    
-    const handleDragStart = (e: DragEvent) => {
-      if (e.target instanceof HTMLImageElement) {
-        e.preventDefault();
-      }
-    };
-
-    const handleSelectStart = (e: Event) => {
-      if (e.target instanceof HTMLImageElement) {
-        e.preventDefault();
-      }
-    };
-    
-    document.addEventListener('contextmenu', handleContextMenu);
-    document.addEventListener('dragstart', handleDragStart);
-    document.addEventListener('selectstart', handleSelectStart);
-    
-    return () => {
-      document.removeEventListener('contextmenu', handleContextMenu);
-      document.removeEventListener('dragstart', handleDragStart);
-      document.removeEventListener('selectstart', handleSelectStart);
-    };
-  }, []);
   return (
     <div className="min-h-screen bg-black relative">
-      {/* Fixed Video Background */}
-      <div className="fixed inset-0 z-0 overflow-hidden">
-        <video
-          autoPlay
-          loop
-          muted
-          playsInline
-          preload="auto"
-          className="absolute inset-0 w-full h-full object-cover opacity-30"
-          style={{
-            minWidth: '100%',
-            minHeight: '100%',
-            width: 'auto',
-            height: 'auto',
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)'
-          }}
-        >
-          <source src="/sky.mp4" type="video/mp4" />
-          Your browser does not support the video tag.
-        </video>
-        <div className="absolute inset-0 bg-black/50" />
+      <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none" aria-hidden>
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(139,92,246,0.16),transparent_55%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,rgba(88,101,242,0.08),transparent_50%)]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black" />
       </div>
       
       <div className="relative z-10 pt-24 px-4 pb-8">

@@ -86,6 +86,10 @@ const config: Config = {
           "50%": { backgroundPosition: "100% 50%" },
           "100%": { backgroundPosition: "0% 50%" },
         },
+        "gradient-x": {
+          "0%, 100%": { backgroundPosition: "0% 50%" },
+          "50%": { backgroundPosition: "100% 50%" },
+        },
         "shimmer": {
           "0%": { transform: "translateX(-100%)" },
           "100%": { transform: "translateX(100%)" },
@@ -99,6 +103,7 @@ const config: Config = {
         "float-fast": "float 4s ease-in-out infinite",
         "glow-pulse": "glow-pulse 3s ease-in-out infinite",
         "gradient-shift": "gradient-shift 8s ease infinite",
+        "gradient-x": "gradient-x 6s ease infinite",
         "shimmer": "shimmer 2s infinite",
       },
     },

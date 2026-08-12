@@ -106,17 +106,30 @@ export async function fetchUserGuilds(accessToken: string, force = false): Promi
     return fetchPromise
 }
 
-// ── Bot Guilds Cache ─────────────────────────────────────────────────────────
-// We intentionally do NOT use a module-level cache here.
-// In Next.js dev mode, HMR re-evaluates modules mid-flight which can leave
-// stale or empty cache entries. Since this is called at most once per dashboard
-// page-load, the extra Discord API call is negligible.
+// â”€â”€ Bot Guilds Cache â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Module-level cache for bot guilds. 
+// We use a global variable to persist across HMR in dev mode where possible,
+// but fallback to a standard variable for production efficiency.
+interface BotGuildsCache {
+    data: Set<string> | null;
+    expiry: number;
+}
+
+let botGuildsCache: BotGuildsCache = (global as any).botGuildsCache || { data: null, expiry: 0 };
+if (!(global as any).botGuildsCache) (global as any).botGuildsCache = botGuildsCache;
+
+const BOT_GUILDS_TTL_MS = 300_000 // 5 minutes
 
 /**
  * Fetch every guild the bot is currently in via paginated Discord API calls.
- * Always fetches fresh data — no module-level cache to avoid HMR stale state.
+ * Uses a 5-minute cache to avoid hammering Discord and slowing down the UI.
  */
-export async function fetchBotGuilds(): Promise<Set<string>> {
+export async function fetchBotGuilds(force = false): Promise<Set<string>> {
+    const now = Date.now()
+    if (!force && botGuildsCache.data && botGuildsCache.expiry > now) {
+        return botGuildsCache.data
+    }
+
     const rawToken = process.env.DISCORD_BOT_TOKEN
     if (!rawToken) {
         console.error("[Bot Guilds] DISCORD_BOT_TOKEN is not set")
@@ -129,6 +142,8 @@ export async function fetchBotGuilds(): Promise<Set<string>> {
     let after = ""
     let consecutiveErrors = 0
     const MAX_ERRORS = 3
+
+    console.log("[Bot Guilds] Cache miss/expired. Fetching fresh list from Discord...")
 
     while (true) {
         const url = `${DISCORD_API}/users/@me/guilds?limit=200${after ? `&after=${after}` : ""}`
@@ -173,6 +188,10 @@ export async function fetchBotGuilds(): Promise<Set<string>> {
     }
 
     console.log(`[Bot Guilds] Fetched ${botGuilds.size} guilds`)
+    
+    botGuildsCache.data = botGuilds
+    botGuildsCache.expiry = now + BOT_GUILDS_TTL_MS
+    
     return botGuilds
 }
 

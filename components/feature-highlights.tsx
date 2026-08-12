@@ -10,7 +10,7 @@ import {
   Gift,
   CircleCheck,
 } from "lucide-react"
-import { CanvasText } from "@/components/ui/canvas-text"
+import { GradientText } from "@/components/ui/gradient-text"
 
 export function FeatureHighlights() {
   return (
@@ -26,26 +26,7 @@ export function FeatureHighlights() {
         <p className="text-xs font-bold tracking-[0.3em] text-[#8b5cf6] uppercase mb-5">Features</p>
         <h2 className="text-3xl md:text-5xl font-bold mb-5 text-white">
           Everything your{" "}
-          <CanvasText
-            text="server needs"
-            backgroundClassName="bg-[#8a8a8a]"
-            colors={[
-              "rgba(255, 255, 255, 1)",
-              "rgba(255, 255, 255, 0.9)",
-              "rgba(255, 255, 255, 0.85)",
-              "rgba(255, 255, 255, 0.8)",
-              "rgba(255, 255, 255, 0.75)",
-              "rgba(255, 255, 255, 0.7)",
-              "rgba(255, 255, 255, 0.65)",
-              "rgba(255, 255, 255, 0.6)",
-              "rgba(255, 255, 255, 0.55)",
-              "rgba(255, 255, 255, 0.5)",
-            ]}
-            lineGap={5}
-            animationDuration={18}
-            curveIntensity={40}
-            lineWidth={1}
-          />
+          <GradientText text="server needs" variant="soft" />
         </h2>
         <p className="text-zinc-400 max-w-xl mx-auto text-base leading-relaxed">
           One bot to rule them all. Designed for modern communities.

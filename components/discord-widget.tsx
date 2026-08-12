@@ -2,7 +2,6 @@
 
 import { useEffect, useRef } from "react"
 import { motion, useInView } from "framer-motion"
-import gsap from "gsap"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faDiscord } from "@fortawesome/free-brands-svg-icons"
 import { faUsers, faHeadset, faHeart, faArrowUpRightFromSquare } from "@fortawesome/free-solid-svg-icons"
@@ -13,17 +12,19 @@ function AnimatedCounter({ target, suffix = "", prefix = "" }: { target: number;
 
   useEffect(() => {
     if (!inView || !ref.current) return
-    const obj = { val: 0 }
-    gsap.to(obj, {
-      val: target,
-      duration: 2,
-      ease: "power2.out",
-      onUpdate: () => {
-        if (ref.current) {
-          ref.current.textContent = prefix + Math.floor(obj.val).toLocaleString() + suffix
-        }
-      },
-    })
+    const el = ref.current
+    const start = performance.now()
+    const duration = 1600
+    let raf = 0
+
+    const tick = (now: number) => {
+      const t = Math.min(1, (now - start) / duration)
+      const eased = 1 - Math.pow(1 - t, 3)
+      el.textContent = prefix + Math.floor(eased * target).toLocaleString() + suffix
+      if (t < 1) raf = requestAnimationFrame(tick)
+    }
+    raf = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(raf)
   }, [inView, target, suffix, prefix])
 
   return <span ref={ref}>{prefix}0{suffix}</span>

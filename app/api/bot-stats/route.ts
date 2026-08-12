@@ -9,17 +9,26 @@ export const dynamic = "force-dynamic"
 
 function getCommandCount() {
     try {
-        // Try root json first as it's definitely in the repo
         const jsonPath = path.join(process.cwd(), "json", "commands_list.json")
         if (fs.existsSync(jsonPath)) {
-            const list = JSON.parse(fs.readFileSync(jsonPath, "utf8"))
-            // If the JSON is old (102), but we know there are 150, we can return 150
-            // or just return the list length if we want it to be JSON-driven.
-            // Let's use 150 if the JSON is exactly 102, as it's more 'real'.
-            return list.length === 102 ? 150 : list.length
+            const data = JSON.parse(fs.readFileSync(jsonPath, "utf8"))
+            if (typeof data.summary?.totalCommands === "number") {
+                return data.summary.totalCommands
+            }
+            if (Array.isArray(data.commands)) {
+                return data.commands.filter((c: { developerOnly?: boolean; category?: string }) =>
+                    !c.developerOnly && c.category !== "developer"
+                ).length
+            }
+            if (data.categories && typeof data.categories === "object") {
+                return Object.entries(data.categories)
+                    .filter(([cat]) => cat !== "developer")
+                    .reduce((sum, [, cmds]) => sum + (Array.isArray(cmds) ? cmds.length : 0), 0)
+            }
+            if (Array.isArray(data)) return data.length
         }
         return 150
-    } catch (e) {
+    } catch {
         return 150
     }
 }

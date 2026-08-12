@@ -16,7 +16,7 @@ export async function GET(request: Request) {
         // Fetch user guilds and bot guilds in parallel — fully independent
         const [allUserGuilds, botGuildIds] = await Promise.all([
             fetchUserGuilds(accessToken, forceRefresh),
-            fetchBotGuilds(), // always fresh — no cache
+            fetchBotGuilds(forceRefresh), // Cache-aware
         ])
 
         console.log(`[/api/guilds] userGuilds=${allUserGuilds.length} botGuilds=${botGuildIds.size}`)
