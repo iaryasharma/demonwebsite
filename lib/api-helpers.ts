@@ -22,17 +22,19 @@ const MAX_BODY_BYTES = 10_240 // 10 KB — more than enough for any dashboard fo
  * Rejects bodies that are too large or not valid JSON.
  */
 export async function parseBody<T = Record<string, unknown>>(
-    request: Request | NextRequest
+    request: Request | NextRequest,
+    maxBytes: number = MAX_BODY_BYTES // raise only for routes that really need it (e.g. AutoMod word lists)
 ): Promise<{ ok: true; data: T } | { ok: false; error: string; status: number }> {
+    const tooLarge = `Request body too large (max ${Math.round(maxBytes / 1024)} KB)`
     const contentLength = request.headers.get("content-length")
-    if (contentLength && parseInt(contentLength) > MAX_BODY_BYTES) {
-        return { ok: false, error: "Request body too large (max 10 KB)", status: 413 }
+    if (contentLength && parseInt(contentLength) > maxBytes) {
+        return { ok: false, error: tooLarge, status: 413 }
     }
 
     try {
         const text = await request.text()
-        if (text.length > MAX_BODY_BYTES) {
-            return { ok: false, error: "Request body too large (max 10 KB)", status: 413 }
+        if (text.length > maxBytes) {
+            return { ok: false, error: tooLarge, status: 413 }
         }
         const data = JSON.parse(text) as T
         if (typeof data !== "object" || data === null || Array.isArray(data)) {
@@ -101,10 +103,10 @@ export const ALLOWED_FIELDS = {
         "events",
     ],
     guild: [
-        "botUpdatesChannelId",
+        "botUpdatesChannelId", "snipeEnabled",
     ],
     autorole: [
-        "enabled", "roleIds", "delay", "conditions", "logChannelId",
+        "enabled", "roleIds", "delay", "conditions", "logChannelId", "restoreRoles",
     ],
     verification: [
         "enabled", "channelId", "roleId", "unverifiedRoleId", "messageId",

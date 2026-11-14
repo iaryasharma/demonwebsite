@@ -1,9 +1,9 @@
 {
-  "generated": "2026-08-12T03:48:17.478Z",
+  "generated": "2026-11-14T04:39:56.065Z",
   "generator": "scripts/generate-commands-list.js",
   "bot": {
     "packageVersion": "1.0.0",
-    "discordJsVersion": "14.27.0"
+    "discordJsVersion": "14.28.1"
   },
   "options": {
     "includeDeveloper": false
@@ -49,23 +49,23 @@
     "welcome"
   ],
   "summary": {
-    "totalCommands": 123,
+    "totalCommands": 126,
     "byType": {
-      "slashAndPrefix": 81,
+      "slashAndPrefix": 84,
       "slashOnly": 0,
       "prefixOnly": 42,
       "unknown": 0
     },
-    "slashSyncedEstimated": 78,
-    "withSubcommands": 25,
+    "slashSyncedEstimated": 81,
+    "withSubcommands": 27,
     "withSlashOptions": 43,
     "withUsageHelp": 13,
-    "guildOnly": 71,
+    "guildOnly": 74,
     "developerOnly": 1,
     "byTier": {
-      "none": 77,
+      "none": 78,
       "mod": 9,
-      "manager": 28,
+      "manager": 30,
       "admin": 9,
       "other": 0
     },
@@ -574,6 +574,430 @@
       "file": "commands/FUN/ascii.js"
     },
     {
+      "name": "automod",
+      "description": "Auto-moderation: Discord AutoMod rules plus Demon extras",
+      "usage": "/automod <subcommand>",
+      "category": "settings",
+      "folder": "settings",
+      "type": "slash+prefix",
+      "cooldown": 3,
+      "guildOnly": true,
+      "nsfw": false,
+      "developerOnly": false,
+      "requiredTier": "manager",
+      "aliases": [],
+      "userPermissions": [
+        "ManageGuild"
+      ],
+      "botPermissions": [
+        "SendMessages",
+        "EmbedLinks",
+        "ManageMessages",
+        "ManageGuild",
+        "ModerateMembers"
+      ],
+      "hasSubcommands": true,
+      "subcommands": [
+        {
+          "name": "custom",
+          "description": "Demon extras: duplicates, caps, emoji, lines, zalgo",
+          "type": "Subcommand",
+          "options": [
+            {
+              "name": "duplicates",
+              "description": "Remove the same message sent 3 times in 30 seconds",
+              "type": "Boolean",
+              "typeId": 5,
+              "required": false
+            },
+            {
+              "name": "caps",
+              "description": "Max % capital letters (0 = off)",
+              "type": "Integer",
+              "typeId": 4,
+              "required": false,
+              "minValue": 0,
+              "maxValue": 100
+            },
+            {
+              "name": "emojis",
+              "description": "Max emojis per message (0 = off)",
+              "type": "Integer",
+              "typeId": 4,
+              "required": false,
+              "minValue": 0,
+              "maxValue": 100
+            },
+            {
+              "name": "lines",
+              "description": "Max lines per message (0 = off)",
+              "type": "Integer",
+              "typeId": 4,
+              "required": false,
+              "minValue": 0,
+              "maxValue": 100
+            },
+            {
+              "name": "zalgo",
+              "description": "Remove zalgo / stacked-symbol text",
+              "type": "Boolean",
+              "typeId": 5,
+              "required": false
+            }
+          ]
+        },
+        {
+          "name": "domain-add",
+          "description": "Allow links to a domain (all other links are removed)",
+          "type": "Subcommand",
+          "options": [
+            {
+              "name": "domain",
+              "description": "e.g. youtube.com",
+              "type": "String",
+              "typeId": 3,
+              "required": true,
+              "maxLength": 100
+            }
+          ]
+        },
+        {
+          "name": "domain-remove",
+          "description": "Remove an allowed domain",
+          "type": "Subcommand",
+          "options": [
+            {
+              "name": "domain",
+              "description": "e.g. youtube.com",
+              "type": "String",
+              "typeId": 3,
+              "required": true,
+              "maxLength": 100
+            }
+          ]
+        },
+        {
+          "name": "ignore-channel",
+          "description": "Add or remove a channel AutoMod ignores",
+          "type": "Subcommand",
+          "options": [
+            {
+              "name": "channel",
+              "description": "Channel",
+              "type": "Channel",
+              "typeId": 7,
+              "required": true,
+              "channelTypes": [
+                "GuildText",
+                "GuildAnnouncement"
+              ]
+            },
+            {
+              "name": "ignore",
+              "description": "true = ignore, false = enforce again",
+              "type": "Boolean",
+              "typeId": 5,
+              "required": true
+            }
+          ]
+        },
+        {
+          "name": "ignore-role",
+          "description": "Add or remove a role AutoMod ignores",
+          "type": "Subcommand",
+          "options": [
+            {
+              "name": "role",
+              "description": "Role",
+              "type": "Role",
+              "typeId": 8,
+              "required": true
+            },
+            {
+              "name": "ignore",
+              "description": "true = ignore, false = enforce again",
+              "type": "Boolean",
+              "typeId": 5,
+              "required": true
+            }
+          ]
+        },
+        {
+          "name": "invites",
+          "description": "Remove Discord invite links",
+          "type": "Subcommand",
+          "options": [
+            {
+              "name": "enabled",
+              "description": "Block invites?",
+              "type": "Boolean",
+              "typeId": 5,
+              "required": true
+            }
+          ]
+        },
+        {
+          "name": "links",
+          "description": "Remove links (use domain-add to allow some)",
+          "type": "Subcommand",
+          "options": [
+            {
+              "name": "enabled",
+              "description": "Block links?",
+              "type": "Boolean",
+              "typeId": 5,
+              "required": true
+            }
+          ]
+        },
+        {
+          "name": "mentions",
+          "description": "Limit mentions per message",
+          "type": "Subcommand",
+          "options": [
+            {
+              "name": "limit",
+              "description": "Max mentions per message (0 = off)",
+              "type": "Integer",
+              "typeId": 4,
+              "required": true,
+              "minValue": 0,
+              "maxValue": 50
+            },
+            {
+              "name": "raid_protection",
+              "description": "Use Discord's mention-raid detection",
+              "type": "Boolean",
+              "typeId": 5,
+              "required": false
+            }
+          ]
+        },
+        {
+          "name": "preset",
+          "description": "Discord's built-in word lists",
+          "type": "Subcommand",
+          "options": [
+            {
+              "name": "type",
+              "description": "Word list",
+              "type": "String",
+              "typeId": 3,
+              "required": true,
+              "choices": [
+                {
+                  "name": "Profanity",
+                  "value": "profanity"
+                },
+                {
+                  "name": "Sexual content",
+                  "value": "sexual"
+                },
+                {
+                  "name": "Slurs",
+                  "value": "slurs"
+                }
+              ]
+            },
+            {
+              "name": "enabled",
+              "description": "Enable this list?",
+              "type": "Boolean",
+              "typeId": 5,
+              "required": true
+            }
+          ]
+        },
+        {
+          "name": "regex-add",
+          "description": "Block messages matching a regex (Rust syntax)",
+          "type": "Subcommand",
+          "options": [
+            {
+              "name": "pattern",
+              "description": "Regex pattern, e.g. (?i)free\\s+nitro",
+              "type": "String",
+              "typeId": 3,
+              "required": true,
+              "maxLength": 260
+            }
+          ]
+        },
+        {
+          "name": "regex-remove",
+          "description": "Remove a blocked regex",
+          "type": "Subcommand",
+          "options": [
+            {
+              "name": "pattern",
+              "description": "The exact pattern",
+              "type": "String",
+              "typeId": 3,
+              "required": true,
+              "maxLength": 260
+            }
+          ]
+        },
+        {
+          "name": "scam",
+          "description": "Remove scam and phishing links (lookalike domains, fake Nitro offers)",
+          "type": "Subcommand",
+          "options": [
+            {
+              "name": "enabled",
+              "description": "Enable scam protection?",
+              "type": "Boolean",
+              "typeId": 5,
+              "required": true
+            }
+          ]
+        },
+        {
+          "name": "spam",
+          "description": "Remove spammy messages",
+          "type": "Subcommand",
+          "options": [
+            {
+              "name": "enabled",
+              "description": "Block spam?",
+              "type": "Boolean",
+              "typeId": 5,
+              "required": true
+            }
+          ]
+        },
+        {
+          "name": "status",
+          "description": "Show the current AutoMod settings",
+          "type": "Subcommand"
+        },
+        {
+          "name": "strikes",
+          "description": "Time out members who trigger AutoMod repeatedly",
+          "type": "Subcommand",
+          "options": [
+            {
+              "name": "limit",
+              "description": "Violations within 10 minutes before a timeout (0 = off)",
+              "type": "Integer",
+              "typeId": 4,
+              "required": true,
+              "minValue": 0,
+              "maxValue": 20
+            },
+            {
+              "name": "minutes",
+              "description": "Timeout length in minutes (default 10)",
+              "type": "Integer",
+              "typeId": 4,
+              "required": false,
+              "minValue": 1,
+              "maxValue": 1440
+            }
+          ]
+        },
+        {
+          "name": "sync",
+          "description": "Re-apply the settings to Discord AutoMod (repair)",
+          "type": "Subcommand"
+        },
+        {
+          "name": "toggle",
+          "description": "Turn AutoMod on or off",
+          "type": "Subcommand",
+          "options": [
+            {
+              "name": "enabled",
+              "description": "Enable AutoMod?",
+              "type": "Boolean",
+              "typeId": 5,
+              "required": true
+            }
+          ]
+        },
+        {
+          "name": "word-add",
+          "description": "Block a word or phrase",
+          "type": "Subcommand",
+          "options": [
+            {
+              "name": "word",
+              "description": "Word or phrase",
+              "type": "String",
+              "typeId": 3,
+              "required": true,
+              "maxLength": 60
+            },
+            {
+              "name": "smart",
+              "description": "Smart match: also catches f.u.c.k, fuuuck and b@d w0rd (Demon enforces it)",
+              "type": "Boolean",
+              "typeId": 5,
+              "required": false
+            }
+          ]
+        },
+        {
+          "name": "word-export",
+          "description": "Download your blocked words as .txt files",
+          "type": "Subcommand"
+        },
+        {
+          "name": "word-import",
+          "description": "Add many words at once from a .txt file (one per line)",
+          "type": "Subcommand",
+          "options": [
+            {
+              "name": "file",
+              "description": "Text file, max 200 KB",
+              "type": "Attachment",
+              "typeId": 11,
+              "required": true
+            },
+            {
+              "name": "smart",
+              "description": "Add them to the smart-match list instead",
+              "type": "Boolean",
+              "typeId": 5,
+              "required": false
+            }
+          ]
+        },
+        {
+          "name": "word-remove",
+          "description": "Unblock a word or phrase",
+          "type": "Subcommand",
+          "options": [
+            {
+              "name": "word",
+              "description": "Word or phrase",
+              "type": "String",
+              "typeId": 3,
+              "required": true,
+              "maxLength": 60
+            }
+          ]
+        }
+      ],
+      "slashOptions": [],
+      "usageHelp": null,
+      "slash": {
+        "name": "automod",
+        "description": "Auto-moderation: Discord AutoMod rules plus Demon extras",
+        "dmPermission": false,
+        "defaultMemberPermissions": [
+          "ManageGuild"
+        ],
+        "contexts": [
+          0
+        ],
+        "nsfw": false,
+        "optionCount": 21
+      },
+      "slashSynced": true,
+      "file": "commands/settings/automod.js"
+    },
+    {
       "name": "autorole",
       "description": "Manage automatic role assignment when members join",
       "usage": "autorole <subcommand>",
@@ -687,6 +1111,20 @@
               "required": true
             }
           ]
+        },
+        {
+          "name": "restore",
+          "description": "Give returning members back their previous roles (sticky roles)",
+          "type": "Subcommand",
+          "options": [
+            {
+              "name": "enabled",
+              "description": "Restore previous roles on rejoin?",
+              "type": "Boolean",
+              "typeId": 5,
+              "required": true
+            }
+          ]
         }
       ],
       "slashOptions": [],
@@ -700,7 +1138,7 @@
         ],
         "contexts": null,
         "nsfw": false,
-        "optionCount": 9
+        "optionCount": 10
       },
       "slashSynced": true,
       "file": "commands/settings/autorole.js"
@@ -3318,7 +3756,8 @@
         "lockchannel"
       ],
       "userPermissions": [
-        "ManageChannels"
+        "ManageChannels",
+        "ManageRoles"
       ],
       "botPermissions": [
         "ManageChannels",
@@ -3380,7 +3819,8 @@
         "ld"
       ],
       "userPermissions": [
-        "ManageChannels"
+        "ManageChannels",
+        "ManageRoles"
       ],
       "botPermissions": [
         "ManageChannels",
@@ -3503,7 +3943,7 @@
     {
       "name": "logs",
       "description": "Configure the server logging system",
-      "usage": "logs <subcommand>",
+      "usage": "logs [panel|enable|disable|status|…]",
       "category": "settings",
       "folder": "settings",
       "type": "slash+prefix",
@@ -3514,19 +3954,19 @@
       "requiredTier": "manager",
       "aliases": [],
       "userPermissions": [
-        "ManageGuild"
+        "Administrator"
       ],
       "botPermissions": [],
       "hasSubcommands": true,
       "subcommands": [
         {
           "name": "channel",
-          "description": "Set the single/fallback log channel",
+          "description": "Set the fallback log channel",
           "type": "Subcommand",
           "options": [
             {
               "name": "channel",
-              "description": "The log channel",
+              "description": "The fallback log channel",
               "type": "Channel",
               "typeId": 7,
               "required": true,
@@ -3548,26 +3988,75 @@
         },
         {
           "name": "mode",
-          "description": "Set log routing mode: single | multi | granular",
+          "description": "Set a category routing mode: category | granular",
           "type": "Subcommand",
           "options": [
             {
-              "name": "type",
-              "description": "Routing mode",
+              "name": "category",
+              "description": "Category to configure",
               "type": "String",
               "typeId": 3,
               "required": true,
               "choices": [
                 {
-                  "name": "Single   — all events to one channel",
-                  "value": "single"
+                  "name": "Moderation",
+                  "value": "moderation"
                 },
                 {
-                  "name": "Multi    — separate channels per category",
-                  "value": "multi"
+                  "name": "Mod Commands",
+                  "value": "modCommands"
                 },
                 {
-                  "name": "Granular — dedicated channel per event type",
+                  "name": "Messages",
+                  "value": "messages"
+                },
+                {
+                  "name": "Members",
+                  "value": "members"
+                },
+                {
+                  "name": "Server",
+                  "value": "server"
+                },
+                {
+                  "name": "Expressions",
+                  "value": "expressions"
+                },
+                {
+                  "name": "Voice",
+                  "value": "voice"
+                },
+                {
+                  "name": "Verification",
+                  "value": "verification"
+                },
+                {
+                  "name": "Autorole",
+                  "value": "autorole"
+                },
+                {
+                  "name": "Tickets",
+                  "value": "tickets"
+                },
+                {
+                  "name": "Security",
+                  "value": "security"
+                }
+              ]
+            },
+            {
+              "name": "type",
+              "description": "Routing for this category",
+              "type": "String",
+              "typeId": 3,
+              "required": true,
+              "choices": [
+                {
+                  "name": "Category — one channel for all events in this group",
+                  "value": "category"
+                },
+                {
+                  "name": "Granular — optional channel per event",
                   "value": "granular"
                 }
               ]
@@ -3575,8 +4064,13 @@
           ]
         },
         {
+          "name": "panel",
+          "description": "Open the interactive logging setup panel",
+          "type": "Subcommand"
+        },
+        {
           "name": "set-category",
-          "description": "Assign a channel to a log category (multi mode)",
+          "description": "Assign a channel to a log category",
           "type": "Subcommand",
           "options": [
             {
@@ -3587,20 +4081,40 @@
               "required": true,
               "choices": [
                 {
-                  "name": "Moderation — bans, kicks, mod commands",
+                  "name": "Moderation — Discord bans, kicks, timeouts",
                   "value": "moderation"
+                },
+                {
+                  "name": "Mod Commands — bot command executions",
+                  "value": "modCommands"
                 },
                 {
                   "name": "Messages — edits and deletes",
                   "value": "messages"
                 },
                 {
-                  "name": "Members — joins and leaves",
+                  "name": "Members — joins, leaves, nicknames, roles",
                   "value": "members"
                 },
                 {
                   "name": "Server — roles, channels, server settings",
                   "value": "server"
+                },
+                {
+                  "name": "Expressions — all emoji + soundboard",
+                  "value": "expressions"
+                },
+                {
+                  "name": "Emoji — emoji events only",
+                  "value": "emoji"
+                },
+                {
+                  "name": "Soundboard — soundboard events only",
+                  "value": "soundboard"
+                },
+                {
+                  "name": "Voice — join, leave, move, mute, deafen, kick",
+                  "value": "voice"
                 },
                 {
                   "name": "Verification",
@@ -3634,117 +4148,16 @@
         },
         {
           "name": "set-event-channel",
-          "description": "Assign a dedicated channel to one event (granular mode)",
+          "description": "Assign a dedicated channel to one event (granular)",
           "type": "Subcommand",
           "options": [
             {
               "name": "event",
-              "description": "The event type",
+              "description": "The event type (type to search)",
               "type": "String",
               "typeId": 3,
               "required": true,
-              "choices": [
-                {
-                  "name": "Member Join",
-                  "value": "memberJoin"
-                },
-                {
-                  "name": "Member Leave",
-                  "value": "memberLeave"
-                },
-                {
-                  "name": "Ban",
-                  "value": "ban"
-                },
-                {
-                  "name": "Unban",
-                  "value": "unban"
-                },
-                {
-                  "name": "Kick",
-                  "value": "kick"
-                },
-                {
-                  "name": "Message Delete",
-                  "value": "messageDelete"
-                },
-                {
-                  "name": "Message Edit",
-                  "value": "messageEdit"
-                },
-                {
-                  "name": "Mod Command",
-                  "value": "modCommand"
-                },
-                {
-                  "name": "Verification",
-                  "value": "verification"
-                },
-                {
-                  "name": "Auto-Role",
-                  "value": "autorole"
-                },
-                {
-                  "name": "Role Create",
-                  "value": "roleCreate"
-                },
-                {
-                  "name": "Role Delete",
-                  "value": "roleDelete"
-                },
-                {
-                  "name": "Role Update",
-                  "value": "roleUpdate"
-                },
-                {
-                  "name": "Channel Create",
-                  "value": "channelCreate"
-                },
-                {
-                  "name": "Channel Delete",
-                  "value": "channelDelete"
-                },
-                {
-                  "name": "Channel Update",
-                  "value": "channelUpdate"
-                },
-                {
-                  "name": "Server Update",
-                  "value": "serverUpdate"
-                },
-                {
-                  "name": "Ticket Create",
-                  "value": "ticketCreate"
-                },
-                {
-                  "name": "Ticket Close",
-                  "value": "ticketClose"
-                },
-                {
-                  "name": "Ticket Reopen",
-                  "value": "ticketReopen"
-                },
-                {
-                  "name": "Ticket Claim",
-                  "value": "ticketClaim"
-                },
-                {
-                  "name": "Ticket Unclaim",
-                  "value": "ticketUnclaim"
-                },
-                {
-                  "name": "Ticket Priority",
-                  "value": "ticketPriority"
-                },
-                {
-                  "name": "Ticket User Add",
-                  "value": "ticketUserAdd"
-                },
-                {
-                  "name": "Ticket User Remove",
-                  "value": "ticketUserRemove"
-                }
-              ]
+              "autocomplete": true
             },
             {
               "name": "channel",
@@ -3770,112 +4183,11 @@
           "options": [
             {
               "name": "event",
-              "description": "The event to toggle",
+              "description": "The event to toggle (type to search)",
               "type": "String",
               "typeId": 3,
               "required": true,
-              "choices": [
-                {
-                  "name": "Member Join",
-                  "value": "memberJoin"
-                },
-                {
-                  "name": "Member Leave",
-                  "value": "memberLeave"
-                },
-                {
-                  "name": "Ban",
-                  "value": "ban"
-                },
-                {
-                  "name": "Unban",
-                  "value": "unban"
-                },
-                {
-                  "name": "Kick",
-                  "value": "kick"
-                },
-                {
-                  "name": "Message Delete",
-                  "value": "messageDelete"
-                },
-                {
-                  "name": "Message Edit",
-                  "value": "messageEdit"
-                },
-                {
-                  "name": "Mod Command",
-                  "value": "modCommand"
-                },
-                {
-                  "name": "Verification",
-                  "value": "verification"
-                },
-                {
-                  "name": "Auto-Role",
-                  "value": "autorole"
-                },
-                {
-                  "name": "Role Create",
-                  "value": "roleCreate"
-                },
-                {
-                  "name": "Role Delete",
-                  "value": "roleDelete"
-                },
-                {
-                  "name": "Role Update",
-                  "value": "roleUpdate"
-                },
-                {
-                  "name": "Channel Create",
-                  "value": "channelCreate"
-                },
-                {
-                  "name": "Channel Delete",
-                  "value": "channelDelete"
-                },
-                {
-                  "name": "Channel Update",
-                  "value": "channelUpdate"
-                },
-                {
-                  "name": "Server Update",
-                  "value": "serverUpdate"
-                },
-                {
-                  "name": "Ticket Create",
-                  "value": "ticketCreate"
-                },
-                {
-                  "name": "Ticket Close",
-                  "value": "ticketClose"
-                },
-                {
-                  "name": "Ticket Reopen",
-                  "value": "ticketReopen"
-                },
-                {
-                  "name": "Ticket Claim",
-                  "value": "ticketClaim"
-                },
-                {
-                  "name": "Ticket Unclaim",
-                  "value": "ticketUnclaim"
-                },
-                {
-                  "name": "Ticket Priority",
-                  "value": "ticketPriority"
-                },
-                {
-                  "name": "Ticket User Add",
-                  "value": "ticketUserAdd"
-                },
-                {
-                  "name": "Ticket User Remove",
-                  "value": "ticketUserRemove"
-                }
-              ]
+              "autocomplete": true
             }
           ]
         }
@@ -3887,11 +4199,11 @@
         "description": "Configure the server logging system",
         "dmPermission": null,
         "defaultMemberPermissions": [
-          "ManageGuild"
+          "Administrator"
         ],
         "contexts": null,
         "nsfw": false,
-        "optionCount": 8
+        "optionCount": 9
       },
       "slashSynced": true,
       "file": "commands/settings/logs.js"
@@ -4688,6 +5000,139 @@
       "file": "commands/moderator/purge.js"
     },
     {
+      "name": "raid",
+      "description": "Anti-raid protection: react to a burst of new members",
+      "usage": "/raid <subcommand>",
+      "category": "settings",
+      "folder": "settings",
+      "type": "slash+prefix",
+      "cooldown": 3,
+      "guildOnly": true,
+      "nsfw": false,
+      "developerOnly": false,
+      "requiredTier": "manager",
+      "aliases": [],
+      "userPermissions": [
+        "ManageGuild"
+      ],
+      "botPermissions": [
+        "SendMessages",
+        "EmbedLinks"
+      ],
+      "hasSubcommands": true,
+      "subcommands": [
+        {
+          "name": "config",
+          "description": "Change the anti-raid settings",
+          "type": "Subcommand",
+          "options": [
+            {
+              "name": "joins",
+              "description": "Joins that trigger raid mode (default 8)",
+              "type": "Integer",
+              "typeId": 4,
+              "required": false,
+              "minValue": 2,
+              "maxValue": 100
+            },
+            {
+              "name": "seconds",
+              "description": "...within this many seconds (default 20)",
+              "type": "Integer",
+              "typeId": 4,
+              "required": false,
+              "minValue": 5,
+              "maxValue": 300
+            },
+            {
+              "name": "duration",
+              "description": "Minutes raid mode lasts (default 10)",
+              "type": "Integer",
+              "typeId": 4,
+              "required": false,
+              "minValue": 1,
+              "maxValue": 120
+            },
+            {
+              "name": "account_age",
+              "description": "Accounts at least this many days old are let through (0 = none, default 7)",
+              "type": "Integer",
+              "typeId": 4,
+              "required": false,
+              "minValue": 0,
+              "maxValue": 365
+            },
+            {
+              "name": "action",
+              "description": "What to do to new joins during a raid",
+              "type": "String",
+              "typeId": 3,
+              "required": false,
+              "choices": [
+                {
+                  "name": "Alert only",
+                  "value": "alert"
+                },
+                {
+                  "name": "Timeout",
+                  "value": "timeout"
+                },
+                {
+                  "name": "Kick",
+                  "value": "kick"
+                },
+                {
+                  "name": "Ban",
+                  "value": "ban"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "end",
+          "description": "End raid mode now",
+          "type": "Subcommand"
+        },
+        {
+          "name": "status",
+          "description": "Show the anti-raid settings and whether a raid is active",
+          "type": "Subcommand"
+        },
+        {
+          "name": "toggle",
+          "description": "Turn anti-raid protection on or off",
+          "type": "Subcommand",
+          "options": [
+            {
+              "name": "enabled",
+              "description": "Enable anti-raid protection?",
+              "type": "Boolean",
+              "typeId": 5,
+              "required": true
+            }
+          ]
+        }
+      ],
+      "slashOptions": [],
+      "usageHelp": null,
+      "slash": {
+        "name": "raid",
+        "description": "Anti-raid protection: react to a burst of new members",
+        "dmPermission": false,
+        "defaultMemberPermissions": [
+          "ManageGuild"
+        ],
+        "contexts": [
+          0
+        ],
+        "nsfw": false,
+        "optionCount": 4
+      },
+      "slashSynced": true,
+      "file": "commands/settings/raid.js"
+    },
+    {
       "name": "randomcolor",
       "description": "Generate a random color with detailed information",
       "usage": "randomcolor [type]",
@@ -5041,6 +5486,39 @@
       },
       "slashSynced": true,
       "file": "commands/moderator/removerole.js"
+    },
+    {
+      "name": "Report message",
+      "description": "No description",
+      "usage": "/Report message",
+      "category": "moderator",
+      "folder": "moderator",
+      "type": "slash+prefix",
+      "cooldown": 0,
+      "guildOnly": true,
+      "nsfw": false,
+      "developerOnly": false,
+      "requiredTier": null,
+      "aliases": [],
+      "userPermissions": [],
+      "botPermissions": [],
+      "hasSubcommands": false,
+      "subcommands": [],
+      "slashOptions": [],
+      "usageHelp": null,
+      "slash": {
+        "name": "Report message",
+        "description": "No description",
+        "dmPermission": null,
+        "defaultMemberPermissions": [],
+        "contexts": [
+          0
+        ],
+        "nsfw": false,
+        "optionCount": 0
+      },
+      "slashSynced": true,
+      "file": "commands/moderator/report-message.js"
     },
     {
       "name": "roleicon",
@@ -5640,16 +6118,24 @@
                 {
                   "name": "Bot Add",
                   "value": "botAdd"
+                },
+                {
+                  "name": "Prune",
+                  "value": "prune"
+                },
+                {
+                  "name": "Dangerous Role Grant",
+                  "value": "dangerousRoleGrant"
                 }
               ]
             },
             {
               "name": "limit",
-              "description": "How many actions allowed (1-100)",
+              "description": "How many actions allowed (0-100; 0 = punish on first)",
               "type": "Integer",
               "typeId": 4,
               "required": true,
-              "minValue": 1,
+              "minValue": 0,
               "maxValue": 100
             },
             {
@@ -5665,31 +6151,76 @@
         },
         {
           "name": "punishment",
-          "description": "Configure punishment type",
+          "description": "Set global or per-event punishment (kick / ban / quarantine)",
           "type": "Subcommand",
           "options": [
             {
               "name": "type",
-              "description": "What to do when limit exceeded",
+              "description": "Punishment to apply when the limit is exceeded",
               "type": "String",
               "typeId": 3,
               "required": true,
               "choices": [
                 {
-                  "name": "Kick User",
+                  "name": "Kick",
                   "value": "kick"
                 },
                 {
-                  "name": "Ban User",
+                  "name": "Ban",
                   "value": "ban"
                 },
                 {
-                  "name": "Remove Roles",
-                  "value": "removeRoles"
+                  "name": "Quarantine — strip roles + 28d timeout",
+                  "value": "quarantine"
                 },
                 {
-                  "name": "Quarantine",
-                  "value": "quarantine"
+                  "name": "Inherit global (per-event only)",
+                  "value": "inherit"
+                }
+              ]
+            },
+            {
+              "name": "action",
+              "description": "Leave empty for global default; set an action for a per-event override",
+              "type": "String",
+              "typeId": 3,
+              "required": false,
+              "choices": [
+                {
+                  "name": "Channel Create",
+                  "value": "channelCreate"
+                },
+                {
+                  "name": "Channel Delete",
+                  "value": "channelDelete"
+                },
+                {
+                  "name": "Role Create",
+                  "value": "roleCreate"
+                },
+                {
+                  "name": "Role Delete",
+                  "value": "roleDelete"
+                },
+                {
+                  "name": "Member Kick",
+                  "value": "memberKick"
+                },
+                {
+                  "name": "Member Ban",
+                  "value": "memberBan"
+                },
+                {
+                  "name": "Bot Add",
+                  "value": "botAdd"
+                },
+                {
+                  "name": "Prune",
+                  "value": "prune"
+                },
+                {
+                  "name": "Dangerous Role Grant",
+                  "value": "dangerousRoleGrant"
                 }
               ]
             }
@@ -6322,7 +6853,7 @@
     {
       "name": "snipe",
       "description": "View recently deleted or edited messages",
-      "usage": "snipe [deleted|edited] [index]",
+      "usage": "snipe [deleted|edited|clear|enable|disable] [index]",
       "category": "moderator",
       "folder": "moderator",
       "type": "slash+prefix",
@@ -6379,6 +6910,20 @@
               "maxValue": 10
             }
           ]
+        },
+        {
+          "name": "toggle",
+          "description": "Turn message sniping on or off for this server (off by default)",
+          "type": "Subcommand",
+          "options": [
+            {
+              "name": "enabled",
+              "description": "Store deleted/edited messages for 24 hours?",
+              "type": "Boolean",
+              "typeId": 5,
+              "required": true
+            }
+          ]
         }
       ],
       "slashOptions": [],
@@ -6394,7 +6939,7 @@
           0
         ],
         "nsfw": false,
-        "optionCount": 3
+        "optionCount": 4
       },
       "slashSynced": true,
       "file": "commands/moderator/snipe.js"
@@ -7646,7 +8191,8 @@
         "unlockchannel"
       ],
       "userPermissions": [
-        "ManageChannels"
+        "ManageChannels",
+        "ManageRoles"
       ],
       "botPermissions": [
         "ManageChannels",
@@ -12274,7 +12820,8 @@
           "lockchannel"
         ],
         "userPermissions": [
-          "ManageChannels"
+          "ManageChannels",
+          "ManageRoles"
         ],
         "botPermissions": [
           "ManageChannels",
@@ -12336,7 +12883,8 @@
           "ld"
         ],
         "userPermissions": [
-          "ManageChannels"
+          "ManageChannels",
+          "ManageRoles"
         ],
         "botPermissions": [
           "ManageChannels",
@@ -12768,6 +13316,39 @@
         "file": "commands/moderator/removerole.js"
       },
       {
+        "name": "Report message",
+        "description": "No description",
+        "usage": "/Report message",
+        "category": "moderator",
+        "folder": "moderator",
+        "type": "slash+prefix",
+        "cooldown": 0,
+        "guildOnly": true,
+        "nsfw": false,
+        "developerOnly": false,
+        "requiredTier": null,
+        "aliases": [],
+        "userPermissions": [],
+        "botPermissions": [],
+        "hasSubcommands": false,
+        "subcommands": [],
+        "slashOptions": [],
+        "usageHelp": null,
+        "slash": {
+          "name": "Report message",
+          "description": "No description",
+          "dmPermission": null,
+          "defaultMemberPermissions": [],
+          "contexts": [
+            0
+          ],
+          "nsfw": false,
+          "optionCount": 0
+        },
+        "slashSynced": true,
+        "file": "commands/moderator/report-message.js"
+      },
+      {
         "name": "roleicon",
         "description": "Set or remove an icon for a role",
         "usage": "roleicon <role> <icon_url|remove>",
@@ -12908,7 +13489,7 @@
       {
         "name": "snipe",
         "description": "View recently deleted or edited messages",
-        "usage": "snipe [deleted|edited] [index]",
+        "usage": "snipe [deleted|edited|clear|enable|disable] [index]",
         "category": "moderator",
         "folder": "moderator",
         "type": "slash+prefix",
@@ -12965,6 +13546,20 @@
                 "maxValue": 10
               }
             ]
+          },
+          {
+            "name": "toggle",
+            "description": "Turn message sniping on or off for this server (off by default)",
+            "type": "Subcommand",
+            "options": [
+              {
+                "name": "enabled",
+                "description": "Store deleted/edited messages for 24 hours?",
+                "type": "Boolean",
+                "typeId": 5,
+                "required": true
+              }
+            ]
           }
         ],
         "slashOptions": [],
@@ -12980,7 +13575,7 @@
             0
           ],
           "nsfw": false,
-          "optionCount": 3
+          "optionCount": 4
         },
         "slashSynced": true,
         "file": "commands/moderator/snipe.js"
@@ -13233,7 +13828,8 @@
           "unlockchannel"
         ],
         "userPermissions": [
-          "ManageChannels"
+          "ManageChannels",
+          "ManageRoles"
         ],
         "botPermissions": [
           "ManageChannels",
@@ -13454,6 +14050,430 @@
     ],
     "settings": [
       {
+        "name": "automod",
+        "description": "Auto-moderation: Discord AutoMod rules plus Demon extras",
+        "usage": "/automod <subcommand>",
+        "category": "settings",
+        "folder": "settings",
+        "type": "slash+prefix",
+        "cooldown": 3,
+        "guildOnly": true,
+        "nsfw": false,
+        "developerOnly": false,
+        "requiredTier": "manager",
+        "aliases": [],
+        "userPermissions": [
+          "ManageGuild"
+        ],
+        "botPermissions": [
+          "SendMessages",
+          "EmbedLinks",
+          "ManageMessages",
+          "ManageGuild",
+          "ModerateMembers"
+        ],
+        "hasSubcommands": true,
+        "subcommands": [
+          {
+            "name": "custom",
+            "description": "Demon extras: duplicates, caps, emoji, lines, zalgo",
+            "type": "Subcommand",
+            "options": [
+              {
+                "name": "duplicates",
+                "description": "Remove the same message sent 3 times in 30 seconds",
+                "type": "Boolean",
+                "typeId": 5,
+                "required": false
+              },
+              {
+                "name": "caps",
+                "description": "Max % capital letters (0 = off)",
+                "type": "Integer",
+                "typeId": 4,
+                "required": false,
+                "minValue": 0,
+                "maxValue": 100
+              },
+              {
+                "name": "emojis",
+                "description": "Max emojis per message (0 = off)",
+                "type": "Integer",
+                "typeId": 4,
+                "required": false,
+                "minValue": 0,
+                "maxValue": 100
+              },
+              {
+                "name": "lines",
+                "description": "Max lines per message (0 = off)",
+                "type": "Integer",
+                "typeId": 4,
+                "required": false,
+                "minValue": 0,
+                "maxValue": 100
+              },
+              {
+                "name": "zalgo",
+                "description": "Remove zalgo / stacked-symbol text",
+                "type": "Boolean",
+                "typeId": 5,
+                "required": false
+              }
+            ]
+          },
+          {
+            "name": "domain-add",
+            "description": "Allow links to a domain (all other links are removed)",
+            "type": "Subcommand",
+            "options": [
+              {
+                "name": "domain",
+                "description": "e.g. youtube.com",
+                "type": "String",
+                "typeId": 3,
+                "required": true,
+                "maxLength": 100
+              }
+            ]
+          },
+          {
+            "name": "domain-remove",
+            "description": "Remove an allowed domain",
+            "type": "Subcommand",
+            "options": [
+              {
+                "name": "domain",
+                "description": "e.g. youtube.com",
+                "type": "String",
+                "typeId": 3,
+                "required": true,
+                "maxLength": 100
+              }
+            ]
+          },
+          {
+            "name": "ignore-channel",
+            "description": "Add or remove a channel AutoMod ignores",
+            "type": "Subcommand",
+            "options": [
+              {
+                "name": "channel",
+                "description": "Channel",
+                "type": "Channel",
+                "typeId": 7,
+                "required": true,
+                "channelTypes": [
+                  "GuildText",
+                  "GuildAnnouncement"
+                ]
+              },
+              {
+                "name": "ignore",
+                "description": "true = ignore, false = enforce again",
+                "type": "Boolean",
+                "typeId": 5,
+                "required": true
+              }
+            ]
+          },
+          {
+            "name": "ignore-role",
+            "description": "Add or remove a role AutoMod ignores",
+            "type": "Subcommand",
+            "options": [
+              {
+                "name": "role",
+                "description": "Role",
+                "type": "Role",
+                "typeId": 8,
+                "required": true
+              },
+              {
+                "name": "ignore",
+                "description": "true = ignore, false = enforce again",
+                "type": "Boolean",
+                "typeId": 5,
+                "required": true
+              }
+            ]
+          },
+          {
+            "name": "invites",
+            "description": "Remove Discord invite links",
+            "type": "Subcommand",
+            "options": [
+              {
+                "name": "enabled",
+                "description": "Block invites?",
+                "type": "Boolean",
+                "typeId": 5,
+                "required": true
+              }
+            ]
+          },
+          {
+            "name": "links",
+            "description": "Remove links (use domain-add to allow some)",
+            "type": "Subcommand",
+            "options": [
+              {
+                "name": "enabled",
+                "description": "Block links?",
+                "type": "Boolean",
+                "typeId": 5,
+                "required": true
+              }
+            ]
+          },
+          {
+            "name": "mentions",
+            "description": "Limit mentions per message",
+            "type": "Subcommand",
+            "options": [
+              {
+                "name": "limit",
+                "description": "Max mentions per message (0 = off)",
+                "type": "Integer",
+                "typeId": 4,
+                "required": true,
+                "minValue": 0,
+                "maxValue": 50
+              },
+              {
+                "name": "raid_protection",
+                "description": "Use Discord's mention-raid detection",
+                "type": "Boolean",
+                "typeId": 5,
+                "required": false
+              }
+            ]
+          },
+          {
+            "name": "preset",
+            "description": "Discord's built-in word lists",
+            "type": "Subcommand",
+            "options": [
+              {
+                "name": "type",
+                "description": "Word list",
+                "type": "String",
+                "typeId": 3,
+                "required": true,
+                "choices": [
+                  {
+                    "name": "Profanity",
+                    "value": "profanity"
+                  },
+                  {
+                    "name": "Sexual content",
+                    "value": "sexual"
+                  },
+                  {
+                    "name": "Slurs",
+                    "value": "slurs"
+                  }
+                ]
+              },
+              {
+                "name": "enabled",
+                "description": "Enable this list?",
+                "type": "Boolean",
+                "typeId": 5,
+                "required": true
+              }
+            ]
+          },
+          {
+            "name": "regex-add",
+            "description": "Block messages matching a regex (Rust syntax)",
+            "type": "Subcommand",
+            "options": [
+              {
+                "name": "pattern",
+                "description": "Regex pattern, e.g. (?i)free\\s+nitro",
+                "type": "String",
+                "typeId": 3,
+                "required": true,
+                "maxLength": 260
+              }
+            ]
+          },
+          {
+            "name": "regex-remove",
+            "description": "Remove a blocked regex",
+            "type": "Subcommand",
+            "options": [
+              {
+                "name": "pattern",
+                "description": "The exact pattern",
+                "type": "String",
+                "typeId": 3,
+                "required": true,
+                "maxLength": 260
+              }
+            ]
+          },
+          {
+            "name": "scam",
+            "description": "Remove scam and phishing links (lookalike domains, fake Nitro offers)",
+            "type": "Subcommand",
+            "options": [
+              {
+                "name": "enabled",
+                "description": "Enable scam protection?",
+                "type": "Boolean",
+                "typeId": 5,
+                "required": true
+              }
+            ]
+          },
+          {
+            "name": "spam",
+            "description": "Remove spammy messages",
+            "type": "Subcommand",
+            "options": [
+              {
+                "name": "enabled",
+                "description": "Block spam?",
+                "type": "Boolean",
+                "typeId": 5,
+                "required": true
+              }
+            ]
+          },
+          {
+            "name": "status",
+            "description": "Show the current AutoMod settings",
+            "type": "Subcommand"
+          },
+          {
+            "name": "strikes",
+            "description": "Time out members who trigger AutoMod repeatedly",
+            "type": "Subcommand",
+            "options": [
+              {
+                "name": "limit",
+                "description": "Violations within 10 minutes before a timeout (0 = off)",
+                "type": "Integer",
+                "typeId": 4,
+                "required": true,
+                "minValue": 0,
+                "maxValue": 20
+              },
+              {
+                "name": "minutes",
+                "description": "Timeout length in minutes (default 10)",
+                "type": "Integer",
+                "typeId": 4,
+                "required": false,
+                "minValue": 1,
+                "maxValue": 1440
+              }
+            ]
+          },
+          {
+            "name": "sync",
+            "description": "Re-apply the settings to Discord AutoMod (repair)",
+            "type": "Subcommand"
+          },
+          {
+            "name": "toggle",
+            "description": "Turn AutoMod on or off",
+            "type": "Subcommand",
+            "options": [
+              {
+                "name": "enabled",
+                "description": "Enable AutoMod?",
+                "type": "Boolean",
+                "typeId": 5,
+                "required": true
+              }
+            ]
+          },
+          {
+            "name": "word-add",
+            "description": "Block a word or phrase",
+            "type": "Subcommand",
+            "options": [
+              {
+                "name": "word",
+                "description": "Word or phrase",
+                "type": "String",
+                "typeId": 3,
+                "required": true,
+                "maxLength": 60
+              },
+              {
+                "name": "smart",
+                "description": "Smart match: also catches f.u.c.k, fuuuck and b@d w0rd (Demon enforces it)",
+                "type": "Boolean",
+                "typeId": 5,
+                "required": false
+              }
+            ]
+          },
+          {
+            "name": "word-export",
+            "description": "Download your blocked words as .txt files",
+            "type": "Subcommand"
+          },
+          {
+            "name": "word-import",
+            "description": "Add many words at once from a .txt file (one per line)",
+            "type": "Subcommand",
+            "options": [
+              {
+                "name": "file",
+                "description": "Text file, max 200 KB",
+                "type": "Attachment",
+                "typeId": 11,
+                "required": true
+              },
+              {
+                "name": "smart",
+                "description": "Add them to the smart-match list instead",
+                "type": "Boolean",
+                "typeId": 5,
+                "required": false
+              }
+            ]
+          },
+          {
+            "name": "word-remove",
+            "description": "Unblock a word or phrase",
+            "type": "Subcommand",
+            "options": [
+              {
+                "name": "word",
+                "description": "Word or phrase",
+                "type": "String",
+                "typeId": 3,
+                "required": true,
+                "maxLength": 60
+              }
+            ]
+          }
+        ],
+        "slashOptions": [],
+        "usageHelp": null,
+        "slash": {
+          "name": "automod",
+          "description": "Auto-moderation: Discord AutoMod rules plus Demon extras",
+          "dmPermission": false,
+          "defaultMemberPermissions": [
+            "ManageGuild"
+          ],
+          "contexts": [
+            0
+          ],
+          "nsfw": false,
+          "optionCount": 21
+        },
+        "slashSynced": true,
+        "file": "commands/settings/automod.js"
+      },
+      {
         "name": "autorole",
         "description": "Manage automatic role assignment when members join",
         "usage": "autorole <subcommand>",
@@ -13567,6 +14587,20 @@
                 "required": true
               }
             ]
+          },
+          {
+            "name": "restore",
+            "description": "Give returning members back their previous roles (sticky roles)",
+            "type": "Subcommand",
+            "options": [
+              {
+                "name": "enabled",
+                "description": "Restore previous roles on rejoin?",
+                "type": "Boolean",
+                "typeId": 5,
+                "required": true
+              }
+            ]
           }
         ],
         "slashOptions": [],
@@ -13580,7 +14614,7 @@
           ],
           "contexts": null,
           "nsfw": false,
-          "optionCount": 9
+          "optionCount": 10
         },
         "slashSynced": true,
         "file": "commands/settings/autorole.js"
@@ -13811,7 +14845,7 @@
       {
         "name": "logs",
         "description": "Configure the server logging system",
-        "usage": "logs <subcommand>",
+        "usage": "logs [panel|enable|disable|status|…]",
         "category": "settings",
         "folder": "settings",
         "type": "slash+prefix",
@@ -13822,19 +14856,19 @@
         "requiredTier": "manager",
         "aliases": [],
         "userPermissions": [
-          "ManageGuild"
+          "Administrator"
         ],
         "botPermissions": [],
         "hasSubcommands": true,
         "subcommands": [
           {
             "name": "channel",
-            "description": "Set the single/fallback log channel",
+            "description": "Set the fallback log channel",
             "type": "Subcommand",
             "options": [
               {
                 "name": "channel",
-                "description": "The log channel",
+                "description": "The fallback log channel",
                 "type": "Channel",
                 "typeId": 7,
                 "required": true,
@@ -13856,26 +14890,75 @@
           },
           {
             "name": "mode",
-            "description": "Set log routing mode: single | multi | granular",
+            "description": "Set a category routing mode: category | granular",
             "type": "Subcommand",
             "options": [
               {
-                "name": "type",
-                "description": "Routing mode",
+                "name": "category",
+                "description": "Category to configure",
                 "type": "String",
                 "typeId": 3,
                 "required": true,
                 "choices": [
                   {
-                    "name": "Single   — all events to one channel",
-                    "value": "single"
+                    "name": "Moderation",
+                    "value": "moderation"
                   },
                   {
-                    "name": "Multi    — separate channels per category",
-                    "value": "multi"
+                    "name": "Mod Commands",
+                    "value": "modCommands"
                   },
                   {
-                    "name": "Granular — dedicated channel per event type",
+                    "name": "Messages",
+                    "value": "messages"
+                  },
+                  {
+                    "name": "Members",
+                    "value": "members"
+                  },
+                  {
+                    "name": "Server",
+                    "value": "server"
+                  },
+                  {
+                    "name": "Expressions",
+                    "value": "expressions"
+                  },
+                  {
+                    "name": "Voice",
+                    "value": "voice"
+                  },
+                  {
+                    "name": "Verification",
+                    "value": "verification"
+                  },
+                  {
+                    "name": "Autorole",
+                    "value": "autorole"
+                  },
+                  {
+                    "name": "Tickets",
+                    "value": "tickets"
+                  },
+                  {
+                    "name": "Security",
+                    "value": "security"
+                  }
+                ]
+              },
+              {
+                "name": "type",
+                "description": "Routing for this category",
+                "type": "String",
+                "typeId": 3,
+                "required": true,
+                "choices": [
+                  {
+                    "name": "Category — one channel for all events in this group",
+                    "value": "category"
+                  },
+                  {
+                    "name": "Granular — optional channel per event",
                     "value": "granular"
                   }
                 ]
@@ -13883,8 +14966,13 @@
             ]
           },
           {
+            "name": "panel",
+            "description": "Open the interactive logging setup panel",
+            "type": "Subcommand"
+          },
+          {
             "name": "set-category",
-            "description": "Assign a channel to a log category (multi mode)",
+            "description": "Assign a channel to a log category",
             "type": "Subcommand",
             "options": [
               {
@@ -13895,20 +14983,40 @@
                 "required": true,
                 "choices": [
                   {
-                    "name": "Moderation — bans, kicks, mod commands",
+                    "name": "Moderation — Discord bans, kicks, timeouts",
                     "value": "moderation"
+                  },
+                  {
+                    "name": "Mod Commands — bot command executions",
+                    "value": "modCommands"
                   },
                   {
                     "name": "Messages — edits and deletes",
                     "value": "messages"
                   },
                   {
-                    "name": "Members — joins and leaves",
+                    "name": "Members — joins, leaves, nicknames, roles",
                     "value": "members"
                   },
                   {
                     "name": "Server — roles, channels, server settings",
                     "value": "server"
+                  },
+                  {
+                    "name": "Expressions — all emoji + soundboard",
+                    "value": "expressions"
+                  },
+                  {
+                    "name": "Emoji — emoji events only",
+                    "value": "emoji"
+                  },
+                  {
+                    "name": "Soundboard — soundboard events only",
+                    "value": "soundboard"
+                  },
+                  {
+                    "name": "Voice — join, leave, move, mute, deafen, kick",
+                    "value": "voice"
                   },
                   {
                     "name": "Verification",
@@ -13942,117 +15050,16 @@
           },
           {
             "name": "set-event-channel",
-            "description": "Assign a dedicated channel to one event (granular mode)",
+            "description": "Assign a dedicated channel to one event (granular)",
             "type": "Subcommand",
             "options": [
               {
                 "name": "event",
-                "description": "The event type",
+                "description": "The event type (type to search)",
                 "type": "String",
                 "typeId": 3,
                 "required": true,
-                "choices": [
-                  {
-                    "name": "Member Join",
-                    "value": "memberJoin"
-                  },
-                  {
-                    "name": "Member Leave",
-                    "value": "memberLeave"
-                  },
-                  {
-                    "name": "Ban",
-                    "value": "ban"
-                  },
-                  {
-                    "name": "Unban",
-                    "value": "unban"
-                  },
-                  {
-                    "name": "Kick",
-                    "value": "kick"
-                  },
-                  {
-                    "name": "Message Delete",
-                    "value": "messageDelete"
-                  },
-                  {
-                    "name": "Message Edit",
-                    "value": "messageEdit"
-                  },
-                  {
-                    "name": "Mod Command",
-                    "value": "modCommand"
-                  },
-                  {
-                    "name": "Verification",
-                    "value": "verification"
-                  },
-                  {
-                    "name": "Auto-Role",
-                    "value": "autorole"
-                  },
-                  {
-                    "name": "Role Create",
-                    "value": "roleCreate"
-                  },
-                  {
-                    "name": "Role Delete",
-                    "value": "roleDelete"
-                  },
-                  {
-                    "name": "Role Update",
-                    "value": "roleUpdate"
-                  },
-                  {
-                    "name": "Channel Create",
-                    "value": "channelCreate"
-                  },
-                  {
-                    "name": "Channel Delete",
-                    "value": "channelDelete"
-                  },
-                  {
-                    "name": "Channel Update",
-                    "value": "channelUpdate"
-                  },
-                  {
-                    "name": "Server Update",
-                    "value": "serverUpdate"
-                  },
-                  {
-                    "name": "Ticket Create",
-                    "value": "ticketCreate"
-                  },
-                  {
-                    "name": "Ticket Close",
-                    "value": "ticketClose"
-                  },
-                  {
-                    "name": "Ticket Reopen",
-                    "value": "ticketReopen"
-                  },
-                  {
-                    "name": "Ticket Claim",
-                    "value": "ticketClaim"
-                  },
-                  {
-                    "name": "Ticket Unclaim",
-                    "value": "ticketUnclaim"
-                  },
-                  {
-                    "name": "Ticket Priority",
-                    "value": "ticketPriority"
-                  },
-                  {
-                    "name": "Ticket User Add",
-                    "value": "ticketUserAdd"
-                  },
-                  {
-                    "name": "Ticket User Remove",
-                    "value": "ticketUserRemove"
-                  }
-                ]
+                "autocomplete": true
               },
               {
                 "name": "channel",
@@ -14078,112 +15085,11 @@
             "options": [
               {
                 "name": "event",
-                "description": "The event to toggle",
+                "description": "The event to toggle (type to search)",
                 "type": "String",
                 "typeId": 3,
                 "required": true,
-                "choices": [
-                  {
-                    "name": "Member Join",
-                    "value": "memberJoin"
-                  },
-                  {
-                    "name": "Member Leave",
-                    "value": "memberLeave"
-                  },
-                  {
-                    "name": "Ban",
-                    "value": "ban"
-                  },
-                  {
-                    "name": "Unban",
-                    "value": "unban"
-                  },
-                  {
-                    "name": "Kick",
-                    "value": "kick"
-                  },
-                  {
-                    "name": "Message Delete",
-                    "value": "messageDelete"
-                  },
-                  {
-                    "name": "Message Edit",
-                    "value": "messageEdit"
-                  },
-                  {
-                    "name": "Mod Command",
-                    "value": "modCommand"
-                  },
-                  {
-                    "name": "Verification",
-                    "value": "verification"
-                  },
-                  {
-                    "name": "Auto-Role",
-                    "value": "autorole"
-                  },
-                  {
-                    "name": "Role Create",
-                    "value": "roleCreate"
-                  },
-                  {
-                    "name": "Role Delete",
-                    "value": "roleDelete"
-                  },
-                  {
-                    "name": "Role Update",
-                    "value": "roleUpdate"
-                  },
-                  {
-                    "name": "Channel Create",
-                    "value": "channelCreate"
-                  },
-                  {
-                    "name": "Channel Delete",
-                    "value": "channelDelete"
-                  },
-                  {
-                    "name": "Channel Update",
-                    "value": "channelUpdate"
-                  },
-                  {
-                    "name": "Server Update",
-                    "value": "serverUpdate"
-                  },
-                  {
-                    "name": "Ticket Create",
-                    "value": "ticketCreate"
-                  },
-                  {
-                    "name": "Ticket Close",
-                    "value": "ticketClose"
-                  },
-                  {
-                    "name": "Ticket Reopen",
-                    "value": "ticketReopen"
-                  },
-                  {
-                    "name": "Ticket Claim",
-                    "value": "ticketClaim"
-                  },
-                  {
-                    "name": "Ticket Unclaim",
-                    "value": "ticketUnclaim"
-                  },
-                  {
-                    "name": "Ticket Priority",
-                    "value": "ticketPriority"
-                  },
-                  {
-                    "name": "Ticket User Add",
-                    "value": "ticketUserAdd"
-                  },
-                  {
-                    "name": "Ticket User Remove",
-                    "value": "ticketUserRemove"
-                  }
-                ]
+                "autocomplete": true
               }
             ]
           }
@@ -14195,11 +15101,11 @@
           "description": "Configure the server logging system",
           "dmPermission": null,
           "defaultMemberPermissions": [
-            "ManageGuild"
+            "Administrator"
           ],
           "contexts": null,
           "nsfw": false,
-          "optionCount": 8
+          "optionCount": 9
         },
         "slashSynced": true,
         "file": "commands/settings/logs.js"
@@ -14319,6 +15225,139 @@
         },
         "slashSynced": true,
         "file": "commands/settings/prefix.js"
+      },
+      {
+        "name": "raid",
+        "description": "Anti-raid protection: react to a burst of new members",
+        "usage": "/raid <subcommand>",
+        "category": "settings",
+        "folder": "settings",
+        "type": "slash+prefix",
+        "cooldown": 3,
+        "guildOnly": true,
+        "nsfw": false,
+        "developerOnly": false,
+        "requiredTier": "manager",
+        "aliases": [],
+        "userPermissions": [
+          "ManageGuild"
+        ],
+        "botPermissions": [
+          "SendMessages",
+          "EmbedLinks"
+        ],
+        "hasSubcommands": true,
+        "subcommands": [
+          {
+            "name": "config",
+            "description": "Change the anti-raid settings",
+            "type": "Subcommand",
+            "options": [
+              {
+                "name": "joins",
+                "description": "Joins that trigger raid mode (default 8)",
+                "type": "Integer",
+                "typeId": 4,
+                "required": false,
+                "minValue": 2,
+                "maxValue": 100
+              },
+              {
+                "name": "seconds",
+                "description": "...within this many seconds (default 20)",
+                "type": "Integer",
+                "typeId": 4,
+                "required": false,
+                "minValue": 5,
+                "maxValue": 300
+              },
+              {
+                "name": "duration",
+                "description": "Minutes raid mode lasts (default 10)",
+                "type": "Integer",
+                "typeId": 4,
+                "required": false,
+                "minValue": 1,
+                "maxValue": 120
+              },
+              {
+                "name": "account_age",
+                "description": "Accounts at least this many days old are let through (0 = none, default 7)",
+                "type": "Integer",
+                "typeId": 4,
+                "required": false,
+                "minValue": 0,
+                "maxValue": 365
+              },
+              {
+                "name": "action",
+                "description": "What to do to new joins during a raid",
+                "type": "String",
+                "typeId": 3,
+                "required": false,
+                "choices": [
+                  {
+                    "name": "Alert only",
+                    "value": "alert"
+                  },
+                  {
+                    "name": "Timeout",
+                    "value": "timeout"
+                  },
+                  {
+                    "name": "Kick",
+                    "value": "kick"
+                  },
+                  {
+                    "name": "Ban",
+                    "value": "ban"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "end",
+            "description": "End raid mode now",
+            "type": "Subcommand"
+          },
+          {
+            "name": "status",
+            "description": "Show the anti-raid settings and whether a raid is active",
+            "type": "Subcommand"
+          },
+          {
+            "name": "toggle",
+            "description": "Turn anti-raid protection on or off",
+            "type": "Subcommand",
+            "options": [
+              {
+                "name": "enabled",
+                "description": "Enable anti-raid protection?",
+                "type": "Boolean",
+                "typeId": 5,
+                "required": true
+              }
+            ]
+          }
+        ],
+        "slashOptions": [],
+        "usageHelp": null,
+        "slash": {
+          "name": "raid",
+          "description": "Anti-raid protection: react to a burst of new members",
+          "dmPermission": false,
+          "defaultMemberPermissions": [
+            "ManageGuild"
+          ],
+          "contexts": [
+            0
+          ],
+          "nsfw": false,
+          "optionCount": 4
+        },
+        "slashSynced": true,
+        "file": "commands/settings/raid.js"
       },
       {
         "name": "security",
@@ -14501,16 +15540,24 @@
                   {
                     "name": "Bot Add",
                     "value": "botAdd"
+                  },
+                  {
+                    "name": "Prune",
+                    "value": "prune"
+                  },
+                  {
+                    "name": "Dangerous Role Grant",
+                    "value": "dangerousRoleGrant"
                   }
                 ]
               },
               {
                 "name": "limit",
-                "description": "How many actions allowed (1-100)",
+                "description": "How many actions allowed (0-100; 0 = punish on first)",
                 "type": "Integer",
                 "typeId": 4,
                 "required": true,
-                "minValue": 1,
+                "minValue": 0,
                 "maxValue": 100
               },
               {
@@ -14526,31 +15573,76 @@
           },
           {
             "name": "punishment",
-            "description": "Configure punishment type",
+            "description": "Set global or per-event punishment (kick / ban / quarantine)",
             "type": "Subcommand",
             "options": [
               {
                 "name": "type",
-                "description": "What to do when limit exceeded",
+                "description": "Punishment to apply when the limit is exceeded",
                 "type": "String",
                 "typeId": 3,
                 "required": true,
                 "choices": [
                   {
-                    "name": "Kick User",
+                    "name": "Kick",
                     "value": "kick"
                   },
                   {
-                    "name": "Ban User",
+                    "name": "Ban",
                     "value": "ban"
                   },
                   {
-                    "name": "Remove Roles",
-                    "value": "removeRoles"
+                    "name": "Quarantine — strip roles + 28d timeout",
+                    "value": "quarantine"
                   },
                   {
-                    "name": "Quarantine",
-                    "value": "quarantine"
+                    "name": "Inherit global (per-event only)",
+                    "value": "inherit"
+                  }
+                ]
+              },
+              {
+                "name": "action",
+                "description": "Leave empty for global default; set an action for a per-event override",
+                "type": "String",
+                "typeId": 3,
+                "required": false,
+                "choices": [
+                  {
+                    "name": "Channel Create",
+                    "value": "channelCreate"
+                  },
+                  {
+                    "name": "Channel Delete",
+                    "value": "channelDelete"
+                  },
+                  {
+                    "name": "Role Create",
+                    "value": "roleCreate"
+                  },
+                  {
+                    "name": "Role Delete",
+                    "value": "roleDelete"
+                  },
+                  {
+                    "name": "Member Kick",
+                    "value": "memberKick"
+                  },
+                  {
+                    "name": "Member Ban",
+                    "value": "memberBan"
+                  },
+                  {
+                    "name": "Bot Add",
+                    "value": "botAdd"
+                  },
+                  {
+                    "name": "Prune",
+                    "value": "prune"
+                  },
+                  {
+                    "name": "Dangerous Role Grant",
+                    "value": "dangerousRoleGrant"
                   }
                 ]
               }

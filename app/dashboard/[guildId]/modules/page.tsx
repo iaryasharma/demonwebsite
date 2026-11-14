@@ -19,6 +19,9 @@ import {
     faToggleOn,
     faWrench,
     faTicket,
+    faRobot,
+    faUserShield,
+    faSliders,
 } from "@fortawesome/free-solid-svg-icons"
 
 const MODULES = [
@@ -55,6 +58,22 @@ const MODULES = [
         href: "security",
     },
     {
+        id: "automod",
+        name: "AutoMod",
+        description: "Discord AutoMod rules plus smart words, scam links and strikes.",
+        icon: faRobot,
+        color: "from-fuchsia-500 to-purple-600",
+        href: "automod",
+    },
+    {
+        id: "raid",
+        name: "Raid Protection",
+        description: "Act on new accounts when a burst of members joins.",
+        icon: faUserShield,
+        color: "from-orange-500 to-red-600",
+        href: "raid",
+    },
+    {
         id: "autorole",
         name: "Autorole",
         description: "Automatically assign roles to new members.",
@@ -85,6 +104,14 @@ const MODULES = [
         icon: faToggleOn,
         color: "from-cyan-500 to-blue-600",
         href: "commands",
+    },
+    {
+        id: "access",
+        name: "Command Access",
+        description: "Turn categories or single commands off in this server.",
+        icon: faSliders,
+        color: "from-teal-500 to-cyan-600",
+        href: "access",
     },
     {
         id: "tickets",
