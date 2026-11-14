@@ -41,8 +41,9 @@ export async function POST(
         }
 
         // Cancel — mark ended without selecting winners
-        await Giveaway.updateOne(
-            { _id: giveaway._id },
+        // isEnded:false: if the bot ended it a moment ago, don't overwrite its winners with a cancel
+        const res = await Giveaway.updateOne(
+            { _id: giveaway._id, isEnded: false },
             {
                 $set: {
                     isActive: false,
@@ -53,6 +54,10 @@ export async function POST(
                 },
             }
         )
+
+        if (res.modifiedCount === 0) {
+            return NextResponse.json({ error: "Giveaway already ended" }, { status: 400 })
+        }
 
         // Try to update Discord message — non-fatal if it fails
         // (bot-created giveaway messages may already be stale/deleted)

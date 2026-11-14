@@ -59,7 +59,7 @@ export async function POST(
 
         let guild = await Guild.findOne({ guildId })
         if (!guild) {
-            guild = await Guild.create({ guildId, prefix: "!!", settings: {} })
+            guild = await Guild.create({ guildId, settings: {} }) // no stored prefix: DEFAULT_PREFIX applies
         }
 
         if (!guild.settings) guild.settings = {}

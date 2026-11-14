@@ -28,7 +28,7 @@ export async function GET(
         // Find or create guild doc
         let guild = await Guild.findOne({ guildId })
         if (!guild) {
-            guild = await Guild.create({ guildId, prefix: "!!", settings: {} })
+            guild = await Guild.create({ guildId, settings: {} }) // no stored prefix: DEFAULT_PREFIX applies
         }
 
         return NextResponse.json({

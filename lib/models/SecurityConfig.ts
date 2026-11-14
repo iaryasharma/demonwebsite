@@ -35,6 +35,9 @@ const securityConfigSchema = new mongoose.Schema({
     memberKickLimit: { type: Number, default: 3 },
     memberBanLimit: { type: Number, default: 3 },
     botAddLimit: { type: Number, default: 1 },
+    pruneLimit: { type: Number, default: 1 },
+    // 0 = first dangerous grant is already over the limit (same as the bot model)
+    dangerousRoleGrantLimit: { type: Number, default: 0 },
     timeframe: { type: Number, default: 300 },
   },
 

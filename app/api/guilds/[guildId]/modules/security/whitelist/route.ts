@@ -63,6 +63,10 @@ export async function POST(
     if (uid && SYSTEM_IDS.includes(uid)) {
       safe.isProtected = true;
     }
+    const target = typeof safe.userId === "string" ? { userId: safe.userId } : typeof safe.roleId === "string" ? { roleId: safe.roleId } : null
+    if (target && await SecurityWhitelist.exists({ guildId, ...target })) {
+      return NextResponse.json({ error: "Already whitelisted" }, { status: 409 })
+    }
     const entry = await SecurityWhitelist.create({
       guildId,
       ...safe

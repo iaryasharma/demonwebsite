@@ -34,7 +34,7 @@ export interface IGiveawayModel extends Model<IGiveaway> {
 
 const giveawaySchema = new Schema<IGiveaway>(
     {
-        messageId: { type: String, required: true, index: true },
+        messageId: { type: String, required: true, unique: true }, // same index options as the bot model
         channelId: { type: String, required: true },
         guildId: { type: String, required: true, index: true },
         hostId: { type: String, required: true },
@@ -106,8 +106,9 @@ giveawaySchema.methods.endGiveaway = async function (
 
     const winners = this.selectWinners()
 
-    await (this.constructor as IGiveawayModel).updateOne(
-        { _id: this._id },
+    // isEnded:false in the filter makes ending atomic: the bot timer or /gend may be ending it right now
+    const res = await (this.constructor as IGiveawayModel).updateOne(
+        { _id: this._id, isEnded: false },
         {
             $set: {
                 isActive: false,
@@ -118,6 +119,8 @@ giveawaySchema.methods.endGiveaway = async function (
             },
         }
     )
+
+    if (res.modifiedCount === 0) return { success: false, reason: "Giveaway already ended" }
 
     // Update local instance
     this.isActive = false

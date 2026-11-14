@@ -151,6 +151,7 @@ export async function POST(
             "channels.security": safe.securityLogChannelId,
             "eventChannels.securityViolation": safe.securityLogChannelId,
           },
+          $setOnInsert: { categoryRoutingMigrated: true, fallbackOnly: false },
         },
         { upsert: true }
       )
