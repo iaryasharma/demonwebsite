@@ -24,12 +24,14 @@ import {
 } from "@fortawesome/free-solid-svg-icons"
 import Link from "next/link"
 import { ChannelPicker } from "@/components/dashboard/settings/channel-picker"
+import { Toggle } from "@/components/dashboard/form-controls"
 import { toast } from "sonner"
 
 interface ServerSettings {
     guildId: string
     prefix: string
     botUpdatesChannelId: string | null
+    snipeEnabled: boolean
     disabledChannels: string[]
     modules: {
         welcome: { enabled: boolean; channelId?: string | null; messageId?: string | null }
@@ -115,7 +117,9 @@ export default function ServerSettingsPage({
             })
             if (res.ok) {
                 setOriginalBotUpdatesChannelId(botUpdatesChannelId)
-                queryClient.invalidateQueries({ queryKey: ["server-settings", guildId] })
+                // Write the saved value into the cache instead of refetching the whole overview
+                const saved = await res.json()
+                queryClient.setQueryData<ServerSettings>(["server-settings", guildId], (old) => (old ? { ...old, ...saved } : old))
                 toast.success("Bot updates channel saved!")
             } else {
                 toast.error("Failed to save bot updates channel")
@@ -124,6 +128,26 @@ export default function ServerSettingsPage({
             toast.error("An error occurred while saving")
         } finally {
             setSaving(false)
+        }
+    }
+
+    const [savingSnipe, setSavingSnipe] = useState(false)
+    const handleToggleSnipe = async (enabled: boolean) => {
+        setSavingSnipe(true)
+        try {
+            const res = await fetch(`/api/guilds/${guildId}/server-settings`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ snipeEnabled: enabled }),
+            })
+            if (!res.ok) throw new Error()
+            const saved = await res.json()
+            queryClient.setQueryData<ServerSettings>(["server-settings", guildId], (old) => (old ? { ...old, ...saved } : old))
+            toast.success(enabled ? "Message sniping turned on" : "Message sniping turned off and stored messages deleted")
+        } catch {
+            toast.error("Could not change message sniping")
+        } finally {
+            setSavingSnipe(false)
         }
     }
 
@@ -258,6 +282,17 @@ export default function ServerSettingsPage({
                                 )}
                             </div>
                         </div>
+                    </div>
+
+                    {/* Message sniping (opt-in) */}
+                    <div className="mt-6 pt-6 border-t border-white/[0.06]">
+                        <Toggle
+                            label="Message sniping (/snipe)"
+                            description="Keeps deleted and edited messages for 24 hours so moderators can use /snipe. Off by default; turning it off deletes what was stored."
+                            checked={Boolean(settings?.snipeEnabled)}
+                            disabled={savingSnipe || !settings}
+                            onChange={handleToggleSnipe}
+                        />
                     </div>
 
                     {/* Bot Updates Channel */}

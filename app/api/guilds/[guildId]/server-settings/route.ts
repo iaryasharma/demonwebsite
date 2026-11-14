@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server"
+import mongoose from "mongoose"
 import { getAccessTokenFromRequest, requireManageGuild, validateGuildId } from "@/lib/permissions"
 import { connectToDatabase } from "@/lib/mongodb"
 import { parseBody, pickAllowed, hasMongoOperators } from "@/lib/api-helpers"
@@ -21,6 +22,10 @@ export async function GET(
     }
 
     const { guildId } = await context.params
+
+    if (!validateGuildId(guildId)) {
+        return NextResponse.json({ error: "Invalid guild ID" }, { status: 400 })
+    }
 
     if (!(await requireManageGuild(accessToken, guildId))) {
         return NextResponse.json({ error: "Forbidden" }, { status: 403 })
@@ -51,6 +56,7 @@ export async function GET(
             guildId,
             prefix: guild?.prefix || process.env.DEFAULT_PREFIX || process.env.NEXT_PUBLIC_DEFAULT_PREFIX || '!!',
             botUpdatesChannelId: (guild as any)?.botUpdatesChannelId ?? null,
+            snipeEnabled: Boolean((guild as any)?.snipeEnabled),
             disabledChannels: guild?.settings?.disabledChannels || [],
             modules: {
                 welcome: welcome || { enabled: false },
@@ -96,7 +102,19 @@ export async function POST(
         }
 
         const safe = pickAllowed(parsed.data as Record<string, unknown>, "guild")
+        if ("snipeEnabled" in safe && typeof safe.snipeEnabled !== "boolean") {
+            return NextResponse.json({ error: "snipeEnabled must be true or false" }, { status: 400 })
+        }
+        if ("botUpdatesChannelId" in safe && safe.botUpdatesChannelId !== null
+            && (typeof safe.botUpdatesChannelId !== "string" || !validateGuildId(safe.botUpdatesChannelId))) {
+            return NextResponse.json({ error: "botUpdatesChannelId must be a channel ID or null" }, { status: 400 })
+        }
         await connectToDatabase()
+
+        // Turning /snipe off also deletes what it had stored (same as the bot's /snipe toggle)
+        if (safe.snipeEnabled === false) {
+            await mongoose.connection.collection("snipes").deleteMany({ guildId })
+        }
 
         const updated = await Guild.findOneAndUpdate(
             { guildId },
@@ -104,7 +122,10 @@ export async function POST(
             { upsert: true, new: true, setDefaultsOnInsert: true }
         ).lean()
 
-        return NextResponse.json({ botUpdatesChannelId: (updated as any)?.botUpdatesChannelId ?? null })
+        return NextResponse.json({
+            botUpdatesChannelId: (updated as any)?.botUpdatesChannelId ?? null,
+            snipeEnabled: Boolean((updated as any)?.snipeEnabled),
+        })
     } catch (error) {
         console.error("Error updating guild settings:", error)
         return NextResponse.json({ error: "Internal server error" }, { status: 500 })

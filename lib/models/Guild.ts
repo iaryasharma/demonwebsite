@@ -36,6 +36,7 @@ export interface IGuild extends Document {
     guildId: string
     prefix: string | null // custom prefix; null = DEFAULT_PREFIX from the environment
     prefixMigrated?: boolean
+    snipeEnabled?: boolean
     botUpdatesChannelId: string | null
     settings: IGuildSettings
     webhooks: IWebhook[]
@@ -59,6 +60,11 @@ const guildSchema = new Schema<IGuild>(
         prefixMigrated: {
             type: Boolean,
             default: true,
+        },
+        // /snipe keeps deleted and edited messages for 24 hours, so it is opt-in per server
+        snipeEnabled: {
+            type: Boolean,
+            default: false,
         },
         botUpdatesChannelId: {
             type: String,

@@ -21,6 +21,7 @@ import { toast } from "sonner"
 import { SaveBar } from "@/components/dashboard/save-bar"
 import Link from "next/link"
 import { ChannelPicker } from "@/components/dashboard/settings/channel-picker"
+import { Toggle } from "@/components/dashboard/form-controls"
 import isEqual from "lodash/isEqual"
 import cloneDeep from "lodash/cloneDeep"
 
@@ -36,6 +37,7 @@ interface AutoRoleConfig {
         verificationRequired: boolean
     }
     logChannelId: string | null
+    restoreRoles?: boolean
 }
 
 interface Role {
@@ -380,6 +382,16 @@ export default function AutoRolePage({
                                 </label>
                             </div>
                             <p className="text-sm text-gray-400">If your server has Verification enabled, Auto-roles will only be assigned <strong className="text-gray-200">after</strong> the user successfully verifies, rather than instantly upon joining.</p>
+                        </div>
+
+                        {/* Sticky roles */}
+                        <div className="pt-4 border-t border-white/[0.06]">
+                            <Toggle
+                                label="Restore roles on rejoin (sticky roles)"
+                                description="Members who leave and come back get their previous roles again. Roles with elevated permissions, managed roles and roles above the bot are never restored, and it is skipped while verification is on."
+                                checked={Boolean(config.restoreRoles)}
+                                onChange={(v) => setConfig({ ...config, restoreRoles: v })}
+                            />
                         </div>
                     </motion.div>
                 </div>

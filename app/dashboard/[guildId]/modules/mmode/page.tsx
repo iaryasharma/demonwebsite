@@ -36,7 +36,7 @@ export default function MModeModulePage({
             return res.json()
         },
         enabled: status === "authenticated" && !!guildId,
-        refetchInterval: 30000 // Refetch every 30s as Discord states might change
+        // Loaded once per visit; saving updates the cache directly, so no polling is needed
     })
 
     useEffect(() => {

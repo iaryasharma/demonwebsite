@@ -38,6 +38,11 @@ const autoRoleSchema = new mongoose.Schema({
     logChannelId: {
         type: String,
         default: null
+    },
+    // Sticky roles: give returning members their previous roles (never elevated ones; skipped while verification is on)
+    restoreRoles: {
+        type: Boolean,
+        default: false
     }
 }, { timestamps: true })
 
