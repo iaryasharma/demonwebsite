@@ -14,13 +14,17 @@ const store = new Map<string, RateLimitEntry>()
 
 // Limits per route category
 const LIMITS: Record<string, { max: number; windowMs: number }> = {
-    auth: { max: 10, windowMs: 60_000 },  // 10 req/min — anti brute-force
+    auth: { max: 20, windowMs: 60_000 },  // 20 req/min — sign-in and OAuth callback (anti brute-force)
+    // NextAuth's own read-only calls (session, csrf, providers). The browser makes these on every page load,
+    // so they get their own, much higher budget; a shared 10/min limit caused 429s and CLIENT_FETCH_ERROR.
+    authSession: { max: 120, windowMs: 60_000 },
     stats: { max: 20, windowMs: 60_000 },  // 20 req/min — public endpoint
     guilds: { max: 60, windowMs: 60_000 },  // 60 req/min — authenticated API
     default: { max: 30, windowMs: 60_000 },  // fallback
 }
 
 function categorise(pathname: string): string {
+    if (/^\/api\/auth\/(session|csrf|providers|_log)\/?$/.test(pathname)) return "authSession"
     if (pathname.startsWith("/api/auth")) return "auth"
     if (pathname.startsWith("/api/bot-stats")) return "stats"
     if (pathname.startsWith("/api/guilds")) return "guilds"

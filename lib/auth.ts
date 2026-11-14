@@ -61,6 +61,9 @@ export const authOptions: NextAuthOptions = {
         DiscordProvider({
             clientId: process.env.DISCORD_CLIENT_ID!,
             clientSecret: process.env.DISCORD_CLIENT_SECRET!,
+            // Discord now adds `iss=https://discord.com` to the OAuth callback (RFC 9207). openid-client rejects
+            // that ("issuer must be configured on the issuer") unless the provider declares the same issuer.
+            issuer: "https://discord.com",
             authorization: {
                 params: {
                     scope: "identify guilds",
