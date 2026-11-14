@@ -98,6 +98,19 @@ export async function deleteMessage(
 /**
  * Send a message to a channel
  */
+/** True only if channelId is a real channel inside guildId (prevents cross-guild use of the bot token). */
+export async function channelBelongsToGuild(channelId: string, guildId: string): Promise<boolean> {
+    if (!/^\d{17,20}$/.test(channelId)) return false
+    try {
+        const res = await fetch(`${DISCORD_API}/channels/${channelId}`, { headers: getHeaders(), cache: "no-store" })
+        if (!res.ok) return false
+        const ch = await res.json()
+        return ch.guild_id === guildId
+    } catch {
+        return false
+    }
+}
+
 export async function sendMessage(
     channelId: string,
     payload: DiscordMessagePayload

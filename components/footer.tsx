@@ -132,9 +132,9 @@ export function Footer() {
               <div className="flex items-center space-x-4 text-xs text-gray-700">
                 <Link href="/privacy" className="hover:text-gray-500 transition-colors">Privacy Policy</Link>
                 <span>•</span>
-                <span>Terms of Service</span>
+                <Link href="/terms" className="hover:text-gray-500 transition-colors">Terms of Service</Link>
                 <span>•</span>
-                <span>Support</span>
+                <a href="https://discord.gg/5MredjDjed" target="_blank" rel="noopener noreferrer" className="hover:text-gray-500 transition-colors">Support</a>
               </div>
             </div>
           </div>

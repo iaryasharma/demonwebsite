@@ -4,6 +4,7 @@ import Transcript from "@/lib/models/Transcript"
 import Ticket from "@/lib/models/Ticket"
 import { parseBody } from "@/lib/api-helpers"
 import { checkRateLimit } from "@/lib/rate-limit"
+import { getAccessTokenFromRequest, requireManageGuild, validateGuildId } from "@/lib/permissions"
 
 export const dynamic = "force-dynamic"
 
@@ -202,6 +203,13 @@ export async function GET(
             { error: "Rate limit exceeded" },
             { status: 429 }
         )
+    }
+
+    const accessToken = await getAccessTokenFromRequest(request)
+    if (!accessToken) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    if (!validateGuildId(guildId)) return NextResponse.json({ error: "Invalid guild ID" }, { status: 400 })
+    if (!(await requireManageGuild(accessToken, guildId))) {
+        return NextResponse.json({ error: "Forbidden" }, { status: 403 })
     }
 
     try {

@@ -3,7 +3,7 @@ import { getToken } from "next-auth/jwt"
 import { getAccessTokenFromRequest, requireManageGuild } from "@/lib/permissions"
 import { connectToDatabase } from "@/lib/mongodb"
 import Giveaway from "@/lib/models/Giveaway"
-import { sendMessage } from "@/lib/discord"
+import { sendMessage, channelBelongsToGuild } from "@/lib/discord"
 import { buildActiveEmbed } from "@/lib/giveaway-embeds"
 
 // Duration parser matching bot's parseDuration
@@ -66,6 +66,10 @@ export async function POST(
                 { error: "Channel, prize, and duration are required" },
                 { status: 400 }
             )
+        }
+
+        if (typeof channelId !== "string" || !(await channelBelongsToGuild(channelId, guildId))) {
+            return NextResponse.json({ error: "Channel does not belong to this guild" }, { status: 403 })
         }
 
         if (prize.length > 256) {

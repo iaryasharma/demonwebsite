@@ -36,10 +36,10 @@ export async function GET(
 
         let guild = await Guild.findOne({ guildId })
         if (!guild) {
-            guild = await Guild.create({ guildId, prefix: "!!" })
+            guild = await Guild.create({ guildId })
         }
 
-        return NextResponse.json({ prefix: guild.prefix })
+        return NextResponse.json({ prefix: guild.prefix || process.env.DEFAULT_PREFIX || process.env.NEXT_PUBLIC_DEFAULT_PREFIX || "!!" })
     } catch (error) {
         console.error("[PREFIX_GET]", error)
         return NextResponse.json({ error: "Internal Error" }, { status: 500 })

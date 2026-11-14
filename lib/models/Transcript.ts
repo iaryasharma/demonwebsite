@@ -1,3 +1,4 @@
+import { randomBytes } from "crypto"
 import mongoose from "mongoose"
 
 export interface ITranscript extends mongoose.Document {
@@ -61,7 +62,7 @@ const transcriptSchema = new mongoose.Schema({
 // Generate unique transcript ID
 transcriptSchema.statics.generateTranscriptId = function(): string {
     const timestamp = Date.now()
-    const random = Math.random().toString(36).substring(2, 10)
+    const random = randomBytes(12).toString("hex")
     return `transcript-${timestamp}-${random}`
 }
 

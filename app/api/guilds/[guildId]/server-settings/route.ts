@@ -49,7 +49,7 @@ export async function GET(
         // Construct a unified response object mapping to the bot's server-settings overview
         const settingsPayload = {
             guildId,
-            prefix: guild?.prefix || process.env.PREFIX || '!!',
+            prefix: guild?.prefix || process.env.DEFAULT_PREFIX || process.env.NEXT_PUBLIC_DEFAULT_PREFIX || '!!',
             botUpdatesChannelId: (guild as any)?.botUpdatesChannelId ?? null,
             disabledChannels: guild?.settings?.disabledChannels || [],
             modules: {

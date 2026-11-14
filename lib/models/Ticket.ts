@@ -1,3 +1,4 @@
+import { randomBytes } from "crypto"
 import mongoose from "mongoose"
 
 export interface ITicket extends mongoose.Document {
@@ -136,7 +137,7 @@ ticketSchema.index({ panelId: 1, typeId: 1 })
 // Static methods
 ticketSchema.statics.generateTicketId = function(): string {
     const timestamp = Date.now().toString(36)
-    const random = Math.random().toString(36).substr(2, 5).toUpperCase()
+    const random = randomBytes(8).toString("hex").toUpperCase()
     return `TICKET-${timestamp}-${random}`
 }
 

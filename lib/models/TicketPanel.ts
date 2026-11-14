@@ -1,3 +1,4 @@
+import { randomBytes } from "crypto"
 import mongoose from "mongoose"
 
 export interface ITicketType {
@@ -127,11 +128,11 @@ ticketPanelSchema.index({ guildId: 1, channelId: 1 })
 
 // Static methods
 ticketPanelSchema.statics.generatePanelId = function(): string {
-    return `panel-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+    return `panel-${Date.now()}-${randomBytes(8).toString("hex")}`
 }
 
 ticketPanelSchema.statics.generateTypeId = function(): string {
-    return `type-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+    return `type-${Date.now()}-${randomBytes(8).toString("hex")}`
 }
 
 ticketPanelSchema.statics.findByPanelId = async function(guildId: string, panelId: string): Promise<ITicketPanel | null> {

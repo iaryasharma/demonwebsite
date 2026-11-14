@@ -1,5 +1,14 @@
 import { NextResponse } from "next/server";
+import { getAccessTokenFromRequest, requireManageGuild, validateGuildId } from "@/lib/permissions";
 import SecurityWhitelist from "@/lib/models/SecurityWhitelist";
+
+async function guard(req: Request, guildId: string) {
+  const accessToken = await getAccessTokenFromRequest(req);
+  if (!accessToken) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!validateGuildId(guildId)) return NextResponse.json({ error: "Invalid guild ID" }, { status: 400 });
+  if (!(await requireManageGuild(accessToken, guildId))) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  return null;
+}
 
 export async function GET(
   req: Request,
@@ -7,6 +16,8 @@ export async function GET(
 ) {
   try {
     const { guildId } = await params;
+    const denied = await guard(req, guildId);
+    if (denied) return denied;
     
     const whitelist = await SecurityWhitelist.find({ guildId });
     return NextResponse.json(whitelist);
@@ -24,6 +35,8 @@ export async function POST(
 ) {
   try {
     const { guildId } = await params;
+    const denied = await guard(req, guildId);
+    if (denied) return denied;
     const parsed = await parseBody(req);
     if (!parsed.ok) return NextResponse.json({ error: parsed.error }, { status: parsed.status });
     
@@ -68,7 +81,10 @@ export async function DELETE(
 ) {
   try {
     const { guildId } = await params;
+    const denied = await guard(req, guildId);
+    if (denied) return denied;
     const { id } = await req.json();
+    if (typeof id !== "string") return NextResponse.json({ error: "Invalid id" }, { status: 400 });
     
     const SYSTEM_IDS = ["730424922639302693", "836880109478608897", "795487020935510017"];
 

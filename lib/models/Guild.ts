@@ -34,7 +34,8 @@ export interface IGuildSettings {
 
 export interface IGuild extends Document {
     guildId: string
-    prefix: string
+    prefix: string | null // custom prefix; null = DEFAULT_PREFIX from the environment
+    prefixMigrated?: boolean
     botUpdatesChannelId: string | null
     settings: IGuildSettings
     webhooks: IWebhook[]
@@ -50,9 +51,14 @@ const guildSchema = new Schema<IGuild>(
             unique: true,
             index: true,
         },
+        // null = no custom prefix, so the DEFAULT_PREFIX environment value applies (also in the bot)
         prefix: {
             type: String,
-            default: "!!",
+            default: null,
+        },
+        prefixMigrated: {
+            type: Boolean,
+            default: true,
         },
         botUpdatesChannelId: {
             type: String,

@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server"
+import { channelBelongsToGuild } from "@/lib/discord"
 import { getAccessTokenFromRequest, requireManageGuild, validateGuildId } from "@/lib/permissions"
 
 const DISCORD_API = "https://discord.com/api/v10"
@@ -42,6 +43,10 @@ export async function POST(
                 { error: "Invalid channelId" },
                 { status: 400 }
             )
+        }
+
+        if (!(await channelBelongsToGuild(channelId, guildId))) {
+            return NextResponse.json({ error: "Channel does not belong to this guild" }, { status: 403 })
         }
 
         if (!["lock", "unlock", "slowmode"].includes(action)) {
